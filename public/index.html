@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Northwest Florida Encounters — Changing Lives Through Christ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=Inter:wght@300;400;500;600;700&family=Barlow+Condensed:wght@700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:      #080808;
+      --dark:       #0F0F0F;
+      --dark-mid:   #181818;
+      --dark-card:  #1E1E1E;
+      --dark-border:#2A2A2A;
+      --gold:       #F0B429;
+      --gold-light: #FFD060;
+      --gold-dim:   #B88320;
+      --gold-pale:  #2A2000;
+      --amber:      #E07B10;
+      --crimson:    #9B1C1C;
+      --crimson-light:#C53030;
+      --steel:      #2D4A6E;
+      --cream:      #FAFAF7;
+      --white:      #FFFFFF;
+      --gray-100:   #F3F4F6;
+      --gray-200:   #E5E7EB;
+      --gray-300:   #D1D5DB;
+      --gray-500:   #6B7280;
+      --gray-700:   #374151;
+      --text:       #1A202C;
+
+      --font-serif:     'Playfair Display', Georgia, serif;
+      --font-sans:      'Inter', system-ui, sans-serif;
+      --font-condensed: 'Barlow Condensed', Impact, sans-serif;
+
+      --radius-sm: 6px;
+      --radius:    12px;
+      --radius-lg: 20px;
+
+      --shadow-sm:   0 1px 3px rgba(0,0,0,.15);
+      --shadow:      0 4px 20px rgba(0,0,0,.25);
+      --shadow-gold: 0 8px 32px rgba(240,180,41,.25);
+      --shadow-lg:   0 24px 56px rgba(0,0,0,.40);
+    }
+
+    html { scroll-behavior: smooth; }
+    body  { font-family: var(--font-sans); color: var(--text); background: var(--white); -webkit-font-smoothing: antialiased; }
+
+    /* ── NAV ─────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      background: rgba(8, 8, 8, 0.96);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(240,180,41,.15);
+    }
+    .nav-inner {
+      max-width: 1280px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem; height: 70px;
+    }
+    .nav-brand { display: flex; align-items: center; gap: .85rem; text-decoration: none; }
+    .nav-logo-img {
+      height: 52px; width: 52px;
+      border-radius: 50%;
+      object-fit: cover;
+      filter: brightness(1.1);
+    }
+    .nav-logo-mark {
+      width: 42px; height: 42px; border-radius: 4px;
+      background: var(--gold);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-condensed); font-weight: 900;
+      font-size: .72rem; color: var(--black); letter-spacing: .05em;
+      text-align: center; line-height: 1.15; flex-shrink: 0;
+    }
+    .nav-brand-text { display: flex; flex-direction: column; }
+    .nav-brand-name { font-family: var(--font-sans); font-size: .95rem; font-weight: 700; color: var(--white); line-height: 1.1; letter-spacing: .01em; }
+    .nav-brand-tag  { font-size: .6rem; font-weight: 500; color: var(--gold); letter-spacing: .12em; text-transform: uppercase; }
+    .nav-links { display: flex; align-items: center; gap: .2rem; list-style: none; }
+    .nav-links a {
+      text-decoration: none; color: rgba(255,255,255,.70);
+      font-size: .83rem; font-weight: 500; letter-spacing: .02em;
+      padding: .5rem .8rem; border-radius: var(--radius-sm);
+      transition: color .2s, background .2s;
+    }
+    .nav-links a:hover { color: var(--gold); }
+    .nav-cta {
+      background: var(--gold) !important; color: var(--black) !important;
+      font-weight: 700 !important; padding: .5rem 1.2rem !important;
+      border-radius: 4px !important; letter-spacing: .03em !important;
+      transition: background .2s, transform .15s !important;
+    }
+    .nav-cta:hover { background: var(--gold-light) !important; transform: translateY(-1px); }
+
+    /* ── HERO ────────────────────────────────────────────── */
+    .hero {
+      position: relative; min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+      background: var(--black);
+    }
+    /* diagonal gold accent top-right */
+    .hero-glow {
+      position: absolute; top: -20%; right: -10%;
+      width: 600px; height: 600px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(240,180,41,.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-glow-left {
+      position: absolute; bottom: 5%; left: -15%;
+      width: 500px; height: 500px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(240,180,41,.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    /* thin gold top border */
+    .hero::after {
+      content: '';
+      position: absolute; top: 70px; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent 0%, var(--gold) 40%, var(--gold) 60%, transparent 100%);
+      opacity: .3;
+    }
+    .hero-inner {
+      position: relative; z-index: 1;
+      max-width: 1100px; margin: 0 auto;
+      padding: 10rem 2rem 7rem;
+      text-align: center;
+    }
+    /* #YESGOD eyebrow */
+    .hero-yesgod {
+      font-family: var(--font-condensed);
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 900; letter-spacing: .3em;
+      text-transform: uppercase; color: var(--gold);
+      margin-bottom: 1.75rem;
+      display: flex; align-items: center; justify-content: center; gap: 1rem;
+    }
+    .hero-yesgod::before,
+    .hero-yesgod::after {
+      content: ''; flex: 1; max-width: 80px; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold));
+    }
+    .hero-yesgod::after { background: linear-gradient(90deg, var(--gold), transparent); }
+
+    /* MAIN TITLE */
+    .hero-title {
+      font-family: var(--font-condensed);
+      font-size: clamp(3.5rem, 10vw, 8.5rem);
+      font-weight: 900; line-height: .95;
+      color: var(--white);
+      text-transform: uppercase;
+      letter-spacing: .02em;
+      margin-bottom: .5rem;
+    }
+    .hero-title .highlight { color: var(--gold); display: block; }
+    .hero-title .subtitle-word {
+      font-size: clamp(2rem, 5.5vw, 4.8rem);
+      color: rgba(255,255,255,.55);
+      letter-spacing: .08em;
+    }
+
+    .hero-tagline {
+      font-family: var(--font-serif); font-style: italic;
+      font-size: clamp(1rem, 2vw, 1.35rem);
+      color: rgba(255,255,255,.6); font-weight: 400;
+      margin: 2rem auto 3rem; max-width: 580px; line-height: 1.7;
+    }
+    .hero-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+    .btn-gold {
+      display: inline-flex; align-items: center; gap: .55rem;
+      background: var(--gold);
+      color: var(--black); font-weight: 700; font-size: .95rem;
+      padding: .9rem 2.2rem; border-radius: 4px;
+      text-decoration: none; letter-spacing: .04em; text-transform: uppercase;
+      font-family: var(--font-condensed); font-size: 1rem;
+      box-shadow: var(--shadow-gold);
+      transition: background .2s, transform .2s, box-shadow .2s;
+    }
+    .btn-gold:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 12px 36px rgba(240,180,41,.4); }
+
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: .55rem;
+      background: transparent;
+      color: var(--white); font-weight: 600; font-size: 1rem;
+      padding: .9rem 2.2rem; border-radius: 4px;
+      text-decoration: none; letter-spacing: .04em; text-transform: uppercase;
+      font-family: var(--font-condensed);
+      border: 1.5px solid rgba(255,255,255,.25);
+      transition: border-color .2s, color .2s;
+    }
+    .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+    .hero-scroll {
+      position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: .5rem;
+      color: rgba(255,255,255,.3); font-size: .65rem; letter-spacing: .12em; text-transform: uppercase;
+    }
+    .hero-scroll-line { width: 1px; height: 40px; background: linear-gradient(to bottom, var(--gold), transparent); animation: scrollPulse 2s ease-in-out infinite; }
+    @keyframes scrollPulse { 0%,100%{opacity:.3} 50%{opacity:.9} }
+
+    /* ── MARQUEE TICKER ──────────────────────────────────── */
+    .ticker {
+      background: var(--gold);
+      overflow: hidden; padding: 0;
+      border-top: 2px solid rgba(0,0,0,.1);
+      border-bottom: 2px solid rgba(0,0,0,.1);
+    }
+    .ticker-track {
+      display: flex; align-items: stretch;
+    }
+    .ticker-label {
+      flex-shrink: 0;
+      background: var(--black); color: var(--gold);
+      display: flex; align-items: center; padding: 0 1.5rem;
+      font-family: var(--font-condensed); font-weight: 900;
+      font-size: .8rem; letter-spacing: .2em; text-transform: uppercase;
+      z-index: 1; white-space: nowrap;
+    }
+    .ticker-label i { margin-right: .5rem; }
+    .ticker-scroll-wrap {
+      overflow: hidden; flex: 1;
+      mask-image: linear-gradient(90deg, transparent, black 4%, black 96%, transparent);
+      -webkit-mask-image: linear-gradient(90deg, transparent, black 4%, black 96%, transparent);
+    }
+    .ticker-scroll {
+      display: flex; align-items: center;
+      animation: marquee 28s linear infinite;
+      width: max-content;
+    }
+    .ticker-scroll:hover { animation-play-state: paused; }
+    @keyframes marquee {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .ticker-item {
+      display: flex; align-items: center; gap: .6rem;
+      font-family: var(--font-condensed); font-weight: 800;
+      font-size: 1rem; letter-spacing: .1em; text-transform: uppercase;
+      color: var(--black); padding: .85rem 0; white-space: nowrap;
+    }
+    .ticker-item i { font-size: .85rem; opacity: .65; }
+    .ticker-sep {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: rgba(0,0,0,.25); flex-shrink: 0; margin: 0 1.75rem;
+    }
+
+    /* ── STATS (dark) ────────────────────────────────────── */
+    .stats { background: var(--dark); padding: 4.5rem 2rem; border-bottom: 1px solid var(--dark-border); }
+    .stats-inner {
+      max-width: 1280px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1px 1fr 1px 1fr; gap: 0; align-items: center;
+    }
+    .stat-item { text-align: center; padding: 1rem 2rem; }
+    .stat-num {
+      font-family: var(--font-condensed); font-size: 4rem; font-weight: 900;
+      color: var(--gold); line-height: 1;
+    }
+    .stat-label { font-size: .75rem; color: rgba(255,255,255,.45); margin-top: .4rem; letter-spacing: .1em; text-transform: uppercase; }
+    .stat-divider { background: var(--dark-border); height: 60px; }
+
+    /* ── SECTION COMMON ──────────────────────────────────── */
+    section { padding: 6rem 2rem; }
+    .section-inner { max-width: 1280px; margin: 0 auto; }
+    .section-label {
+      font-family: var(--font-condensed); font-weight: 700;
+      font-size: .75rem; letter-spacing: .2em;
+      text-transform: uppercase; color: var(--gold);
+      margin-bottom: .6rem;
+    }
+    .section-title {
+      font-family: var(--font-serif);
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 700; line-height: 1.15; color: var(--text);
+      margin-bottom: 1rem;
+    }
+    .section-title em { font-style: italic; color: var(--gold-dim); }
+    .section-title.light { color: var(--white); }
+    .section-title.light em { color: var(--gold); }
+    .section-lead { font-size: 1.05rem; color: var(--gray-500); line-height: 1.75; max-width: 600px; }
+    .section-lead.light { color: rgba(255,255,255,.55); }
+    .section-header { margin-bottom: 3.5rem; }
+    .section-header.centered { text-align: center; }
+    .section-header.centered .section-lead { margin: 0 auto; }
+    .divider { width: 40px; height: 3px; background: var(--gold); border-radius: 2px; margin: .9rem 0 1.4rem; }
+    .divider.centered { margin: .9rem auto 1.4rem; }
+
+    /* ── ENCOUNTERS ──────────────────────────────────────── */
+    .encounters { background: var(--cream); }
+    .season-block { margin-bottom: 3rem; }
+    .season-label {
+      display: flex; align-items: center; gap: 1rem;
+      font-family: var(--font-condensed); font-size: .8rem; font-weight: 700;
+      letter-spacing: .2em; text-transform: uppercase; color: var(--gray-500);
+      margin-bottom: 1.25rem;
+    }
+    .season-label::after { content: ''; flex: 1; height: 1px; background: var(--gray-200); }
+    .encounters-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(255px,1fr)); gap: 1rem; }
+
+    .encounter-card {
+      background: var(--white);
+      border-radius: var(--radius-sm);
+      padding: 1.4rem 1.5rem;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--gray-200);
+      border-top: 3px solid var(--gold);
+      transition: box-shadow .2s, transform .2s;
+      text-decoration: none; display: block;
+    }
+    .encounter-card:hover { box-shadow: var(--shadow); transform: translateY(-3px); }
+    .encounter-card.womens { border-top-color: #9333ea; }
+    .encounter-card.mens   { border-top-color: #1d4ed8; }
+    .encounter-card.ky     { border-top-color: var(--amber); }
+
+    .ec-state { font-size: .6rem; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; color: var(--gray-500); margin-bottom: .3rem; }
+    .ec-title { font-family: var(--font-serif); font-size: 1.05rem; font-weight: 700; color: var(--dark); margin-bottom: .5rem; line-height: 1.25; }
+    .ec-dates { display: flex; align-items: center; gap: .4rem; font-size: .8rem; color: var(--gray-500); }
+    .ec-dates i { color: var(--gold); }
+    .ec-type-badge {
+      display: inline-block; font-size: .58rem; font-weight: 700;
+      letter-spacing: .08em; text-transform: uppercase;
+      padding: .18rem .6rem; border-radius: 50px; margin-top: .7rem;
+    }
+    .badge-mens   { background: #EFF6FF; color: #1d4ed8; }
+    .badge-womens { background: #FAF5FF; color: #7E22CE; }
+    .badge-ky     { background: #FFFBEB; color: #B45309; }
+
+    /* ── GOLF CLASSIC (dark) ─────────────────────────────── */
+    .golf { background: var(--dark); padding: 6rem 2rem; }
+    .golf-card {
+      background: var(--dark-mid);
+      border: 1px solid var(--dark-border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      display: grid; grid-template-columns: 1fr 1fr;
+      box-shadow: var(--shadow-lg);
+    }
+    .golf-content { padding: 3.5rem; border-right: 1px solid var(--dark-border); }
+    .golf-eyebrow {
+      display: inline-flex; align-items: center; gap: .5rem;
+      font-family: var(--font-condensed); font-size: .72rem; font-weight: 700;
+      letter-spacing: .18em; text-transform: uppercase; color: var(--gold);
+      background: rgba(240,180,41,.08); border: 1px solid rgba(240,180,41,.2);
+      border-radius: 4px; padding: .35rem 1rem; margin-bottom: 1.5rem;
+    }
+    .golf-title {
+      font-family: var(--font-condensed); font-size: clamp(2rem, 5vw, 3.4rem);
+      font-weight: 900; color: var(--white); line-height: 1.05;
+      text-transform: uppercase; letter-spacing: .02em; margin-bottom: 1rem;
+    }
+    .golf-title em { color: var(--gold); font-style: normal; }
+    .golf-desc { color: rgba(255,255,255,.55); line-height: 1.7; margin-bottom: 2rem; font-size: .9rem; }
+    .golf-details { display: flex; flex-direction: column; gap: .7rem; margin-bottom: 2.5rem; }
+    .golf-detail-row { display: flex; align-items: center; gap: .8rem; color: rgba(255,255,255,.75); font-size: .875rem; }
+    .golf-detail-row i { color: var(--gold); width: 14px; }
+    .golf-visual {
+      display: flex; align-items: center; justify-content: center;
+      padding: 3rem; background: var(--dark-card);
+    }
+    .golf-emblem {
+      text-align: center;
+    }
+    .golf-emblem-ring {
+      width: 190px; height: 190px; border-radius: 50%;
+      border: 2px solid rgba(240,180,41,.3);
+      background: rgba(240,180,41,.05);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: .5rem;
+      margin: 0 auto 1.5rem;
+      box-shadow: 0 0 40px rgba(240,180,41,.08);
+    }
+    .golf-emblem-ring i { font-size: 2.8rem; color: var(--gold); }
+    .golf-emblem-ring span { font-family: var(--font-condensed); font-size: 1.1rem; font-weight: 900; color: var(--white); letter-spacing: .1em; }
+    .golf-emblem-tag { font-family: var(--font-condensed); font-size: .7rem; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.4); }
+
+    /* ── NEXT EVENT ──────────────────────────────────────── */
+    .next-event { background: var(--gray-100); }
+    .next-event-grid { display: grid; grid-template-columns: 3fr 2fr; gap: 2rem; }
+
+    .event-card {
+      background: var(--white); border-radius: var(--radius);
+      padding: 2.5rem; box-shadow: var(--shadow);
+      border-top: 4px solid var(--gold);
+    }
+    .event-badge {
+      display: inline-flex; align-items: center; gap: .4rem;
+      font-family: var(--font-condensed); font-size: .68rem; font-weight: 700;
+      letter-spacing: .14em; text-transform: uppercase; color: var(--black);
+      background: var(--gold); border-radius: 3px; padding: .3rem .85rem; margin-bottom: 1.25rem;
+    }
+    .event-title { font-family: var(--font-serif); font-size: 1.9rem; font-weight: 700; color: var(--dark); margin-bottom: .35rem; }
+    .event-venue { color: var(--gray-500); font-size: .875rem; margin-bottom: 1.25rem; }
+    .event-venue i { color: var(--gold); margin-right: .4rem; }
+    .event-desc { color: var(--gray-700); line-height: 1.75; font-size: .9rem; margin-bottom: 1.75rem; }
+    .event-meta {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+      padding: 1.25rem; background: var(--gray-100);
+      border-radius: var(--radius-sm); margin-bottom: 1.75rem;
+      border-left: 3px solid var(--gold);
+    }
+    .event-meta-row { display: flex; flex-direction: column; gap: .25rem; }
+    .event-meta-label { font-size: .65rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gray-500); }
+    .event-meta-val   { font-size: .9rem; font-weight: 600; color: var(--dark); }
+
+    .info-card {
+      background: var(--dark); border-radius: var(--radius);
+      padding: 2.5rem; box-shadow: var(--shadow);
+      display: flex; flex-direction: column;
+      border: 1px solid var(--dark-border);
+    }
+    .info-card-icon {
+      width: 52px; height: 52px; border-radius: 4px;
+      background: rgba(240,180,41,.1); display: flex;
+      align-items: center; justify-content: center;
+      margin-bottom: 1.25rem; font-size: 1.4rem; color: var(--gold);
+    }
+    .info-card-title { font-family: var(--font-serif); font-size: 1.4rem; font-weight: 700; color: var(--white); margin-bottom: .75rem; }
+    .info-card-text  { color: rgba(255,255,255,.5); line-height: 1.7; font-size: .875rem; flex: 1; }
+    .info-card-link  {
+      display: inline-flex; align-items: center; gap: .4rem;
+      margin-top: 1.5rem; color: var(--gold); font-weight: 600;
+      font-size: .875rem; text-decoration: none; transition: gap .2s;
+    }
+    .info-card-link:hover { gap: .7rem; }
+
+    /* ── BIBLE STUDY ─────────────────────────────────────── */
+    .bible-study { background: var(--white); }
+    .bible-study-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
+    .bs-detail {
+      display: flex; align-items: center; gap: 1rem;
+      padding: 1.1rem 1.25rem; background: var(--gray-100);
+      border-radius: var(--radius-sm); margin-top: .75rem;
+      border-left: 3px solid var(--gold);
+    }
+    .bs-detail-icon { width: 40px; height: 40px; border-radius: 4px; background: var(--gold); display: flex; align-items: center; justify-content: center; color: var(--black); font-size: 1rem; flex-shrink: 0; }
+    .bs-detail-label { font-size: .65rem; color: var(--gray-500); text-transform: uppercase; letter-spacing: .1em; }
+    .bs-detail-val   { font-size: .95rem; font-weight: 600; color: var(--dark); }
+
+    .video-frame {
+      border-radius: var(--radius); overflow: hidden;
+      box-shadow: var(--shadow-lg); aspect-ratio: 16/9;
+      background: var(--dark);
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 1rem; position: relative;
+      text-decoration: none;
+    }
+    .video-bg {
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, #0F0F0F 0%, #1A1A1A 100%);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .video-bg-text {
+      font-family: var(--font-condensed); font-size: 6rem; font-weight: 900;
+      color: rgba(240,180,41,.06); letter-spacing: .1em; text-transform: uppercase;
+      user-select: none;
+    }
+    .video-play-btn {
+      position: relative; z-index: 1;
+      width: 72px; height: 72px; border-radius: 50%;
+      background: var(--gold); display: flex;
+      align-items: center; justify-content: center;
+      font-size: 1.4rem; color: var(--black);
+      box-shadow: 0 0 0 14px rgba(240,180,41,.12);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .video-play-btn:hover { transform: scale(1.08); box-shadow: 0 0 0 20px rgba(240,180,41,.1); }
+    .video-caption { position: relative; z-index: 1; color: rgba(255,255,255,.55); font-size: .8rem; }
+
+    /* ── LOCATIONS ───────────────────────────────────────── */
+    .locations { background: var(--dark); padding: 6rem 2rem; }
+    .locations-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; }
+    .location-card {
+      background: var(--dark-mid);
+      border: 1px solid var(--dark-border);
+      border-radius: var(--radius-sm);
+      padding: 2.25rem 2rem; text-align: center; text-decoration: none;
+      transition: border-color .2s, transform .2s;
+      display: block;
+    }
+    .location-card:hover { border-color: var(--gold); transform: translateY(-3px); }
+    .location-icon {
+      width: 56px; height: 56px; border-radius: 4px;
+      background: rgba(240,180,41,.1); border: 1px solid rgba(240,180,41,.2);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.25rem; font-size: 1.2rem; color: var(--gold);
+    }
+    .location-name { font-family: var(--font-serif); font-size: 1.1rem; font-weight: 700; color: var(--white); margin-bottom: .4rem; }
+    .location-sub  { font-size: .8rem; color: rgba(255,255,255,.4); margin-bottom: 1.25rem; }
+    .location-link { display: inline-flex; align-items: center; gap: .4rem; font-size: .78rem; font-weight: 600; color: var(--gold); font-family: var(--font-condensed); letter-spacing: .08em; text-transform: uppercase; }
+
+    /* ── VERSE ───────────────────────────────────────────── */
+    .verse-section {
+      background: var(--black); padding: 7rem 2rem;
+      position: relative; overflow: hidden;
+      border-top: 1px solid var(--dark-border);
+      border-bottom: 1px solid var(--dark-border);
+    }
+    .verse-section::before {
+      content: '\201C';
+      position: absolute; top: -3rem; left: 50%; transform: translateX(-50%);
+      font-family: var(--font-serif); font-size: 22rem; font-weight: 900;
+      color: rgba(240,180,41,.04); line-height: 1; pointer-events: none;
+    }
+    .verse-inner { max-width: 820px; margin: 0 auto; text-align: center; position: relative; z-index: 1; }
+    .verse-text {
+      font-family: var(--font-serif); font-style: italic;
+      font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+      color: rgba(255,255,255,.80); line-height: 1.75; margin-bottom: 1.75rem;
+    }
+    .verse-ref {
+      font-family: var(--font-condensed); font-size: .85rem; font-weight: 700;
+      letter-spacing: .2em; text-transform: uppercase; color: var(--gold);
+    }
+
+    /* ── FOOTER ──────────────────────────────────────────── */
+    footer { background: #050505; color: rgba(255,255,255,.45); padding: 4rem 2rem 2rem; }
+    .footer-inner { max-width: 1280px; margin: 0 auto; }
+    .footer-top {
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem;
+      padding-bottom: 3rem; border-bottom: 1px solid #1a1a1a; margin-bottom: 2rem;
+    }
+    .footer-brand p { font-size: .85rem; line-height: 1.7; margin: 1rem 0 1.5rem; max-width: 260px; color: rgba(255,255,255,.4); }
+    .footer-social { display: flex; gap: .6rem; }
+    .footer-social a {
+      width: 34px; height: 34px; border-radius: 4px;
+      background: #1a1a1a; display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,.5); font-size: .85rem; text-decoration: none;
+      transition: background .2s, color .2s;
+    }
+    .footer-social a:hover { background: var(--gold); color: var(--black); }
+    .footer-col h4 {
+      font-family: var(--font-condensed); font-size: .72rem; font-weight: 700;
+      letter-spacing: .18em; text-transform: uppercase; color: var(--gold);
+      margin-bottom: 1.25rem;
+    }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: .55rem; }
+    .footer-col a { text-decoration: none; color: rgba(255,255,255,.4); font-size: .85rem; transition: color .2s; }
+    .footer-col a:hover { color: var(--white); }
+    .footer-bottom {
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+      font-size: .78rem;
+    }
+    .footer-bottom a { color: rgba(255,255,255,.3); text-decoration: none; }
+    .footer-bottom a:hover { color: var(--white); }
+
+    /* ── RESPONSIVE ──────────────────────────────────────── */
+    @media (max-width: 960px) {
+      .golf-card         { grid-template-columns: 1fr; }
+      .golf-content      { border-right: none; border-bottom: 1px solid var(--dark-border); }
+      .next-event-grid   { grid-template-columns: 1fr; }
+      .bible-study-grid  { grid-template-columns: 1fr; }
+      .locations-grid    { grid-template-columns: 1fr; }
+      .footer-top        { grid-template-columns: 1fr 1fr; }
+      .stats-inner       { grid-template-columns: 1fr; }
+      .stat-divider      { display: none; }
+    }
+    @media (max-width: 600px) {
+      .nav-links { display: none; }
+      .footer-top { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ────────────────────────────────────── -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-brand">
+      <svg class="nav-logo-img" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="100" cy="100" r="99" fill="#0a0a0a"/>
+        <circle cx="100" cy="100" r="92" fill="none" stroke="url(#ring-grad)" stroke-width="16"/>
+        <circle cx="100" cy="100" r="75" fill="none" stroke="#555" stroke-width=".8"/>
+        <circle cx="100" cy="100" r="74" fill="#0a0a0a"/>
+        <defs>
+          <linearGradient id="ring-grad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#ffffff"/>
+            <stop offset="100%" stop-color="#aaaaaa"/>
+          </linearGradient>
+          <path id="arc-t1" d="M 18,100 A 82,82 0 0,1 182,100"/>
+          <path id="arc-t2" d="M 30,100 A 70,70 0 0,1 170,100"/>
+          <path id="arc-b1" d="M 170,100 A 70,70 0 0,1 30,100"/>
+          <path id="arc-b2" d="M 182,100 A 82,82 0 0,1 18,100"/>
+        </defs>
+        <text font-family="'Arial Black',Arial,sans-serif" font-weight="900" font-size="10" fill="#111" letter-spacing="1.2">
+          <textPath href="#arc-t1" startOffset="50%" text-anchor="middle">N. ALABAMA - NW FLORIDA</textPath>
+        </text>
+        <text font-family="'Arial Black',Arial,sans-serif" font-weight="900" font-size="10.5" fill="#111" letter-spacing="1">
+          <textPath href="#arc-t2" startOffset="50%" text-anchor="middle">THE ENCOUNTERS</textPath>
+        </text>
+        <text font-family="'Arial Black',Arial,sans-serif" font-weight="900" font-size="7.2" fill="#111" letter-spacing=".4">
+          <textPath href="#arc-b1" startOffset="50%" text-anchor="middle">MY ENCOUNTER...MY FREEDOM! JOHN 8:36</textPath>
+        </text>
+        <text font-family="'Arial Black',Arial,sans-serif" font-weight="900" font-size="8.5" fill="#111" letter-spacing="1">
+          <textPath href="#arc-b2" startOffset="50%" text-anchor="middle">TENNESSEE - N. MISSISSIPPI</textPath>
+        </text>
+        <!-- Broken chain / fists center icon -->
+        <g fill="white" stroke="none">
+          <!-- Left arm -->
+          <path d="M72,130 L75,88 Q76,78 83,77 Q90,76 91,86 L90,130Z"/>
+          <rect x="69" y="128" width="24" height="9" rx="4.5"/>
+          <!-- Right arm (fist raised) -->
+          <path d="M110,130 L109,86 Q110,76 117,77 Q124,78 125,88 L128,130Z"/>
+          <rect x="107" y="128" width="24" height="9" rx="4.5"/>
+          <!-- chain links -->
+          <path d="M93,137 Q96,140 99,137 Q102,134 99,131 Q96,128 93,131 Q90,134 93,137Z" fill="none" stroke="white" stroke-width="1.5"/>
+          <path d="M107,137 Q110,140 113,137 Q116,134 113,131 Q110,128 107,131 Q104,134 107,137Z" fill="none" stroke="white" stroke-width="1.5"/>
+          <!-- break particles -->
+          <circle cx="101" cy="134" r="1.2"/>
+          <circle cx="99"  cy="139" r=".9"/>
+          <circle cx="103" cy="139" r=".9"/>
+          <circle cx="97"  cy="141" r=".7"/>
+        </g>
+      </svg>
+      <div class="nav-brand-text">
+        <span class="nav-brand-name">NW Florida Encounters</span>
+        <span class="nav-brand-tag">#YesGod</span>
+      </div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#">About</a></li>
+      <li><a href="#encounters">Encounters</a></li>
+      <li><a href="#dates">Dates</a></li>
+      <li><a href="#gallery">Gallery</a></li>
+      <li><a href="#">Donate</a></li>
+      <li><a href="#">Contact</a></li>
+      <li><a href="#golf" class="nav-cta">Register Now</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ── HERO ───────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-glow-left"></div>
+  <div class="hero-inner">
+    <div class="hero-yesgod">#YESGOD</div>
+    <h1 class="hero-title">
+      <span class="subtitle-word">Northwest Florida</span>
+      <span class="highlight">Encounters</span>
+    </h1>
+    <p class="hero-tagline">
+      A safe place where men and women encounter the living God — and leave transformed forever in just three days.
+    </p>
+    <div class="hero-actions">
+      <a href="#encounters" class="btn-gold">
+        <i class="fas fa-calendar-check"></i> View 2026 Schedule
+      </a>
+      <a href="#gallery" class="btn-ghost">
+        <i class="fas fa-play-circle"></i> Watch Testimonials
+      </a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <div class="hero-scroll-line"></div>
+    Scroll
+  </div>
+</section>
+
+<!-- ── GOLD TICKER ─────────────────────────────── -->
+<div class="ticker">
+  <div class="ticker-track">
+    <div class="ticker-label"><i class="fas fa-bolt"></i> #YesGod</div>
+    <div class="ticker-scroll-wrap">
+      <div class="ticker-scroll">
+        <!-- set 1 -->
+        <div class="ticker-item"><i class="fas fa-cross"></i> Life-Changing Weekends</div>
+        <div class="ticker-sep"></div>
+        <div class="ticker-item"><i class="fas fa-map-marker-alt"></i> 5+ States Across the USA</div>
+        <div class="ticker-sep"></div>
+        <div class="ticker-item"><i class="fas fa-calendar-check"></i> 15 Encounters in 2026</div>
+        <div class="ticker-sep"></div>
+        <div class="ticker-item"><i class="fas fa-users"></i> Men's &amp; Women's Weekends</div>
+        <div class="ticker-sep"></div>
+        <div class="ticker-item"><i class="fas fa-link-slash"></i> My Encounter... My Freedom</div>
+        <div class="ticker-sep"></div>
+        <div class="ticker-item"><i class="fas fa-book-open"></i> John 8:36</div>
+        <div class="ticker-sep"></div>
+        <div class="ticker-item"><i class="fas fa-heart"></i> Set Free Through Christ</div>
+        <div class="ticker-sep"></div>
+        <div class="ticker-item"><i class="fas fa-church"></i> N. Alabama · NW Florida · Mississippi · Tennessee · Kentucky</div>
+        <div class="ticker-sep"></div>
+        <!-- set 2 (duplicate for seamless loop) -->
+        <div class="ticker-item"><i class="fas fa-cross"></i> Life-Changing Weekends</div>
+        <div class="ticker-sep"></div>
+        <div class="ticker-item"><i class="fas fa-map-marker-alt"></i> 5+ States Across the USA</div>
+        <div class="ticker-sep"></div>
+        <div class="ticker-item"><i class="fas fa-calendar-check"></i> 15 Encounters in 2026</div>
+        <div class="ticker-sep"></div>
+        <div class="ticker-item"><i class="fas fa-users"></i> Men's &amp; Women's Weekends</div>
+        <div class="ticker-sep"></div>
+        <div class="ticker-item"><i class="fas fa-link-slash"></i> My Encounter... My Freedom</div>
+        <div class="ticker-sep"></div>
+        <div class="ticker-item"><i class="fas fa-book-open"></i> John 8:36</div>
+        <div class="ticker-sep"></div>
+        <div class="ticker-item"><i class="fas fa-heart"></i> Set Free Through Christ</div>
+        <div class="ticker-sep"></div>
+        <div class="ticker-item"><i class="fas fa-church"></i> N. Alabama · NW Florida · Mississippi · Tennessee · Kentucky</div>
+        <div class="ticker-sep"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── STATS ───────────────────────────────────── -->
+<div class="stats">
+  <div class="stats-inner">
+    <div class="stat-item">
+      <div class="stat-num">10+</div>
+      <div class="stat-label">Years Transforming Lives</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <div class="stat-num">15</div>
+      <div class="stat-label">Encounters in 2026</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <div class="stat-num">5+</div>
+      <div class="stat-label">States Across the USA</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── UPCOMING ENCOUNTERS ─────────────────────── -->
+<section class="encounters" id="encounters">
+  <div class="section-inner">
+    <div class="section-header centered">
+      <div class="section-label">2026 Schedule</div>
+      <h2 class="section-title">Upcoming <em>Encounters</em></h2>
+      <div class="divider centered"></div>
+      <p class="section-lead">Life-changing weekends across the United States. Find an Encounter near you.</p>
+    </div>
+
+    <div class="season-block">
+      <div class="season-label"><span>🌸</span> Spring</div>
+      <div class="encounters-grid">
+        <a class="encounter-card womens" href="#">
+          <div class="ec-state">Florida</div>
+          <div class="ec-title">Florida Women's Encounter</div>
+          <div class="ec-dates"><i class="fas fa-calendar-alt"></i> April 17 – April 19</div>
+          <span class="ec-type-badge badge-womens">Women's</span>
+        </a>
+        <a class="encounter-card mens" href="#">
+          <div class="ec-state">Mississippi</div>
+          <div class="ec-title">Florida Men's Encounter</div>
+          <div class="ec-dates"><i class="fas fa-calendar-alt"></i> April 24 – April 26</div>
+          <span class="ec-type-badge badge-mens">Men's</span>
+        </a>
+        <a class="encounter-card ky" href="#">
+          <div class="ec-state">Kentucky</div>
+          <div class="ec-title">Kentucky Men's Encounter</div>
+          <div class="ec-dates"><i class="fas fa-calendar-alt"></i> May 15 – May 17</div>
+          <span class="ec-type-badge badge-ky">Men's</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="season-block">
+      <div class="season-label"><span>☀️</span> Summer</div>
+      <div class="encounters-grid">
+        <a class="encounter-card mens" href="#">
+          <div class="ec-state">Kansas</div>
+          <div class="ec-title">Kansas Men's Encounter</div>
+          <div class="ec-dates"><i class="fas fa-calendar-alt"></i> June 12 – June 14</div>
+          <span class="ec-type-badge badge-mens">Men's</span>
+        </a>
+        <a class="encounter-card mens" href="#">
+          <div class="ec-state">Mississippi</div>
+          <div class="ec-title">Mississippi Men's Encounter</div>
+          <div class="ec-dates"><i class="fas fa-calendar-alt"></i> July 24 – July 26</div>
+          <span class="ec-type-badge badge-mens">Men's</span>
+        </a>
+        <a class="encounter-card womens" href="#">
+          <div class="ec-state">Mississippi</div>
+          <div class="ec-title">Mississippi Women's Encounter</div>
+          <div class="ec-dates"><i class="fas fa-calendar-alt"></i> July 31 – August 2</div>
+          <span class="ec-type-badge badge-womens">Women's</span>
+        </a>
+        <a class="encounter-card womens" href="#">
+          <div class="ec-state">Florida</div>
+          <div class="ec-title">Florida Women's Encounter</div>
+          <div class="ec-dates"><i class="fas fa-calendar-alt"></i> August 21 – August 23</div>
+          <span class="ec-type-badge badge-womens">Women's</span>
+        </a>
+        <a class="encounter-card mens" href="#">
+          <div class="ec-state">Florida</div>
+          <div class="ec-title">Florida Men's Encounter</div>
+          <div class="ec-dates"><i class="fas fa-calendar-alt"></i> August 28 – August 30</div>
+          <span class="ec-type-badge badge-mens">Men's</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="season-block">
+      <div class="season-label"><span>🍂</span> Fall</div>
+      <div class="encounters-grid">
+        <a class="encounter-card mens" href="#">
+          <div class="ec-state">Ohio</div>
+          <div class="ec-title">Ohio Men's Encounter</div>
+          <div class="ec-dates"><i class="fas fa-calendar-alt"></i> September 11 – September 13</div>
+          <span class="ec-type-badge badge-mens">Men's</span>
+        </a>
+        <a class="encounter-card womens" href="#">
+          <div class="ec-state">Florida</div>
+          <div class="ec-title">Florida Women's Encounter</div>
+          <div class="ec-dates"><i class="fas fa-calendar-alt"></i> October 23 – October 25</div>
+          <span class="ec-type-badge badge-womens">Women's</span>
+        </a>
+        <a class="encounter-card mens" href="#">
+          <div class="ec-state">Florida</div>
+          <div class="ec-title">Florida Men's Encounter</div>
+          <div class="ec-dates"><i class="fas fa-calendar-alt"></i> October 30 – November 1</div>
+          <span class="ec-type-badge badge-mens">Men's</span>
+        </a>
+        <a class="encounter-card mens" href="#">
+          <div class="ec-state">Alabama</div>
+          <div class="ec-title">Alabama Men's Encounter</div>
+          <div class="ec-dates"><i class="fas fa-calendar-alt"></i> November 6 – November 8</div>
+          <span class="ec-type-badge badge-mens">Men's</span>
+        </a>
+        <a class="encounter-card womens" href="#">
+          <div class="ec-state">Alabama</div>
+          <div class="ec-title">Alabama Women's Encounter</div>
+          <div class="ec-dates"><i class="fas fa-calendar-alt"></i> November 13 – November 15</div>
+          <span class="ec-type-badge badge-womens">Women's</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── NEXT EVENT ──────────────────────────────── -->
+<section class="next-event" id="dates">
+  <div class="section-inner">
+    <div class="section-header">
+      <div class="section-label">Happening Now</div>
+      <h2 class="section-title">Next <em>Encounter</em></h2>
+      <div class="divider"></div>
+    </div>
+    <div class="next-event-grid">
+      <div class="event-card">
+        <span class="event-badge"><i class="fas fa-bolt"></i> Upcoming</span>
+        <h3 class="event-title">Men's Encounter — April 2026</h3>
+        <p class="event-venue"><i class="fas fa-map-marker-alt"></i>Blue Lake Methodist Camp, Andalusia, AL</p>
+        <p class="event-desc">
+          The Men's Encounter is a 3-day event that will change your life FOREVER! Last-minute registrations and a meet &amp; greet with servers from 6:00–6:30pm. Come to the building just east of the Pinewood Lodge. A Celebration Service will be held Sunday @ 7:00pm at Blue Lake Methodist Church — EVERYONE is encouraged to attend.
+        </p>
+        <div class="event-meta">
+          <div class="event-meta-row">
+            <span class="event-meta-label">Starts</span>
+            <span class="event-meta-val">Friday, April 24 · 6:00pm</span>
+          </div>
+          <div class="event-meta-row">
+            <span class="event-meta-label">Ends</span>
+            <span class="event-meta-val">Sunday, April 26 · 8:00pm</span>
+          </div>
+        </div>
+        <a href="#" class="btn-gold"><i class="fas fa-user-plus"></i> Register Today</a>
+      </div>
+      <div class="info-card">
+        <div class="info-card-icon"><i class="fas fa-hourglass-half"></i></div>
+        <h3 class="info-card-title">Please Bear With Us</h3>
+        <p class="info-card-text">
+          We are currently putting together the details for the next Encounter. Check back soon — we can't wait to share what God has in store.
+        </p>
+        <a href="#" class="info-card-link">Get Notified <i class="fas fa-arrow-right"></i></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── GOLF CLASSIC ────────────────────────────── -->
+<section class="golf" id="golf">
+  <div class="section-inner">
+    <div class="golf-card">
+      <div class="golf-content">
+        <div class="golf-eyebrow"><i class="fas fa-golf-ball-tee"></i> Special Event · 2026</div>
+        <h2 class="golf-title">2nd Annual<br><em>Faith &amp; Fairways</em><br>Golf Classic</h2>
+        <p class="golf-desc">
+          Join us on the golf course and help transform lives. Fellowship, lunch, prizes, and more — all in support of the Encounters ministry.
+        </p>
+        <div class="golf-details">
+          <div class="golf-detail-row"><i class="fas fa-calendar"></i> May 21st — Blackwater Golf Course</div>
+          <div class="golf-detail-row"><i class="fas fa-utensils"></i> Fellowship · Lunch · Prizes &amp; More</div>
+          <div class="golf-detail-row"><i class="fas fa-handshake"></i> Sponsor Opportunities Available</div>
+        </div>
+        <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+          <a href="#" class="btn-gold"><i class="fas fa-golf-ball-tee"></i> Register as Player</a>
+          <a href="#" class="btn-ghost">Become a Sponsor</a>
+        </div>
+      </div>
+      <div class="golf-visual">
+        <div class="golf-emblem">
+          <div class="golf-emblem-ring">
+            <i class="fas fa-golf-ball-tee"></i>
+            <span>#YESGOD</span>
+          </div>
+          <div class="golf-emblem-tag">NWFL Encounters · Golf Classic 2026</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── BIBLE STUDY + VIDEO ─────────────────────── -->
+<section class="bible-study" id="gallery">
+  <div class="section-inner">
+    <div class="bible-study-grid">
+      <div>
+        <div class="section-label">Weekly Community</div>
+        <h2 class="section-title">The Inner Circle<br><em>Bible Study</em></h2>
+        <div class="divider"></div>
+        <p class="section-lead">Stay connected and keep growing. The Inner Circle is our weekly Bible study open to everyone who wants to go deeper in their faith.</p>
+        <div class="bs-detail">
+          <div class="bs-detail-icon"><i class="fas fa-clock"></i></div>
+          <div>
+            <div class="bs-detail-label">When</div>
+            <div class="bs-detail-val">Every Tuesday at 7:00pm CST</div>
+          </div>
+        </div>
+        <div class="bs-detail">
+          <div class="bs-detail-icon"><i class="fas fa-video"></i></div>
+          <div>
+            <div class="bs-detail-label">Format</div>
+            <div class="bs-detail-val">Online — Join from Anywhere</div>
+          </div>
+        </div>
+        <a href="#" class="btn-gold" style="display:inline-flex;margin-top:2rem;"><i class="fas fa-book-open"></i> Join the Study</a>
+      </div>
+      <div>
+        <div class="section-label" style="margin-bottom:.75rem;">Men's Encounter Testimonials</div>
+        <a href="https://www.youtube.com" class="video-frame" target="_blank" rel="noopener">
+          <div class="video-bg"><div class="video-bg-text">#YESGOD</div></div>
+          <div class="video-play-btn"><i class="fas fa-play" style="margin-left:3px;"></i></div>
+          <p class="video-caption">Watch — Men's Encounter Testimonials</p>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── LOCATIONS (dark) ───────────────────────── -->
+<section class="locations">
+  <div class="section-inner">
+    <div class="section-header centered">
+      <div class="section-label">Nationwide Ministry</div>
+      <h2 class="section-title light">Other <em>Locations</em></h2>
+      <div class="divider centered"></div>
+      <p class="section-lead light">The Encounters movement is growing across the country. Find your regional chapter.</p>
+    </div>
+    <div class="locations-grid">
+      <a href="#" class="location-card">
+        <div class="location-icon"><i class="fas fa-map-marker-alt"></i></div>
+        <div class="location-name">North Alabama Encounters</div>
+        <div class="location-sub">Serving North Alabama communities</div>
+        <div class="location-link">Visit Chapter <i class="fas fa-arrow-right"></i></div>
+      </a>
+      <a href="#" class="location-card">
+        <div class="location-icon"><i class="fas fa-map-marker-alt"></i></div>
+        <div class="location-name">North Mississippi Encounters</div>
+        <div class="location-sub">Serving North Mississippi communities</div>
+        <div class="location-link">Visit Chapter <i class="fas fa-arrow-right"></i></div>
+      </a>
+      <a href="#" class="location-card">
+        <div class="location-icon"><i class="fas fa-map-marker-alt"></i></div>
+        <div class="location-name">West Kentucky Encounters</div>
+        <div class="location-sub">Serving West Kentucky communities</div>
+        <div class="location-link">Visit Chapter <i class="fas fa-arrow-right"></i></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── VERSE ──────────────────────────────────── -->
+<div class="verse-section">
+  <div class="verse-inner">
+    <p class="verse-text">
+      "And Jesus came and spoke to them, saying, 'All authority has been given to Me in heaven and on earth. Go therefore and make disciples of all the nations, baptizing them in the name of the Father and of the Son and of the Holy Spirit, teaching them to observe all things that I have commanded you; and lo, I am with you always, even to the end of the age.'"
+    </p>
+    <div class="verse-ref">Matthew 28:18–20</div>
+  </div>
+</div>
+
+<!-- ── FOOTER ──────────────────────────────────── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="nav-brand" style="margin-bottom:.5rem;">
+          <div class="nav-logo-mark" style="width:38px;height:38px;font-size:.65rem;">NWFL<br>ENC</div>
+          <div class="nav-brand-text">
+            <span class="nav-brand-name">NW Florida Encounters</span>
+            <span class="nav-brand-tag">#YesGod</span>
+          </div>
+        </div>
+        <p>A ministry dedicated to setting people free through a personal encounter with Jesus Christ.</p>
+        <div class="footer-social">
+          <a href="#"><i class="fab fa-facebook-f"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+          <a href="#"><i class="fab fa-youtube"></i></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Ministry</h4>
+        <ul>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Our Story</a></li>
+          <li><a href="#">Field Engineers</a></li>
+          <li><a href="#">Gallery</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Encounters</h4>
+        <ul>
+          <li><a href="#">2026 Schedule</a></li>
+          <li><a href="#">Men's Encounter</a></li>
+          <li><a href="#">Women's Encounter</a></li>
+          <li><a href="#">Other Locations</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Connect</h4>
+        <ul>
+          <li><a href="#">Contact Us</a></li>
+          <li><a href="#">Donate</a></li>
+          <li><a href="#">Store</a></li>
+          <li><a href="#">Inner Circle Study</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2014 – 2026 Northwest Florida Encounters. All rights reserved.</span>
+      <div style="display:flex;gap:1.5rem;">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Use</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
