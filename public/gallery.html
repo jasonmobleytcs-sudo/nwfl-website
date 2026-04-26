@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gallery — The Encounters</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --sky:#EEF6FF;--sky2:#DFF0FF;--blue:#2A7FC1;--blue2:#1A6099;--blue-lt:#5BA3D9;
+  --gold:#D4891A;--gold2:#F0A830;--gold-lt:#FFF3DC;--teal:#2CA58D;
+  --white:#FFFFFF;--warm-white:#FDFAF5;--cream:#FBF6EE;--ink:#1A2B3C;--body:#4A5E70;
+  --rule:rgba(42,127,193,0.18);--gold-rule:rgba(212,137,26,0.22);
+  --ff-d:'Cormorant Garamond',Georgia,serif;--ff-b:'Jost',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--ff-b);background:var(--warm-white);color:var(--ink);overflow-x:hidden}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:300;display:flex;align-items:center;justify-content:space-between;padding:1rem 4rem;background:rgba(255,255,255,.96);backdrop-filter:blur(20px);border-bottom:1px solid rgba(42,127,193,.12);box-shadow:0 2px 24px rgba(0,0,0,.06)}
+.nav-logo-wrap{display:flex;align-items:center;gap:.8rem;text-decoration:none}
+.nav-logo-img{width:40px;height:40px;object-fit:contain}
+.nav-logo-text{font-family:var(--ff-d);font-size:1.1rem;font-weight:600;color:var(--ink);line-height:1.1}
+.nav-logo-text span{display:block;font-size:.52rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--blue);font-family:var(--ff-b)}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{font-size:.65rem;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--body);text-decoration:none;transition:color .2s}
+.nav-links a:hover,.nav-links a.active{color:var(--blue)}
+.nav-cta{font-size:.65rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--white);background:var(--blue);padding:.62rem 1.5rem;border-radius:50px;text-decoration:none;transition:background .2s,box-shadow .2s}
+.nav-cta:hover{background:var(--blue2);box-shadow:0 4px 18px rgba(42,127,193,.35)}
+
+/* SHARED */
+.wrap{max-width:1200px;margin:0 auto}
+.kicker{display:inline-flex;align-items:center;gap:.6rem;font-size:.6rem;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:var(--blue);margin-bottom:.8rem}
+.kicker::before{content:'';width:20px;height:2px;background:var(--gold);flex-shrink:0}
+
+/* GALLERY MAIN */
+.gallery-main{padding:7rem 4rem 5rem}
+
+/* ALBUMS VIEW */
+.gal-header{margin-bottom:3rem}
+.gal-title{font-family:var(--ff-d);font-size:clamp(2.4rem,5vw,4rem);font-weight:300;color:var(--ink);line-height:1;margin-bottom:.5rem}
+.gal-title em{font-style:italic;color:var(--blue)}
+.gal-sub{font-size:.9rem;font-weight:300;color:var(--body);margin-top:.8rem}
+.albums-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.6rem}
+.album-card{border-radius:16px;overflow:hidden;border:1.5px solid rgba(42,127,193,.12);background:var(--white);box-shadow:0 4px 18px rgba(0,0,0,.06);cursor:pointer;transition:transform .25s,box-shadow .25s,border-color .25s}
+.album-card:hover{transform:translateY(-5px);box-shadow:0 12px 36px rgba(42,127,193,.15);border-color:var(--blue)}
+.album-cover{position:relative;aspect-ratio:4/3;overflow:hidden}
+.album-cover img{width:100%;height:100%;object-fit:cover;transition:transform .4s ease}
+.album-card:hover .album-cover img{transform:scale(1.05)}
+.album-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(26,43,60,.75) 0%,transparent 55%);display:flex;align-items:flex-end;padding:1.4rem 1.6rem;font-size:.65rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--white);opacity:0;transition:opacity .3s}
+.album-card:hover .album-overlay{opacity:1}
+.album-info{padding:1.2rem 1.5rem 1.4rem}
+.album-name{font-family:var(--ff-d);font-size:1.18rem;font-weight:400;color:var(--ink);margin-bottom:.3rem;line-height:1.3}
+.album-meta{font-size:.58rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--body);opacity:.55}
+.album-count-badge{display:inline-flex;align-items:center;gap:.4rem;margin-top:.6rem;background:var(--sky);border-radius:50px;padding:.28rem .85rem;font-size:.56rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--blue)}
+
+/* PHOTOS VIEW */
+#photos-view{display:none}
+.back-btn{display:inline-flex;align-items:center;gap:.5rem;font-size:.62rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--blue);background:none;border:1.5px solid rgba(42,127,193,.25);border-radius:50px;cursor:pointer;padding:.45rem 1.1rem;margin-bottom:2rem;transition:all .2s;font-family:var(--ff-b)}
+.back-btn:hover{background:var(--blue);color:var(--white);border-color:var(--blue)}
+.photos-view-header{margin-bottom:2rem}
+.album-view-title{font-family:var(--ff-d);font-size:clamp(1.8rem,4vw,3rem);font-weight:300;color:var(--ink);margin-bottom:.3rem}
+.album-view-meta{font-size:.6rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--body);opacity:.55}
+.gallery-grid{columns:4 180px;column-gap:.75rem}
+.gallery-item{break-inside:avoid;margin-bottom:.75rem;cursor:pointer;border-radius:10px;overflow:hidden}
+.gallery-item img{width:100%;display:block;transition:transform .35s ease,filter .35s ease}
+.gallery-item:hover img{transform:scale(1.05);filter:brightness(1.07)}
+
+/* LIGHTBOX */
+.lightbox{display:none;position:fixed;inset:0;z-index:9999;background:rgba(10,18,28,.94);align-items:center;justify-content:center;padding:2rem}
+.lightbox.open{display:flex}
+.lightbox img{max-width:88vw;max-height:88vh;object-fit:contain;border-radius:8px;box-shadow:0 24px 80px rgba(0,0,0,.7)}
+.lb-close{position:absolute;top:1.2rem;right:1.8rem;color:white;font-size:2.2rem;cursor:pointer;opacity:.65;transition:opacity .2s;background:none;border:none;line-height:1}
+.lb-close:hover{opacity:1}
+.lb-nav{position:absolute;top:50%;transform:translateY(-50%);color:white;font-size:3rem;cursor:pointer;opacity:.5;transition:opacity .2s;background:none;border:none;padding:.4rem 1.2rem;line-height:1}
+.lb-nav:hover{opacity:1}
+.lb-prev{left:.5rem}.lb-next{right:.5rem}
+.lb-counter{position:absolute;bottom:1.2rem;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.45);font-size:.7rem;letter-spacing:.12em}
+
+/* FOOTER */
+footer{background:var(--ink);padding:5rem 4rem 0;border-top:4px solid var(--gold)}
+.footer-grid{display:grid;grid-template-columns:1.8fr 1fr 1fr 1fr;gap:4rem;margin-bottom:4rem}
+.foot-brand-logo{text-decoration:none;display:inline-flex;align-items:center;gap:.8rem;margin-bottom:1rem}
+.foot-logo-img{width:42px;height:42px;object-fit:contain;filter:brightness(0) invert(1);opacity:.8}
+.foot-brand-name{font-family:var(--ff-d);font-size:1.05rem;font-weight:600;color:rgba(255,255,255,.8);line-height:1.1}
+.foot-brand-name span{display:block;font-size:.48rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--gold2);font-family:var(--ff-b);margin-top:.2rem}
+.foot-tagline{font-size:.8rem;color:rgba(255,255,255,.3);font-weight:300;line-height:1.7;max-width:220px;margin-bottom:1.4rem}
+.footer-social{display:flex;gap:.7rem;margin-top:1.4rem}
+.social-btn{width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.15);display:grid;place-items:center;font-size:.7rem;font-weight:700;color:rgba(255,255,255,.45);text-decoration:none;transition:all .2s}
+.social-btn:hover{background:var(--blue);border-color:var(--blue);color:var(--white)}
+.foot-col h4{font-size:.56rem;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--gold2);margin-bottom:1.3rem}
+.foot-col ul{list-style:none;display:flex;flex-direction:column;gap:.6rem}
+.foot-col a{font-size:.82rem;color:rgba(255,255,255,.38);text-decoration:none;font-weight:300;transition:color .2s}
+.foot-col a:hover{color:var(--gold2)}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.06);padding:1.4rem 0;display:flex;justify-content:space-between;align-items:center;font-size:.66rem;color:rgba(255,255,255,.2);font-weight:300}
+.yg-footer{font-family:var(--ff-d);font-size:1rem;font-weight:700;color:rgba(212,137,26,.45);letter-spacing:.1em}
+
+@media(max-width:1000px){
+  nav{padding:1rem 1.6rem}
+  .nav-links{display:none}
+  .gallery-main{padding:5rem 1.6rem 4rem}
+  .gallery-grid{columns:2 130px}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:2.5rem}
+  footer{padding:3.5rem 1.6rem 0}
+  .footer-bottom{flex-direction:column;gap:.5rem;text-align:center;padding:1rem 0}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo-wrap">
+    <img class="nav-logo-img" src="logo-transparent.png" alt="The Encounters">
+    <div class="nav-logo-text">NWFL Encounters<span>My Encounter... My Freedom!</span></div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html#about">About</a></li>
+    <li><a href="index.html#dates">Encounters</a></li>
+    <li><a href="index.html#locs">Locations</a></li>
+    <li><a href="gallery.html" class="active">Gallery</a></li>
+    <li><a href="#">Donate</a></li>
+    <li><a href="https://nwflencountersinc.itemorder.com/shop/sale/" target="_blank">Store</a></li>
+  </ul>
+  <a href="#" class="nav-cta">Register Now</a>
+</nav>
+
+<!-- ALBUMS VIEW -->
+<main class="gallery-main" id="albums-view">
+  <div class="wrap">
+    <div class="gal-header">
+      <p class="kicker">Memories</p>
+      <h1 class="gal-title">Gallery</h1>
+      <p class="gal-sub">Tap any album to explore the photos.</p>
+    </div>
+    <div class="albums-grid">
+
+      <div class="album-card" onclick="openAlbum('anniversary-10')">
+        <div class="album-cover">
+          <img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06178_1.jpg" loading="lazy" alt="10 Year Anniversary Celebration">
+          <div class="album-overlay">Open Gallery &#8594;</div>
+        </div>
+        <div class="album-info">
+          <div class="album-name">10 Year Anniversary Celebration</div>
+          <div class="album-meta">127 photos</div>
+          <div class="album-count-badge">&#128247; View Album</div>
+        </div>
+      </div>
+
+      <!-- Future albums added here -->
+
+    </div>
+  </div>
+</main>
+
+<!-- PHOTOS VIEW -->
+<main class="gallery-main" id="photos-view">
+  <div class="wrap">
+    <button class="back-btn" onclick="closeAlbum()">&#8592; All Galleries</button>
+    <div class="photos-view-header">
+      <div class="album-view-title" id="album-title"></div>
+      <div class="album-view-meta" id="album-meta"></div>
+    </div>
+
+    <div class="photos-container" id="photos-anniversary-10">
+      <div class="gallery-grid">
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05842_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06178_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/IMG_2910.JPG" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06188_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/IMG_2887.JPG" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06067_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/IMG_2912.JPG" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05973_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06179_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05819_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06071_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05837_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05826_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05940_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05856_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06056_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06144_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06079_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05942_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06160_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/IMG_2907.JPG" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05865_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06124_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/IMG_2895.JPG" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06172_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05833_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06045_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05886_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06050_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05903_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06088_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05953_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06142_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06131_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05882_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06108_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06115_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06100_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/IMG_2917.JPG" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/IMG_6770.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06074_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05889_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05858_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/IMG_2937.JPG" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06186_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06017_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/IMG_2899.JPG" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05847_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05816_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05977_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05935_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06121_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05876_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06153_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05918_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/IMG_2898.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06029_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05979_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/IMG_2911.JPG" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05891_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05897_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/IMG_2888.JPG" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06125_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06068_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05993_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05974_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05899_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05910_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/IMG_2902.JPG" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06182_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06103_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05920_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05844_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/IMG_2913.JPG" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05981_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06060_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06166_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06042_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06140_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05921_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/IMG_2916.JPG" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06070_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05928_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05884_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06055_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/IMG_2897.JPG" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06122_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06059_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06044_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06083_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06155_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06005_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/IMG_2923.JPG" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/IMG_6769.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06146_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05862_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06135_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/IMG_2904.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05945_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/IMG_2892.JPG" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05872_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06048_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/IMG_6767.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/IMG_2927.JPG" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05995_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05821_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06063_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/IMG_2909.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06149_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/IMG_2890.JPG" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06095_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05818_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05911_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05830_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06157_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05924_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/IMG_2932.JPG" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06133_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05824_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06184_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/IMG_6771.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/IMG_2926.JPG" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06092_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06047_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05815_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC06110_1.jpg" loading="lazy" alt=""></div>
+        <div class="gallery-item"><img src="https://nwflencounters.com/img/gallery/100-10_year_anniversary_celebration/DSC05868_1.jpg" loading="lazy" alt=""></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <a href="index.html" class="foot-brand-logo">
+          <img class="foot-logo-img" src="logo-transparent.png" alt="The Encounters">
+          <div class="foot-brand-name">NWFL Encounters<span>My Encounter... My Freedom!</span></div>
+        </a>
+        <p class="foot-tagline">Transforming lives through weekend encounters with God across the Southeast.</p>
+        <div class="footer-social">
+          <a href="https://www.facebook.com/NWFLEncountersInc" class="social-btn">f</a>
+          <a href="https://www.instagram.com/nwflencounters/" class="social-btn">ig</a>
+        </div>
+      </div>
+      <div class="foot-col"><h4>Ministry</h4><ul><li><a href="index.html">About Encounters</a></li><li><a href="#">Testimonies</a></li><li><a href="gallery.html">Gallery</a></li><li><a href="#">Inner Circle</a></li></ul></div>
+      <div class="foot-col"><h4>Register</h4><ul><li><a href="#">Men&#39;s Encounter</a></li><li><a href="#">Women&#39;s Encounter</a></li><li><a href="index.html#dates">All Dates</a></li><li><a href="#">All Locations</a></li></ul></div>
+      <div class="foot-col"><h4>Give &amp; Connect</h4><ul><li><a href="#">Donate</a></li><li><a href="https://nwflencountersinc.itemorder.com/shop/sale/" target="_blank">Store</a></li><li><a href="#">Golf Classic 2026</a></li><li><a href="#">Contact Us</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 NWFL Encounters Inc. All rights reserved.</span>
+      <span class="yg-footer">#YESGOD</span>
+    </div>
+  </div>
+</footer>
+
+<div class="lightbox" id="lightbox">
+  <button class="lb-close" id="lbClose">&times;</button>
+  <button class="lb-nav lb-prev" id="lbPrev">&#8249;</button>
+  <img src="" id="lbImg" alt="">
+  <button class="lb-nav lb-next" id="lbNext">&#8250;</button>
+  <div class="lb-counter" id="lbCounter"></div>
+</div>
+
+<script>
+const albums = {
+  'anniversary-10': { title: '10 Year Anniversary Celebration', meta: '127 photos', containerId: 'photos-anniversary-10' }
+};
+
+function openAlbum(id) {
+  const a = albums[id];
+  document.getElementById('albums-view').style.display = 'none';
+  document.getElementById('photos-view').style.display = 'block';
+  document.getElementById('album-title').textContent = a.title;
+  document.getElementById('album-meta').textContent = a.meta;
+  document.querySelectorAll('.photos-container').forEach(c => c.style.display = 'none');
+  document.getElementById(a.containerId).style.display = 'block';
+  window.scrollTo(0, 0);
+  setupLightbox();
+}
+
+function closeAlbum() {
+  document.getElementById('albums-view').style.display = 'block';
+  document.getElementById('photos-view').style.display = 'none';
+  window.scrollTo(0, 0);
+}
+
+function setupLightbox() {
+  const items = Array.from(document.querySelectorAll('#photos-view .gallery-item'));
+  const lb = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lbImg');
+  const lbCounter = document.getElementById('lbCounter');
+  let cur = 0;
+  function open(i) { cur=i; lbImg.src=items[i].querySelector('img').src; lbCounter.textContent=(i+1)+' / '+items.length; lb.classList.add('open'); }
+  function close() { lb.classList.remove('open'); lbImg.src=''; }
+  function prev() { open((cur-1+items.length)%items.length); }
+  function next() { open((cur+1)%items.length); }
+  items.forEach((el,i) => el.onclick = () => open(i));
+  document.getElementById('lbClose').onclick = close;
+  document.getElementById('lbPrev').onclick = prev;
+  document.getElementById('lbNext').onclick = next;
+  lb.onclick = e => { if(e.target===lb) close(); };
+  document.onkeydown = e => { if(!lb.classList.contains('open')) return; if(e.key==='Escape') close(); if(e.key==='ArrowLeft') prev(); if(e.key==='ArrowRight') next(); };
+}
+</script>
+</body>
+</html>
