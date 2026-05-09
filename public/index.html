@@ -52,8 +52,10 @@ nav{
 .nav-logo-text{font-family:var(--ff-d);font-size:1.1rem;font-weight:600;color:var(--ink);line-height:1.1}
 .nav-logo-text span{display:block;font-size:.52rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--blue);font-family:var(--ff-b)}
 .nav-links{display:flex;gap:2rem;list-style:none}
-.nav-links a{font-size:.65rem;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--body);text-decoration:none;transition:color .2s}
-.nav-links a:hover{color:var(--blue)}
+.nav-links a{font-size:.65rem;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--body);text-decoration:none;transition:color .22s,transform .22s;position:relative;display:inline-block}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:50%;right:50%;height:1.5px;background:var(--blue);border-radius:2px;transition:left .25s ease,right .25s ease}
+.nav-links a:hover{color:var(--blue);transform:translateY(-2px)}
+.nav-links a:hover::after{left:0;right:0}
 .nav-cta{font-size:.65rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--white);background:var(--blue);padding:.62rem 1.5rem;border-radius:50px;text-decoration:none;transition:background .2s,box-shadow .2s}
 .nav-cta:hover{background:var(--blue2);box-shadow:0 4px 18px rgba(42,127,193,.35)}
 
@@ -550,8 +552,8 @@ footer{
 
 /* ── HERO ANIMATIONS ── */
 /* Gentle logo float */
-.logo-display img{animation:sealFloat 5s ease-in-out infinite}
-@keyframes sealFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.logo-display img{animation:sealRotate 35s linear infinite}
+@keyframes sealRotate{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 /* Ripple rings emanating from logo */
 .logo-ring-outer::before,.logo-ring-outer::after{
   content:'';position:absolute;inset:0;border-radius:50%;
@@ -559,7 +561,7 @@ footer{
   animation:rippleOut 4s ease-out infinite;pointer-events:none;
 }
 .logo-ring-outer::after{border-color:rgba(212,137,26,.16);animation-delay:2s}
-@keyframes rippleOut{0%{transform:scale(1);opacity:.65}100%{transform:scale(1.45);opacity:0}}
+@keyframes rippleOut{0%{transform:scale(0.15);opacity:.9}100%{transform:scale(2.6);opacity:0}}
 /* #YESGOD soft pulse */
 @keyframes hashPulse{0%,100%{opacity:1;text-shadow:none}50%{opacity:.75;text-shadow:0 0 28px rgba(42,127,193,.35)}}
 .hero-hashtag{animation:hashPulse 4s ease-in-out infinite}
@@ -583,7 +585,7 @@ footer{
 .btn-teal{transition:background .25s,box-shadow .25s,transform .25s}
 .btn-teal:hover{background:#228a75;transform:translateY(-3px) scale(1.02);box-shadow:0 10px 28px rgba(44,165,141,.38)}
 .nav-cta{transition:background .2s,box-shadow .2s,transform .2s}
-.nav-cta:hover{background:var(--blue2);transform:translateY(-2px);box-shadow:0 6px 22px rgba(42,127,193,.42)}
+.nav-cta:hover{background:var(--blue2);transform:translateY(-2px) scale(1.04);box-shadow:0 6px 22px rgba(42,127,193,.42)}
 </style>
 </head>
 <body>

@@ -25,8 +25,10 @@ nav{position:fixed;top:0;left:0;right:0;z-index:300;display:flex;align-items:cen
 .nav-logo-text{font-family:var(--ff-d);font-size:1.1rem;font-weight:600;color:var(--ink);line-height:1.1}
 .nav-logo-text span{display:block;font-size:.52rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--blue);font-family:var(--ff-b)}
 .nav-links{display:flex;gap:2rem;list-style:none}
-.nav-links a{font-size:.65rem;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--body);text-decoration:none;transition:color .2s}
-.nav-links a:hover,.nav-links a.active{color:var(--blue)}
+.nav-links a{font-size:.65rem;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--body);text-decoration:none;transition:color .22s,transform .22s;position:relative;display:inline-block}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:50%;right:50%;height:1.5px;background:var(--blue);border-radius:2px;transition:left .25s ease,right .25s ease}
+.nav-links a:hover,.nav-links a.active{color:var(--blue);transform:translateY(-2px)}
+.nav-links a:hover::after,.nav-links a.active::after{left:0;right:0}
 .nav-cta{font-size:.65rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--white);background:var(--blue);padding:.62rem 1.5rem;border-radius:50px;text-decoration:none;transition:background .2s,box-shadow .2s}
 .nav-cta:hover{background:var(--blue2);box-shadow:0 6px 22px rgba(42,127,193,.42);transform:translateY(-2px)}
 .nav-cta{position:relative;overflow:hidden;transition:background .2s,box-shadow .2s,transform .2s}
