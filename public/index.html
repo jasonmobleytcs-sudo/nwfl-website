@@ -552,8 +552,8 @@ footer{
 
 /* ── HERO ANIMATIONS ── */
 /* Gentle logo float */
-.logo-display img{animation:sealRotate 35s linear infinite}
-@keyframes sealRotate{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.logo-display img{animation:sealFloat 5s ease-in-out infinite}
+@keyframes sealFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 /* Ripple rings emanating from logo */
 .logo-ring-outer::before,.logo-ring-outer::after{
   content:'';position:absolute;inset:0;border-radius:50%;
