@@ -56,18 +56,45 @@ nav{position:fixed;top:0;left:0;right:0;z-index:300;display:flex;align-items:cen
 /* VIDEO SECTION */
 .video-sec{background:var(--white);padding:6rem 4rem}
 .video-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.6rem;margin-top:3rem}
-.video-card{border-radius:16px;overflow:hidden;border:1.5px solid rgba(42,127,193,.1);background:var(--white);box-shadow:0 4px 18px rgba(0,0,0,.06);cursor:pointer;transition:transform .25s,box-shadow .25s,border-color .25s}
-.video-card:hover{transform:translateY(-5px);box-shadow:0 12px 36px rgba(42,127,193,.15);border-color:var(--blue)}
-.video-thumb{position:relative;aspect-ratio:16/9;overflow:hidden;background:var(--ink)}
-.video-thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease,filter .4s ease}
-.video-card:hover .video-thumb img{transform:scale(1.04);filter:brightness(.85)}
-.play-btn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
-.play-circle{width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(0,0,0,.25);transition:transform .25s,background .25s}
-.play-circle svg{width:20px;height:20px;fill:var(--blue);margin-left:3px}
-.video-card:hover .play-circle{transform:scale(1.12);background:var(--white)}
-.video-card-info{padding:1.2rem 1.4rem 1.4rem}
+.video-card{border-radius:18px;overflow:hidden;border:1.5px solid rgba(42,127,193,.12);background:var(--white);box-shadow:0 6px 24px rgba(0,0,0,.08);cursor:pointer;transition:transform .3s cubic-bezier(.22,1,.36,1),box-shadow .3s,border-color .3s}
+.video-card:hover{transform:translateY(-7px);box-shadow:0 18px 48px rgba(26,43,60,.22);border-color:var(--blue)}
+/* Branded thumbnail */
+.video-thumb{position:relative;aspect-ratio:16/9;overflow:hidden;
+  background:linear-gradient(140deg,var(--ink) 0%,#1e3a52 50%,var(--blue2) 100%)}
+.video-thumb::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 70% 70% at 50% 45%,rgba(212,137,26,.18) 0%,transparent 65%),
+             radial-gradient(ellipse 50% 50% at 80% 80%,rgba(42,127,193,.12) 0%,transparent 60%)}
+.video-thumb::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(26,43,60,.55) 0%,transparent 50%)}
+/* Dots pattern overlay */
+.video-dots{position:absolute;inset:0;opacity:.08;
+  background-image:radial-gradient(circle,rgba(255,255,255,.7) 1px,transparent 1px);
+  background-size:18px 18px;pointer-events:none}
+/* Watermark logo */
+.video-seal{position:absolute;top:50%;left:50%;transform:translate(-50%,-56%);
+  width:55%;height:55%;object-fit:contain;opacity:.1;
+  filter:brightness(0) invert(1);pointer-events:none;
+  transition:opacity .3s}
+.video-card:hover .video-seal{opacity:.16}
+/* Decorative rings */
+.video-ring{position:absolute;top:50%;left:50%;border-radius:50%;border:1px solid rgba(212,137,26,.25);pointer-events:none;transform:translate(-50%,-56%)}
+.video-ring-1{width:42%;aspect-ratio:1;animation:vRing 4s ease-in-out infinite}
+.video-ring-2{width:55%;aspect-ratio:1;border-color:rgba(42,127,193,.2);animation:vRing 4s ease-in-out infinite .8s}
+@keyframes vRing{0%,100%{opacity:.6;transform:translate(-50%,-56%) scale(1)}50%{opacity:1;transform:translate(-50%,-56%) scale(1.06)}}
+/* Play button */
+.play-btn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:2}
+.play-circle{width:60px;height:60px;border-radius:50%;
+  background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.7);
+  backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 24px rgba(0,0,0,.3),0 0 0 8px rgba(255,255,255,.06);
+  transition:transform .25s,background .25s,box-shadow .25s}
+.play-circle svg{width:22px;height:22px;fill:var(--white);margin-left:4px}
+.video-card:hover .play-circle{transform:scale(1.15);background:var(--blue);border-color:var(--blue);
+  box-shadow:0 6px 28px rgba(42,127,193,.5),0 0 0 10px rgba(42,127,193,.12)}
+/* Bottom name strip */
+.video-card-info{padding:1.1rem 1.4rem 1.3rem;border-top:1px solid rgba(42,127,193,.07)}
 .video-card-name{font-family:var(--ff-d);font-size:1.15rem;font-weight:400;color:var(--ink);margin-bottom:.2rem}
-.video-card-loc{font-size:.6rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--body);opacity:.6}
+.video-card-loc{font-size:.6rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--body);opacity:.55}
 
 /* VIDEO MODAL */
 .video-modal{display:none;position:fixed;inset:0;z-index:9999;background:rgba(10,18,28,.94);align-items:center;justify-content:center;padding:2rem}
@@ -165,7 +192,10 @@ footer{background:var(--ink);padding:5rem 4rem 0;border-top:4px solid var(--gold
 
       <div class="video-card" onclick="openVideo('BsBUT9QtT0o')">
         <div class="video-thumb">
-          <img src="https://img.youtube.com/vi/BsBUT9QtT0o/maxresdefault.jpg" loading="lazy" alt="Denise Gibson testimony" onerror="this.src='https://img.youtube.com/vi/BsBUT9QtT0o/hqdefault.jpg'">
+          <div class="video-dots"></div>
+          <img class="video-seal" src="logo-transparent.png" alt="">
+          <div class="video-ring video-ring-1"></div>
+          <div class="video-ring video-ring-2"></div>
           <div class="play-btn"><div class="play-circle"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>
         </div>
         <div class="video-card-info">
@@ -176,7 +206,10 @@ footer{background:var(--ink);padding:5rem 4rem 0;border-top:4px solid var(--gold
 
       <div class="video-card" onclick="openVideo('nuMb2BL4B38')">
         <div class="video-thumb">
-          <img src="https://img.youtube.com/vi/nuMb2BL4B38/maxresdefault.jpg" loading="lazy" alt="Hollie Heiston testimony" onerror="this.src='https://img.youtube.com/vi/nuMb2BL4B38/hqdefault.jpg'">
+          <div class="video-dots"></div>
+          <img class="video-seal" src="logo-transparent.png" alt="">
+          <div class="video-ring video-ring-1"></div>
+          <div class="video-ring video-ring-2"></div>
           <div class="play-btn"><div class="play-circle"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>
         </div>
         <div class="video-card-info">
@@ -187,7 +220,10 @@ footer{background:var(--ink);padding:5rem 4rem 0;border-top:4px solid var(--gold
 
       <div class="video-card" onclick="openVideo('UUIDLVZwT1U')">
         <div class="video-thumb">
-          <img src="https://img.youtube.com/vi/UUIDLVZwT1U/maxresdefault.jpg" loading="lazy" alt="Kristy Lundy testimony" onerror="this.src='https://img.youtube.com/vi/UUIDLVZwT1U/hqdefault.jpg'">
+          <div class="video-dots"></div>
+          <img class="video-seal" src="logo-transparent.png" alt="">
+          <div class="video-ring video-ring-1"></div>
+          <div class="video-ring video-ring-2"></div>
           <div class="play-btn"><div class="play-circle"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>
         </div>
         <div class="video-card-info">
@@ -198,7 +234,10 @@ footer{background:var(--ink);padding:5rem 4rem 0;border-top:4px solid var(--gold
 
       <div class="video-card" onclick="openVideo('a84Q4R0Pzrc')">
         <div class="video-thumb">
-          <img src="https://img.youtube.com/vi/a84Q4R0Pzrc/maxresdefault.jpg" loading="lazy" alt="Nikki Godwin testimony" onerror="this.src='https://img.youtube.com/vi/a84Q4R0Pzrc/hqdefault.jpg'">
+          <div class="video-dots"></div>
+          <img class="video-seal" src="logo-transparent.png" alt="">
+          <div class="video-ring video-ring-1"></div>
+          <div class="video-ring video-ring-2"></div>
           <div class="play-btn"><div class="play-circle"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>
         </div>
         <div class="video-card-info">
