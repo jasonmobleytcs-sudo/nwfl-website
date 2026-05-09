@@ -70,27 +70,24 @@ nav{position:fixed;top:0;left:0;right:0;z-index:300;display:flex;align-items:cen
 .video-dots{position:absolute;inset:0;opacity:.08;
   background-image:radial-gradient(circle,rgba(255,255,255,.7) 1px,transparent 1px);
   background-size:18px 18px;pointer-events:none}
-/* Watermark logo */
+/* Gold watermark logo (CSS-masked so it picks up --gold) */
 .video-seal{position:absolute;top:50%;left:50%;transform:translate(-50%,-56%);
-  width:55%;height:55%;object-fit:contain;opacity:.1;
-  filter:brightness(0) invert(1);pointer-events:none;
+  width:55%;aspect-ratio:1;opacity:.55;pointer-events:none;
+  background-color:var(--gold);
+  -webkit-mask:url(logo-6state.png) center/contain no-repeat;
+          mask:url(logo-6state.png) center/contain no-repeat;
   transition:opacity .3s}
-.video-card:hover .video-seal{opacity:.16}
-/* Decorative rings */
-.video-ring{position:absolute;top:50%;left:50%;border-radius:50%;border:1px solid rgba(212,137,26,.25);pointer-events:none;transform:translate(-50%,-56%)}
-.video-ring-1{width:42%;aspect-ratio:1;animation:vRing 4s ease-in-out infinite}
-.video-ring-2{width:55%;aspect-ratio:1;border-color:rgba(42,127,193,.2);animation:vRing 4s ease-in-out infinite .8s}
-@keyframes vRing{0%,100%{opacity:.6;transform:translate(-50%,-56%) scale(1)}50%{opacity:1;transform:translate(-50%,-56%) scale(1.06)}}
+.video-card:hover .video-seal{opacity:.7}
 /* Play button */
 .play-btn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:2}
-.play-circle{width:60px;height:60px;border-radius:50%;
-  background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.7);
-  backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;
-  box-shadow:0 4px 24px rgba(0,0,0,.3),0 0 0 8px rgba(255,255,255,.06);
-  transition:transform .25s,background .25s,box-shadow .25s}
+.play-circle{width:64px;height:64px;border-radius:50%;
+  background:var(--blue);border:2px solid rgba(255,255,255,.85);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 6px 24px rgba(42,127,193,.45),0 0 0 8px rgba(42,127,193,.15);
+  transition:transform .25s,box-shadow .25s}
 .play-circle svg{width:22px;height:22px;fill:var(--white);margin-left:4px}
-.video-card:hover .play-circle{transform:scale(1.15);background:var(--blue);border-color:var(--blue);
-  box-shadow:0 6px 28px rgba(42,127,193,.5),0 0 0 10px rgba(42,127,193,.12)}
+.video-card:hover .play-circle{transform:scale(1.12);
+  box-shadow:0 8px 32px rgba(42,127,193,.6),0 0 0 12px rgba(42,127,193,.2)}
 /* Bottom name strip */
 .video-card-info{padding:1.1rem 1.4rem 1.3rem;border-top:1px solid rgba(42,127,193,.07)}
 .video-card-name{font-family:var(--ff-d);font-size:1.15rem;font-weight:400;color:var(--ink);margin-bottom:.2rem}
@@ -193,9 +190,7 @@ footer{background:var(--ink);padding:5rem 4rem 0;border-top:4px solid var(--gold
       <div class="video-card" onclick="openVideo('BsBUT9QtT0o')">
         <div class="video-thumb">
           <div class="video-dots"></div>
-          <img class="video-seal" src="logo-6state.png" alt="">
-          <div class="video-ring video-ring-1"></div>
-          <div class="video-ring video-ring-2"></div>
+          <div class="video-seal"></div>
           <div class="play-btn"><div class="play-circle"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>
         </div>
         <div class="video-card-info">
@@ -207,9 +202,7 @@ footer{background:var(--ink);padding:5rem 4rem 0;border-top:4px solid var(--gold
       <div class="video-card" onclick="openVideo('nuMb2BL4B38')">
         <div class="video-thumb">
           <div class="video-dots"></div>
-          <img class="video-seal" src="logo-6state.png" alt="">
-          <div class="video-ring video-ring-1"></div>
-          <div class="video-ring video-ring-2"></div>
+          <div class="video-seal"></div>
           <div class="play-btn"><div class="play-circle"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>
         </div>
         <div class="video-card-info">
@@ -221,9 +214,7 @@ footer{background:var(--ink);padding:5rem 4rem 0;border-top:4px solid var(--gold
       <div class="video-card" onclick="openVideo('UUIDLVZwT1U')">
         <div class="video-thumb">
           <div class="video-dots"></div>
-          <img class="video-seal" src="logo-6state.png" alt="">
-          <div class="video-ring video-ring-1"></div>
-          <div class="video-ring video-ring-2"></div>
+          <div class="video-seal"></div>
           <div class="play-btn"><div class="play-circle"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>
         </div>
         <div class="video-card-info">
@@ -235,9 +226,7 @@ footer{background:var(--ink);padding:5rem 4rem 0;border-top:4px solid var(--gold
       <div class="video-card" onclick="openVideo('a84Q4R0Pzrc')">
         <div class="video-thumb">
           <div class="video-dots"></div>
-          <img class="video-seal" src="logo-6state.png" alt="">
-          <div class="video-ring video-ring-1"></div>
-          <div class="video-ring video-ring-2"></div>
+          <div class="video-seal"></div>
           <div class="play-btn"><div class="play-circle"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>
         </div>
         <div class="video-card-info">
