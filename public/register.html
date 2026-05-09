@@ -31,8 +31,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:300;display:flex;align-items:cen
 .nav-links a:hover,.nav-links a.active{color:var(--blue);transform:translateY(-2px)}
 .nav-links a:hover::after,.nav-links a.active::after{left:0;right:0}
 .has-dropdown>a::after{display:none}
-.dropdown{display:none;position:absolute;top:calc(100% + .8rem);left:50%;transform:translateX(-50%);background:var(--white);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.12);border:1px solid rgba(42,127,193,.1);padding:.4rem;min-width:170px;list-style:none;z-index:400}
-.has-dropdown:hover .dropdown{display:flex;flex-direction:column}
+.dropdown{display:flex;flex-direction:column;visibility:hidden;opacity:0;pointer-events:none;position:absolute;top:100%;left:50%;transform:translateX(-50%);background:var(--white);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.12);border:1px solid rgba(42,127,193,.1);padding:.6rem .4rem .4rem;min-width:170px;list-style:none;z-index:400;transition:opacity .18s ease,visibility .18s ease}
+.has-dropdown:hover .dropdown{visibility:visible;opacity:1;pointer-events:auto}
 .dropdown li a{font-size:.62rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--body);text-decoration:none;padding:.6rem 1rem;border-radius:8px;display:block;white-space:nowrap;transition:all .2s;transform:none}
 .dropdown li a::after{display:none}
 .dropdown li a:hover{background:var(--sky);color:var(--blue);transform:none}
