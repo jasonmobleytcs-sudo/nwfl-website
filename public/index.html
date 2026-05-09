@@ -547,6 +547,43 @@ footer{
 .lb-nav:hover{opacity:1}
 .lb-prev{left:.5rem}.lb-next{right:.5rem}
 .lb-counter{position:absolute;bottom:1.2rem;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.45);font-size:.7rem;letter-spacing:.12em}
+
+/* ── HERO ANIMATIONS ── */
+/* Gentle logo float */
+.logo-display img{animation:sealFloat 5s ease-in-out infinite}
+@keyframes sealFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+/* Ripple rings emanating from logo */
+.logo-ring-outer::before,.logo-ring-outer::after{
+  content:'';position:absolute;inset:0;border-radius:50%;
+  border:1.5px solid rgba(42,127,193,.22);
+  animation:rippleOut 4s ease-out infinite;pointer-events:none;
+}
+.logo-ring-outer::after{border-color:rgba(212,137,26,.16);animation-delay:2s}
+@keyframes rippleOut{0%{transform:scale(1);opacity:.65}100%{transform:scale(1.45);opacity:0}}
+/* #YESGOD soft pulse */
+@keyframes hashPulse{0%,100%{opacity:1;text-shadow:none}50%{opacity:.75;text-shadow:0 0 28px rgba(42,127,193,.35)}}
+.hero-hashtag{animation:hashPulse 4s ease-in-out infinite}
+
+/* ── BUTTON SHIMMER + LIFT (ALL BUTTONS) ── */
+.btn-primary,.btn-secondary,.btn-teal,.nav-cta{position:relative;overflow:hidden}
+/* light shimmer streak */
+.btn-primary::before,.btn-secondary::before,.btn-teal::before,.nav-cta::before{
+  content:'';position:absolute;top:0;left:-100%;width:50%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent);
+  transition:left .55s ease;pointer-events:none;z-index:1;
+}
+.btn-primary:hover::before,.btn-teal:hover::before,.nav-cta:hover::before{left:150%}
+.btn-secondary::before{background:linear-gradient(90deg,transparent,rgba(42,127,193,.1),transparent)}
+.btn-secondary:hover::before{left:150%}
+/* enhanced hovers */
+.btn-primary{transition:background .25s,box-shadow .25s,transform .25s}
+.btn-primary:hover{background:var(--blue2);transform:translateY(-3px) scale(1.02);box-shadow:0 10px 32px rgba(42,127,193,.42)}
+.btn-secondary{transition:all .25s}
+.btn-secondary:hover{background:var(--sky2);transform:translateY(-3px) scale(1.02);box-shadow:0 8px 24px rgba(42,127,193,.16)}
+.btn-teal{transition:background .25s,box-shadow .25s,transform .25s}
+.btn-teal:hover{background:#228a75;transform:translateY(-3px) scale(1.02);box-shadow:0 10px 28px rgba(44,165,141,.38)}
+.nav-cta{transition:background .2s,box-shadow .2s,transform .2s}
+.nav-cta:hover{background:var(--blue2);transform:translateY(-2px);box-shadow:0 6px 22px rgba(42,127,193,.42)}
 </style>
 </head>
 <body>
@@ -597,9 +634,9 @@ footer{
       </div>
       <div class="hero-hashtag">#YESGOD</div>
       <div class="hero-stats">
-        <div class="h-stat"><div class="h-stat-n">6</div><div class="h-stat-l">States</div></div>
-        <div class="h-stat"><div class="h-stat-n">3</div><div class="h-stat-l">Days</div></div>
-        <div class="h-stat"><div class="h-stat-n">&#x221E;</div><div class="h-stat-l">Changed</div></div>
+        <div class="h-stat"><div class="h-stat-n" data-target="6">0</div><div class="h-stat-l">States</div></div>
+        <div class="h-stat"><div class="h-stat-n" data-target="3">0</div><div class="h-stat-l">Days</div></div>
+        <div class="h-stat"><div class="h-stat-n" id="stat-inf">&#x221E;</div><div class="h-stat-l">Changed</div></div>
       </div>
     </div>
   </div>
@@ -858,6 +895,24 @@ footer{
 </footer>
 
 <script>
+// Stat count-up
+(function(){
+  function countUp(el,target,duration){
+    let start=0,step=duration/target;
+    let t=setInterval(()=>{
+      start++;el.textContent=start;
+      if(start>=target)clearInterval(t);
+    },step);
+  }
+  setTimeout(()=>{
+    document.querySelectorAll('.h-stat-n[data-target]').forEach(el=>{
+      countUp(el,parseInt(el.dataset.target),800);
+    });
+    // ∞ pops in with a fade
+    const inf=document.getElementById('stat-inf');
+    if(inf){inf.style.opacity='0';inf.style.transition='opacity .6s ease';setTimeout(()=>inf.style.opacity='1',900);}
+  },600);
+})();
 // View toggle
 document.querySelectorAll(".vtbtn").forEach(btn=>{
   btn.addEventListener("click",()=>{
