@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register — The Encounters</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --sky:#EEF6FF;--sky2:#DFF0FF;--blue:#2A7FC1;--blue2:#1A6099;--blue-lt:#5BA3D9;
+  --gold:#D4891A;--gold2:#F0A830;--gold-lt:#FFF3DC;--teal:#2CA58D;
+  --white:#FFFFFF;--warm-white:#FDFAF5;--cream:#FBF6EE;--ink:#1A2B3C;--body:#4A5E70;
+  --rule:rgba(42,127,193,0.18);--gold-rule:rgba(212,137,26,0.22);
+  --ff-d:'Cormorant Garamond',Georgia,serif;--ff-b:'Jost',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--ff-b);background:var(--warm-white);color:var(--ink);overflow-x:hidden}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:300;display:flex;align-items:center;justify-content:space-between;padding:1rem 4rem;background:rgba(255,255,255,.96);backdrop-filter:blur(20px);border-bottom:1px solid rgba(42,127,193,.12);box-shadow:0 2px 24px rgba(0,0,0,.06)}
+.nav-logo-wrap{display:flex;align-items:center;gap:.8rem;text-decoration:none}
+.nav-logo-img{width:40px;height:40px;object-fit:contain}
+.nav-logo-text{font-family:var(--ff-d);font-size:1.1rem;font-weight:600;color:var(--ink);line-height:1.1}
+.nav-logo-text span{display:block;font-size:.52rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--blue);font-family:var(--ff-b)}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links>li{position:relative}
+.nav-links a{font-size:.65rem;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--body);text-decoration:none;transition:color .22s,transform .22s;position:relative;display:inline-block}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:50%;right:50%;height:1.5px;background:var(--blue);border-radius:2px;transition:left .25s ease,right .25s ease}
+.nav-links a:hover,.nav-links a.active{color:var(--blue);transform:translateY(-2px)}
+.nav-links a:hover::after,.nav-links a.active::after{left:0;right:0}
+.has-dropdown>a::after{display:none}
+.dropdown{display:none;position:absolute;top:calc(100% + .8rem);left:50%;transform:translateX(-50%);background:var(--white);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.12);border:1px solid rgba(42,127,193,.1);padding:.4rem;min-width:170px;list-style:none;z-index:400}
+.has-dropdown:hover .dropdown{display:flex;flex-direction:column}
+.dropdown li a{font-size:.62rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--body);text-decoration:none;padding:.6rem 1rem;border-radius:8px;display:block;white-space:nowrap;transition:all .2s;transform:none}
+.dropdown li a::after{display:none}
+.dropdown li a:hover{background:var(--sky);color:var(--blue);transform:none}
+.nav-cta{font-size:.65rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--white);background:var(--blue);padding:.62rem 1.5rem;border-radius:50px;text-decoration:none;position:relative;overflow:hidden;transition:background .2s,box-shadow .2s,transform .2s}
+.nav-cta::before{content:'';position:absolute;top:0;left:-100%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent);transition:left .55s ease;pointer-events:none;z-index:1}
+.nav-cta:hover{background:var(--blue2);transform:translateY(-2px) scale(1.04);box-shadow:0 6px 22px rgba(42,127,193,.42)}
+.nav-cta:hover::before{left:150%}
+
+/* SHARED */
+.wrap{max-width:1100px;margin:0 auto}
+.kicker{display:inline-flex;align-items:center;gap:.6rem;font-size:.6rem;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:var(--blue);margin-bottom:.8rem}
+.kicker::before{content:'';width:20px;height:2px;background:var(--gold);flex-shrink:0}
+
+/* HERO */
+.reg-hero{background:linear-gradient(135deg,#EEF6FF 0%,#FDF9F2 60%,#E8F5F0 100%);padding:8rem 4rem 5rem;text-align:center}
+.reg-hero h1{font-family:var(--ff-d);font-size:clamp(2.8rem,6vw,5rem);font-weight:300;color:var(--ink);line-height:.97;margin-bottom:1rem}
+.reg-hero h1 em{font-style:italic;color:var(--blue);display:block}
+.reg-hero-body{font-size:1rem;font-weight:300;line-height:1.9;color:var(--body);max-width:520px;margin:.8rem auto 0}
+
+/* STATUS BANNER */
+.status-banner{background:var(--gold-lt);border-top:3px solid var(--gold);border-bottom:3px solid var(--gold);padding:1.4rem 4rem}
+.status-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:1.2rem}
+.status-icon{font-size:1.4rem;flex-shrink:0}
+.status-text{font-size:.85rem;font-weight:400;color:var(--ink);line-height:1.5}
+.status-text strong{color:var(--gold);font-weight:600}
+
+/* REGISTRATION SECTION */
+.reg-sec{background:var(--white);padding:6rem 4rem}
+.reg-inner{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start}
+.reg-intro{font-size:1rem;font-weight:300;line-height:1.9;color:var(--body);margin-bottom:2rem}
+.reg-heading{font-family:var(--ff-d);font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:300;color:var(--ink);line-height:1.08;margin-bottom:1rem}
+.reg-heading em{font-style:italic;color:var(--blue)}
+.payment-card{background:var(--sky);border-radius:16px;padding:2rem;border:1.5px solid rgba(42,127,193,.12);margin-bottom:1.5rem}
+.payment-card h3{font-family:var(--ff-d);font-size:1.3rem;font-weight:400;color:var(--ink);margin-bottom:1.2rem}
+.payment-list{list-style:none;display:flex;flex-direction:column;gap:.6rem}
+.payment-list li{display:flex;align-items:center;gap:.8rem;font-size:.88rem;font-weight:300;color:var(--body)}
+.payment-list li::before{content:'✓';color:var(--blue);font-weight:700;font-size:.8rem;flex-shrink:0}
+.payment-options-card{background:var(--cream);border-radius:16px;padding:2rem;border:1.5px solid var(--gold-rule)}
+.payment-options-card h3{font-family:var(--ff-d);font-size:1.3rem;font-weight:400;color:var(--ink);margin-bottom:1.2rem}
+.option-item{display:flex;align-items:flex-start;gap:.8rem;margin-bottom:.9rem}
+.option-num{width:24px;height:24px;border-radius:50%;background:var(--gold);color:var(--white);font-size:.6rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.1rem}
+.option-text{font-size:.88rem;font-weight:300;color:var(--body);line-height:1.5}
+.option-text strong{color:var(--ink);font-weight:500}
+.cta-area{margin-top:2rem;display:flex;flex-direction:column;gap:1rem}
+.btn-primary{font-size:.7rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--white);background:var(--blue);padding:1rem 2.4rem;border-radius:50px;text-decoration:none;transition:all .25s;box-shadow:0 4px 18px rgba(42,127,193,.3);position:relative;overflow:hidden;display:inline-block}
+.btn-primary::before{content:'';position:absolute;top:0;left:-100%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent);transition:left .55s ease;pointer-events:none;z-index:1}
+.btn-primary:hover{background:var(--blue2);transform:translateY(-3px) scale(1.02);box-shadow:0 10px 32px rgba(42,127,193,.42)}
+.btn-primary:hover::before{left:150%}
+.btn-secondary{font-size:.7rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--blue);background:var(--white);padding:1rem 2.4rem;border-radius:50px;border:2px solid var(--blue);text-decoration:none;transition:all .25s;position:relative;overflow:hidden;display:inline-block}
+.btn-secondary:hover{background:var(--sky2);transform:translateY(-3px) scale(1.02)}
+.what-to-expect{background:var(--ink);border-radius:20px;padding:2.5rem;color:var(--white)}
+.what-to-expect h3{font-family:var(--ff-d);font-size:1.6rem;font-weight:300;color:var(--white);margin-bottom:1.4rem}
+.what-to-expect h3 em{font-style:italic;color:var(--gold2)}
+.expect-list{list-style:none;display:flex;flex-direction:column;gap:.9rem}
+.expect-list li{display:flex;align-items:flex-start;gap:.9rem;font-size:.88rem;font-weight:300;color:rgba(255,255,255,.7);line-height:1.5}
+.expect-dot{width:7px;height:7px;border-radius:50%;background:var(--gold2);flex-shrink:0;margin-top:.35rem}
+.verse-strip{margin-top:1.8rem;border-top:1px solid rgba(255,255,255,.12);padding-top:1.4rem}
+.verse-strip p{font-family:var(--ff-d);font-size:1.1rem;font-style:italic;color:rgba(255,255,255,.8);line-height:1.4}
+.verse-strip cite{display:block;font-family:var(--ff-b);font-size:.56rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold2);margin-top:.4rem;font-style:normal}
+
+/* DATES PREVIEW */
+.dates-preview{background:var(--sky);padding:5rem 4rem;text-align:center}
+.dates-preview h2{font-family:var(--ff-d);font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:300;color:var(--ink);margin-bottom:.6rem}
+.dates-preview h2 em{font-style:italic;color:var(--blue)}
+.dates-preview p{font-size:.9rem;color:var(--body);font-weight:300;margin-bottom:2rem}
+
+/* FOOTER */
+footer{background:var(--ink);padding:5rem 4rem 0;border-top:4px solid var(--gold)}
+.footer-grid{display:grid;grid-template-columns:1.8fr 1fr 1fr 1fr;gap:4rem;margin-bottom:4rem}
+.foot-brand-logo{text-decoration:none;display:inline-flex;align-items:center;gap:.8rem;margin-bottom:1rem}
+.foot-logo-img{width:42px;height:42px;object-fit:contain;filter:brightness(0) invert(1);opacity:.8}
+.foot-brand-name{font-family:var(--ff-d);font-size:1.05rem;font-weight:600;color:rgba(255,255,255,.8);line-height:1.1}
+.foot-brand-name span{display:block;font-size:.48rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--gold2);font-family:var(--ff-b);margin-top:.2rem}
+.foot-tagline{font-size:.8rem;color:rgba(255,255,255,.3);font-weight:300;line-height:1.7;max-width:220px;margin-bottom:1.4rem}
+.footer-social{display:flex;gap:.7rem;margin-top:1.4rem}
+.social-btn{width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.15);display:grid;place-items:center;font-size:.7rem;font-weight:700;color:rgba(255,255,255,.45);text-decoration:none;transition:all .2s}
+.social-btn:hover{background:var(--blue);border-color:var(--blue);color:var(--white)}
+.foot-col h4{font-size:.56rem;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--gold2);margin-bottom:1.3rem}
+.foot-col ul{list-style:none;display:flex;flex-direction:column;gap:.6rem}
+.foot-col a{font-size:.82rem;color:rgba(255,255,255,.38);text-decoration:none;font-weight:300;transition:color .2s}
+.foot-col a:hover{color:var(--gold2)}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.06);padding:1.4rem 0;display:flex;justify-content:space-between;align-items:center;font-size:.66rem;color:rgba(255,255,255,.2);font-weight:300}
+.yg-footer{font-family:var(--ff-d);font-size:1rem;font-weight:700;color:rgba(212,137,26,.45);letter-spacing:.1em}
+
+@media(max-width:1000px){
+  nav{padding:1rem 1.6rem}
+  .nav-links{display:none}
+  .reg-hero,.reg-sec,.dates-preview{padding:5rem 1.6rem}
+  .status-banner{padding:1.2rem 1.6rem}
+  .reg-inner{grid-template-columns:1fr;gap:2.5rem}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:2.5rem}
+  footer{padding:3.5rem 1.6rem 0}
+  .footer-bottom{flex-direction:column;gap:.5rem;text-align:center;padding:1rem 0}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo-wrap">
+    <img class="nav-logo-img" src="logo-transparent.png" alt="The Encounters">
+    <div class="nav-logo-text">NWFL Encounters<span>My Encounter... My Freedom!</span></div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="about.html">About</a></li>
+    <li class="has-dropdown">
+      <a href="#" class="active">Encounters ▾</a>
+      <ul class="dropdown">
+        <li><a href="register.html">Register</a></li>
+        <li><a href="testimonies.html">Testimonies</a></li>
+        <li><a href="index.html#dates">All Dates</a></li>
+      </ul>
+    </li>
+    <li><a href="index.html#locs">Locations</a></li>
+    <li><a href="gallery.html">Gallery</a></li>
+    <li><a href="#">Donate</a></li>
+    <li><a href="https://nwflencountersinc.itemorder.com/shop/sale/" target="_blank">Store</a></li>
+  </ul>
+  <a href="register.html" class="nav-cta">Register Now</a>
+</nav>
+
+<!-- HERO -->
+<section class="reg-hero">
+  <div class="wrap">
+    <p class="kicker" style="justify-content:center">Take the First Step</p>
+    <h1>Register for Your<em>Encounter</em></h1>
+    <p class="reg-hero-body">We aim to make this the most memorable experience of your life. Flexible payment options make it easy for anyone to attend.</p>
+  </div>
+</section>
+
+<!-- STATUS BANNER -->
+<div class="status-banner">
+  <div class="status-inner">
+    <span class="status-icon">📢</span>
+    <p class="status-text"><strong>Our current Encounter is full.</strong> We apologize for the inconvenience — please check back soon for details on the next Encounter, or view our upcoming dates below.</p>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<section class="reg-sec">
+  <div class="wrap">
+    <div class="reg-inner">
+      <div>
+        <p class="kicker">How It Works</p>
+        <h2 class="reg-heading">Simple Registration,<br><em>Life-Changing Weekend</em></h2>
+        <p class="reg-intro">Registering for an Encounter is simple. We accept multiple forms of payment and offer flexible options so that cost is never a barrier to your breakthrough.</p>
+
+        <div class="payment-card">
+          <h3>Accepted Payment Methods</h3>
+          <ul class="payment-list">
+            <li>Credit or Debit Card</li>
+            <li>Personal Check</li>
+            <li>Cash</li>
+          </ul>
+        </div>
+
+        <div class="payment-options-card">
+          <h3>Flexible Payment Options</h3>
+          <div class="option-item">
+            <div class="option-num">1</div>
+            <div class="option-text"><strong>Pay in full today</strong> — complete your registration with one payment</div>
+          </div>
+          <div class="option-item">
+            <div class="option-num">2</div>
+            <div class="option-text"><strong>Partial payment now</strong> — pay a deposit and cover the remaining balance at check-in</div>
+          </div>
+          <div class="option-item">
+            <div class="option-num">3</div>
+            <div class="option-text"><strong>Pay at check-in</strong> — complete your payment when you arrive at the camp</div>
+          </div>
+        </div>
+
+        <div class="cta-area">
+          <a href="https://nwflencounters.com/participants/register_intro" target="_blank" class="btn-primary">Register on nwflencounters.com &#8594;</a>
+          <a href="index.html#dates" class="btn-secondary">View All Upcoming Dates</a>
+        </div>
+      </div>
+
+      <div>
+        <div class="what-to-expect">
+          <h3>What to <em>Expect</em></h3>
+          <ul class="expect-list">
+            <li><span class="expect-dot"></span>3 days in a camp setting, away from the distractions of everyday life</li>
+            <li><span class="expect-dot"></span>A safe place to draw closer to God and experience real freedom</li>
+            <li><span class="expect-dot"></span>The practical love of Jesus poured out in an atmosphere built for breakthrough</li>
+            <li><span class="expect-dot"></span>New relationships with believers who will walk alongside you after the weekend</li>
+            <li><span class="expect-dot"></span>A greater passion and clarity for the call God has placed on your life</li>
+            <li><span class="expect-dot"></span>Freedom from religion, performance, and the weight of your past</li>
+            <li><span class="expect-dot"></span>Separate weekends for Men and Women — tailored, safe, powerful</li>
+          </ul>
+          <div class="verse-strip">
+            <p>"So if the Son sets you free, you are truly free."</p>
+            <cite>John 8:36</cite>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- UPCOMING DATES -->
+<section class="dates-preview">
+  <div class="wrap">
+    <p class="kicker" style="justify-content:center">Next Steps</p>
+    <h2>Check the <em>Upcoming Schedule</em></h2>
+    <p>Find an Encounter near you and register for the weekend that works for your life.</p>
+    <a href="index.html#dates" class="btn-primary">View Full Schedule &#8594;</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <a href="index.html" class="foot-brand-logo">
+          <img class="foot-logo-img" src="logo-transparent.png" alt="">
+          <div class="foot-brand-name">NWFL Encounters<span>My Encounter... My Freedom!</span></div>
+        </a>
+        <p class="foot-tagline">Transforming lives through weekend encounters with God across the Southeast.</p>
+        <div class="footer-social">
+          <a href="https://www.facebook.com/NWFLEncountersInc" class="social-btn">f</a>
+          <a href="https://www.instagram.com/nwflencounters/" class="social-btn">ig</a>
+        </div>
+      </div>
+      <div class="foot-col"><h4>Ministry</h4><ul><li><a href="about.html">About Encounters</a></li><li><a href="testimonies.html">Testimonies</a></li><li><a href="gallery.html">Gallery</a></li><li><a href="#">Inner Circle</a></li></ul></div>
+      <div class="foot-col"><h4>Register</h4><ul><li><a href="register.html">Men&#39;s Encounter</a></li><li><a href="register.html">Women&#39;s Encounter</a></li><li><a href="index.html#dates">All Dates</a></li><li><a href="#">All Locations</a></li></ul></div>
+      <div class="foot-col"><h4>Give &amp; Connect</h4><ul><li><a href="#">Donate</a></li><li><a href="https://nwflencountersinc.itemorder.com/shop/sale/" target="_blank">Store</a></li><li><a href="#">Golf Classic 2026</a></li><li><a href="#">Contact Us</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2014 – 2026 Northwest Florida Encounters Inc. All rights reserved.</span>
+      <span class="yg-footer">#YESGOD</span>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

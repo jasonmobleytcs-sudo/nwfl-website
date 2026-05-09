@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Testimonies — The Encounters</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --sky:#EEF6FF;--sky2:#DFF0FF;--blue:#2A7FC1;--blue2:#1A6099;--blue-lt:#5BA3D9;
+  --gold:#D4891A;--gold2:#F0A830;--gold-lt:#FFF3DC;--teal:#2CA58D;
+  --white:#FFFFFF;--warm-white:#FDFAF5;--cream:#FBF6EE;--ink:#1A2B3C;--body:#4A5E70;
+  --rule:rgba(42,127,193,0.18);--gold-rule:rgba(212,137,26,0.22);
+  --ff-d:'Cormorant Garamond',Georgia,serif;--ff-b:'Jost',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--ff-b);background:var(--warm-white);color:var(--ink);overflow-x:hidden}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:300;display:flex;align-items:center;justify-content:space-between;padding:1rem 4rem;background:rgba(255,255,255,.96);backdrop-filter:blur(20px);border-bottom:1px solid rgba(42,127,193,.12);box-shadow:0 2px 24px rgba(0,0,0,.06)}
+.nav-logo-wrap{display:flex;align-items:center;gap:.8rem;text-decoration:none}
+.nav-logo-img{width:40px;height:40px;object-fit:contain}
+.nav-logo-text{font-family:var(--ff-d);font-size:1.1rem;font-weight:600;color:var(--ink);line-height:1.1}
+.nav-logo-text span{display:block;font-size:.52rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--blue);font-family:var(--ff-b)}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links>li{position:relative}
+.nav-links a{font-size:.65rem;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--body);text-decoration:none;transition:color .22s,transform .22s;position:relative;display:inline-block}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:50%;right:50%;height:1.5px;background:var(--blue);border-radius:2px;transition:left .25s ease,right .25s ease}
+.nav-links a:hover,.nav-links a.active{color:var(--blue);transform:translateY(-2px)}
+.nav-links a:hover::after,.nav-links a.active::after{left:0;right:0}
+.has-dropdown>a::after{display:none}
+.dropdown{display:none;position:absolute;top:calc(100% + .8rem);left:50%;transform:translateX(-50%);background:var(--white);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.12);border:1px solid rgba(42,127,193,.1);padding:.4rem;min-width:170px;list-style:none;z-index:400}
+.has-dropdown:hover .dropdown{display:flex;flex-direction:column}
+.dropdown::before{content:'';position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:10px;height:10px;background:var(--white);border-left:1px solid rgba(42,127,193,.1);border-top:1px solid rgba(42,127,193,.1);clip-path:polygon(0 100%,100% 0,100% 100%);rotate:45deg}
+.dropdown li a{font-size:.62rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--body);text-decoration:none;padding:.6rem 1rem;border-radius:8px;display:block;white-space:nowrap;transition:all .2s;transform:none}
+.dropdown li a::after{display:none}
+.dropdown li a:hover{background:var(--sky);color:var(--blue);transform:none}
+.nav-cta{font-size:.65rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--white);background:var(--blue);padding:.62rem 1.5rem;border-radius:50px;text-decoration:none;position:relative;overflow:hidden;transition:background .2s,box-shadow .2s,transform .2s}
+.nav-cta::before{content:'';position:absolute;top:0;left:-100%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent);transition:left .55s ease;pointer-events:none;z-index:1}
+.nav-cta:hover{background:var(--blue2);transform:translateY(-2px) scale(1.04);box-shadow:0 6px 22px rgba(42,127,193,.42)}
+.nav-cta:hover::before{left:150%}
+
+/* SHARED */
+.wrap{max-width:1200px;margin:0 auto}
+.kicker{display:inline-flex;align-items:center;gap:.6rem;font-size:.6rem;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:var(--blue);margin-bottom:.8rem}
+.kicker::before{content:'';width:20px;height:2px;background:var(--gold);flex-shrink:0}
+.sh{font-family:var(--ff-d);font-size:clamp(2rem,4.5vw,3.4rem);font-weight:300;color:var(--ink);line-height:1.08;margin-bottom:1rem}
+.sh em{font-style:italic;color:var(--blue)}
+
+/* HERO */
+.testi-hero{background:linear-gradient(135deg,#EEF6FF 0%,#FDF9F2 60%,#FFF8E8 100%);padding:8rem 4rem 5rem;text-align:center}
+.testi-hero-body{font-size:1rem;font-weight:300;line-height:1.85;color:var(--body);max-width:560px;margin:.8rem auto 0}
+
+/* VIDEO SECTION */
+.video-sec{background:var(--white);padding:6rem 4rem}
+.video-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.6rem;margin-top:3rem}
+.video-card{border-radius:16px;overflow:hidden;border:1.5px solid rgba(42,127,193,.1);background:var(--white);box-shadow:0 4px 18px rgba(0,0,0,.06);cursor:pointer;transition:transform .25s,box-shadow .25s,border-color .25s}
+.video-card:hover{transform:translateY(-5px);box-shadow:0 12px 36px rgba(42,127,193,.15);border-color:var(--blue)}
+.video-thumb{position:relative;aspect-ratio:16/9;overflow:hidden;background:var(--ink)}
+.video-thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease,filter .4s ease}
+.video-card:hover .video-thumb img{transform:scale(1.04);filter:brightness(.85)}
+.play-btn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.play-circle{width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(0,0,0,.25);transition:transform .25s,background .25s}
+.play-circle svg{width:20px;height:20px;fill:var(--blue);margin-left:3px}
+.video-card:hover .play-circle{transform:scale(1.12);background:var(--white)}
+.video-card-info{padding:1.2rem 1.4rem 1.4rem}
+.video-card-name{font-family:var(--ff-d);font-size:1.15rem;font-weight:400;color:var(--ink);margin-bottom:.2rem}
+.video-card-loc{font-size:.6rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--body);opacity:.6}
+
+/* VIDEO MODAL */
+.video-modal{display:none;position:fixed;inset:0;z-index:9999;background:rgba(10,18,28,.94);align-items:center;justify-content:center;padding:2rem}
+.video-modal.open{display:flex}
+.modal-inner{position:relative;width:100%;max-width:900px}
+.modal-inner iframe{width:100%;aspect-ratio:16/9;border-radius:10px;display:block}
+.modal-close{position:absolute;top:-2.5rem;right:0;color:white;font-size:1.8rem;cursor:pointer;opacity:.7;background:none;border:none;line-height:1;transition:opacity .2s}
+.modal-close:hover{opacity:1}
+
+/* WRITTEN TESTIMONIES */
+.written-sec{background:var(--cream);padding:6rem 4rem}
+.written-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem;margin-top:3rem}
+.testi-card{background:var(--white);border-radius:14px;padding:1.6rem;border:1.5px solid rgba(42,127,193,.08);box-shadow:0 2px 12px rgba(0,0,0,.04);transition:box-shadow .25s,border-color .25s;display:flex;flex-direction:column;gap:.8rem}
+.testi-card:hover{box-shadow:0 6px 24px rgba(42,127,193,.1);border-color:rgba(42,127,193,.2)}
+.testi-quote-mark{font-family:var(--ff-d);font-size:3rem;color:var(--gold);line-height:.8;font-weight:600;flex-shrink:0}
+.testi-text{font-family:var(--ff-d);font-size:1.05rem;font-style:italic;color:var(--ink);line-height:1.6;flex:1}
+.testi-divider{height:1px;background:var(--gold-rule)}
+.testi-author{font-size:.6rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--body)}
+.testi-author span{color:var(--blue);font-weight:400}
+
+/* FREEDOM BAND */
+.freedom-band{background:linear-gradient(90deg,var(--blue),var(--blue2));padding:2.2rem 4rem;text-align:center}
+.freedom-band blockquote{font-family:var(--ff-d);font-size:clamp(1rem,2.2vw,1.45rem);font-style:italic;color:var(--white);line-height:1.4}
+.freedom-band cite{display:block;font-family:var(--ff-b);font-size:.58rem;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.65);margin-top:.5rem;font-style:normal}
+
+/* FOOTER */
+footer{background:var(--ink);padding:5rem 4rem 0;border-top:4px solid var(--gold)}
+.footer-grid{display:grid;grid-template-columns:1.8fr 1fr 1fr 1fr;gap:4rem;margin-bottom:4rem}
+.foot-brand-logo{text-decoration:none;display:inline-flex;align-items:center;gap:.8rem;margin-bottom:1rem}
+.foot-logo-img{width:42px;height:42px;object-fit:contain;filter:brightness(0) invert(1);opacity:.8}
+.foot-brand-name{font-family:var(--ff-d);font-size:1.05rem;font-weight:600;color:rgba(255,255,255,.8);line-height:1.1}
+.foot-brand-name span{display:block;font-size:.48rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--gold2);font-family:var(--ff-b);margin-top:.2rem}
+.foot-tagline{font-size:.8rem;color:rgba(255,255,255,.3);font-weight:300;line-height:1.7;max-width:220px;margin-bottom:1.4rem}
+.footer-social{display:flex;gap:.7rem;margin-top:1.4rem}
+.social-btn{width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.15);display:grid;place-items:center;font-size:.7rem;font-weight:700;color:rgba(255,255,255,.45);text-decoration:none;transition:all .2s}
+.social-btn:hover{background:var(--blue);border-color:var(--blue);color:var(--white)}
+.foot-col h4{font-size:.56rem;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--gold2);margin-bottom:1.3rem}
+.foot-col ul{list-style:none;display:flex;flex-direction:column;gap:.6rem}
+.foot-col a{font-size:.82rem;color:rgba(255,255,255,.38);text-decoration:none;font-weight:300;transition:color .2s}
+.foot-col a:hover{color:var(--gold2)}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.06);padding:1.4rem 0;display:flex;justify-content:space-between;align-items:center;font-size:.66rem;color:rgba(255,255,255,.2);font-weight:300}
+.yg-footer{font-family:var(--ff-d);font-size:1rem;font-weight:700;color:rgba(212,137,26,.45);letter-spacing:.1em}
+
+@media(max-width:1000px){
+  nav{padding:1rem 1.6rem}
+  .nav-links{display:none}
+  .testi-hero,.video-sec,.written-sec{padding:5rem 1.6rem}
+  .freedom-band{padding:2rem 1.6rem}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:2.5rem}
+  footer{padding:3.5rem 1.6rem 0}
+  .footer-bottom{flex-direction:column;gap:.5rem;text-align:center;padding:1rem 0}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo-wrap">
+    <img class="nav-logo-img" src="logo-transparent.png" alt="The Encounters">
+    <div class="nav-logo-text">NWFL Encounters<span>My Encounter... My Freedom!</span></div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="about.html">About</a></li>
+    <li class="has-dropdown">
+      <a href="#" class="active">Encounters ▾</a>
+      <ul class="dropdown">
+        <li><a href="register.html">Register</a></li>
+        <li><a href="testimonies.html">Testimonies</a></li>
+        <li><a href="index.html#dates">All Dates</a></li>
+      </ul>
+    </li>
+    <li><a href="index.html#locs">Locations</a></li>
+    <li><a href="gallery.html">Gallery</a></li>
+    <li><a href="#">Donate</a></li>
+    <li><a href="https://nwflencountersinc.itemorder.com/shop/sale/" target="_blank">Store</a></li>
+  </ul>
+  <a href="register.html" class="nav-cta">Register Now</a>
+</nav>
+
+<!-- HERO -->
+<section class="testi-hero">
+  <div class="wrap">
+    <p class="kicker" style="justify-content:center">Changed Lives</p>
+    <h1 class="sh" style="text-align:center">Real Stories of<br><em>Real Freedom</em></h1>
+    <p class="testi-hero-body">These are real people from real places who walked into an Encounter weekend carrying heavy burdens — and walked out free. Their stories are proof that God still moves, still heals, and still sets the captive free.</p>
+  </div>
+</section>
+
+<!-- VIDEO TESTIMONIES -->
+<section class="video-sec">
+  <div class="wrap">
+    <p class="kicker">On Video</p>
+    <h2 class="sh">Hear It<br><em>In Their Own Words</em></h2>
+    <div class="video-grid">
+
+      <div class="video-card" onclick="openVideo('BsBUT9QtT0o')">
+        <div class="video-thumb">
+          <img src="https://img.youtube.com/vi/BsBUT9QtT0o/maxresdefault.jpg" loading="lazy" alt="Denise Gibson testimony" onerror="this.src='https://img.youtube.com/vi/BsBUT9QtT0o/hqdefault.jpg'">
+          <div class="play-btn"><div class="play-circle"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>
+        </div>
+        <div class="video-card-info">
+          <div class="video-card-name">Denise Gibson</div>
+          <div class="video-card-loc">Milton, FL</div>
+        </div>
+      </div>
+
+      <div class="video-card" onclick="openVideo('nuMb2BL4B38')">
+        <div class="video-thumb">
+          <img src="https://img.youtube.com/vi/nuMb2BL4B38/maxresdefault.jpg" loading="lazy" alt="Hollie Heiston testimony" onerror="this.src='https://img.youtube.com/vi/nuMb2BL4B38/hqdefault.jpg'">
+          <div class="play-btn"><div class="play-circle"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>
+        </div>
+        <div class="video-card-info">
+          <div class="video-card-name">Hollie Heiston</div>
+          <div class="video-card-loc">Baker, FL</div>
+        </div>
+      </div>
+
+      <div class="video-card" onclick="openVideo('UUIDLVZwT1U')">
+        <div class="video-thumb">
+          <img src="https://img.youtube.com/vi/UUIDLVZwT1U/maxresdefault.jpg" loading="lazy" alt="Kristy Lundy testimony" onerror="this.src='https://img.youtube.com/vi/UUIDLVZwT1U/hqdefault.jpg'">
+          <div class="play-btn"><div class="play-circle"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>
+        </div>
+        <div class="video-card-info">
+          <div class="video-card-name">Kristy Lundy</div>
+          <div class="video-card-loc">Baker, FL</div>
+        </div>
+      </div>
+
+      <div class="video-card" onclick="openVideo('a84Q4R0Pzrc')">
+        <div class="video-thumb">
+          <img src="https://img.youtube.com/vi/a84Q4R0Pzrc/maxresdefault.jpg" loading="lazy" alt="Nikki Godwin testimony" onerror="this.src='https://img.youtube.com/vi/a84Q4R0Pzrc/hqdefault.jpg'">
+          <div class="play-btn"><div class="play-circle"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>
+        </div>
+        <div class="video-card-info">
+          <div class="video-card-name">Nikki Godwin</div>
+          <div class="video-card-loc">Crestview, FL</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- FREEDOM BAND -->
+<div class="freedom-band">
+  <blockquote>"And they overcame him by the blood of the Lamb and by the word of their testimony."<cite>Revelation 12:11</cite></blockquote>
+</div>
+
+<!-- WRITTEN TESTIMONIES -->
+<section class="written-sec">
+  <div class="wrap">
+    <p class="kicker">Written Testimonies</p>
+    <h2 class="sh">Words That<br><em>Can't Be Contained</em></h2>
+    <div class="written-grid">
+
+      <div class="testi-card">
+        <div class="testi-quote-mark">&ldquo;</div>
+        <div class="testi-text">FREEDOM! He set me free from harvesting unforgiveness that had been there so long I could barely recognize it.</div>
+        <div class="testi-divider"></div>
+        <div class="testi-author">Sommer Griggs &nbsp;<span>Andalusia, AL</span></div>
+      </div>
+
+      <div class="testi-card">
+        <div class="testi-quote-mark">&ldquo;</div>
+        <div class="testi-text">I felt the heaviness and the weight I have been carrying leave me and I felt more free in Christ.</div>
+        <div class="testi-divider"></div>
+        <div class="testi-author">Erika Yant Richards &nbsp;<span>Santa Rosa Beach, FL</span></div>
+      </div>
+
+      <div class="testi-card">
+        <div class="testi-quote-mark">&ldquo;</div>
+        <div class="testi-text">I walked around with a face, like a mask. I smiled every day and nobody knew. Not anymore.</div>
+        <div class="testi-divider"></div>
+        <div class="testi-author">Sara Taylor Faust &nbsp;<span>Andalusia, AL</span></div>
+      </div>
+
+      <div class="testi-card">
+        <div class="testi-quote-mark">&ldquo;</div>
+        <div class="testi-text">I let go of so much stuff. So much anger, hurt and hatred and I have never felt so good.</div>
+        <div class="testi-divider"></div>
+        <div class="testi-author">Brooklyn Clifton &nbsp;<span>Crestview, FL</span></div>
+      </div>
+
+      <div class="testi-card">
+        <div class="testi-quote-mark">&ldquo;</div>
+        <div class="testi-text">He saved my marriage and gave me a renewal that I didn't even know was possible.</div>
+        <div class="testi-divider"></div>
+        <div class="testi-author">Krista Cross &nbsp;<span>Wing, AL</span></div>
+      </div>
+
+      <div class="testi-card">
+        <div class="testi-quote-mark">&ldquo;</div>
+        <div class="testi-text">These 3 days changed my life forever!</div>
+        <div class="testi-divider"></div>
+        <div class="testi-author">Don Ward &nbsp;<span>Baker, FL</span></div>
+      </div>
+
+      <div class="testi-card">
+        <div class="testi-quote-mark">&ldquo;</div>
+        <div class="testi-text">LIFE CHANGING would be a great start.</div>
+        <div class="testi-divider"></div>
+        <div class="testi-author">Wayne Nestle &nbsp;<span>Pace, FL</span></div>
+      </div>
+
+      <div class="testi-card">
+        <div class="testi-quote-mark">&ldquo;</div>
+        <div class="testi-text">This encounter changed my life forever! I became more on fire for God than I have ever been.</div>
+        <div class="testi-divider"></div>
+        <div class="testi-author">James Davis &nbsp;<span>Milton, FL</span></div>
+      </div>
+
+      <div class="testi-card">
+        <div class="testi-quote-mark">&ldquo;</div>
+        <div class="testi-text">This 3 day event changed my life and set me on a path for eternity with my Lord.</div>
+        <div class="testi-divider"></div>
+        <div class="testi-author">Lathem Brown &nbsp;<span>Baker, FL</span></div>
+      </div>
+
+      <div class="testi-card">
+        <div class="testi-quote-mark">&ldquo;</div>
+        <div class="testi-text">FREED of chains I didn't even realize were there, freed from heartache I didn't know I was still carrying.</div>
+        <div class="testi-divider"></div>
+        <div class="testi-author">Bridget Lusk &nbsp;<span>Baker, FL</span></div>
+      </div>
+
+      <div class="testi-card">
+        <div class="testi-quote-mark">&ldquo;</div>
+        <div class="testi-text">No it wasn't great — it was so very amazing!</div>
+        <div class="testi-divider"></div>
+        <div class="testi-author">P.J. Wells &nbsp;<span>Andalusia, AL</span></div>
+      </div>
+
+      <div class="testi-card">
+        <div class="testi-quote-mark">&ldquo;</div>
+        <div class="testi-text">Never in my life did I think I would meet a group of gentlemen that were as caring and Christ-filled as this group.</div>
+        <div class="testi-divider"></div>
+        <div class="testi-author">Randy Martin &nbsp;<span>Baker, FL</span></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <a href="index.html" class="foot-brand-logo">
+          <img class="foot-logo-img" src="logo-transparent.png" alt="The Encounters">
+          <div class="foot-brand-name">NWFL Encounters<span>My Encounter... My Freedom!</span></div>
+        </a>
+        <p class="foot-tagline">Transforming lives through weekend encounters with God across the Southeast.</p>
+        <div class="footer-social">
+          <a href="https://www.facebook.com/NWFLEncountersInc" class="social-btn">f</a>
+          <a href="https://www.instagram.com/nwflencounters/" class="social-btn">ig</a>
+        </div>
+      </div>
+      <div class="foot-col"><h4>Ministry</h4><ul><li><a href="about.html">About Encounters</a></li><li><a href="testimonies.html">Testimonies</a></li><li><a href="gallery.html">Gallery</a></li><li><a href="#">Inner Circle</a></li></ul></div>
+      <div class="foot-col"><h4>Register</h4><ul><li><a href="register.html">Men&#39;s Encounter</a></li><li><a href="register.html">Women&#39;s Encounter</a></li><li><a href="index.html#dates">All Dates</a></li><li><a href="#">All Locations</a></li></ul></div>
+      <div class="foot-col"><h4>Give &amp; Connect</h4><ul><li><a href="#">Donate</a></li><li><a href="https://nwflencountersinc.itemorder.com/shop/sale/" target="_blank">Store</a></li><li><a href="#">Golf Classic 2026</a></li><li><a href="#">Contact Us</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2014 – 2026 Northwest Florida Encounters Inc. All rights reserved.</span>
+      <span class="yg-footer">#YESGOD</span>
+    </div>
+  </div>
+</footer>
+
+<!-- VIDEO MODAL -->
+<div class="video-modal" id="videoModal">
+  <div class="modal-inner">
+    <button class="modal-close" onclick="closeVideo()">&#x2715;</button>
+    <iframe id="videoFrame" src="" frameborder="0" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>
+  </div>
+</div>
+
+<script>
+function openVideo(id){
+  document.getElementById('videoFrame').src='https://www.youtube.com/embed/'+id+'?autoplay=1&rel=0';
+  document.getElementById('videoModal').classList.add('open');
+}
+function closeVideo(){
+  document.getElementById('videoModal').classList.remove('open');
+  document.getElementById('videoFrame').src='';
+}
+document.getElementById('videoModal').addEventListener('click',function(e){if(e.target===this)closeVideo()});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeVideo()});
+</script>
+</body>
+</html>

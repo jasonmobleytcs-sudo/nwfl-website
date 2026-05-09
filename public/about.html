@@ -25,10 +25,17 @@ nav{position:fixed;top:0;left:0;right:0;z-index:300;display:flex;align-items:cen
 .nav-logo-text{font-family:var(--ff-d);font-size:1.1rem;font-weight:600;color:var(--ink);line-height:1.1}
 .nav-logo-text span{display:block;font-size:.52rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--blue);font-family:var(--ff-b)}
 .nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links>li{position:relative}
 .nav-links a{font-size:.65rem;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--body);text-decoration:none;transition:color .22s,transform .22s;position:relative;display:inline-block}
 .nav-links a::after{content:'';position:absolute;bottom:-4px;left:50%;right:50%;height:1.5px;background:var(--blue);border-radius:2px;transition:left .25s ease,right .25s ease}
 .nav-links a:hover,.nav-links a.active{color:var(--blue);transform:translateY(-2px)}
 .nav-links a:hover::after,.nav-links a.active::after{left:0;right:0}
+.has-dropdown>a::after{display:none}
+.dropdown{display:none;position:absolute;top:calc(100% + .8rem);left:50%;transform:translateX(-50%);background:var(--white);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.12);border:1px solid rgba(42,127,193,.1);padding:.4rem;min-width:170px;list-style:none;z-index:400}
+.has-dropdown:hover .dropdown{display:flex;flex-direction:column}
+.dropdown li a{font-size:.62rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--body);text-decoration:none;padding:.6rem 1rem;border-radius:8px;display:block;white-space:nowrap;transition:all .2s;transform:none!important}
+.dropdown li a::after{display:none!important}
+.dropdown li a:hover{background:var(--sky);color:var(--blue)}
 .nav-cta{font-size:.65rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--white);background:var(--blue);padding:.62rem 1.5rem;border-radius:50px;text-decoration:none;position:relative;overflow:hidden;transition:background .2s,box-shadow .2s,transform .2s}
 .nav-cta::before{content:'';position:absolute;top:0;left:-100%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent);transition:left .55s ease;pointer-events:none;z-index:1}
 .nav-cta:hover{background:var(--blue2);transform:translateY(-2px) scale(1.04);box-shadow:0 6px 22px rgba(42,127,193,.42)}
@@ -163,7 +170,7 @@ footer{background:var(--ink);padding:5rem 4rem 0;border-top:4px solid var(--gold
   </a>
   <ul class="nav-links">
     <li><a href="about.html" class="active">About</a></li>
-    <li><a href="index.html#dates">Encounters</a></li>
+    <li class="has-dropdown"><a href="#">Encounters ▾</a><ul class="dropdown"><li><a href="register.html">Register</a></li><li><a href="testimonies.html">Testimonies</a></li><li><a href="index.html#dates">All Dates</a></li></ul></li>
     <li><a href="index.html#locs">Locations</a></li>
     <li><a href="gallery.html">Gallery</a></li>
     <li><a href="#">Donate</a></li>
