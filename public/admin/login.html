@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login — NWFL Encounters</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#2A7FC1;--blue2:#1A6099;--gold:#D4891A;--gold2:#F0A830;
+  --ink:#1A2B3C;--white:#fff;--ff-d:'Cormorant Garamond',Georgia,serif;--ff-b:'Jost',sans-serif;
+}
+body{font-family:var(--ff-b);min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(140deg,#0d1b2a 0%,#1A2B3C 50%,#1e3a52 100%);
+  position:relative;overflow:hidden}
+body::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 60% 60% at 70% 40%,rgba(212,137,26,.12),transparent 65%),
+             radial-gradient(ellipse 40% 40% at 20% 80%,rgba(42,127,193,.1),transparent 55%)}
+.dots{position:absolute;inset:0;opacity:.04;
+  background-image:radial-gradient(circle,#fff 1px,transparent 1px);background-size:24px 24px}
+
+.card{position:relative;z-index:1;background:rgba(255,255,255,.97);border-radius:24px;
+  padding:2.8rem 2.6rem;width:100%;max-width:420px;
+  box-shadow:0 32px 80px rgba(0,0,0,.45);
+  animation:cardIn .6s cubic-bezier(.22,1,.36,1) both}
+@keyframes cardIn{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
+
+.logo-wrap{display:flex;flex-direction:column;align-items:center;margin-bottom:2rem}
+.logo-img{width:72px;height:72px;object-fit:contain;margin-bottom:.9rem;
+  filter:drop-shadow(0 4px 12px rgba(42,127,193,.2))}
+.logo-title{font-family:var(--ff-d);font-size:1.6rem;font-weight:300;color:var(--ink);line-height:1}
+.logo-sub{font-size:.58rem;font-weight:600;letter-spacing:.26em;text-transform:uppercase;
+  color:var(--blue);margin-top:.35rem}
+
+.divider{display:flex;align-items:center;gap:.8rem;margin-bottom:1.8rem}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:rgba(42,127,193,.15)}
+.divider span{font-size:.55rem;font-weight:600;letter-spacing:.22em;text-transform:uppercase;
+  color:rgba(42,127,193,.4)}
+
+.field{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.1rem}
+.field label{font-size:.6rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+  color:#4A5E70}
+.field input{padding:.75rem 1rem;border-radius:10px;border:1.5px solid rgba(42,127,193,.18);
+  background:#FAFBFD;font-family:var(--ff-b);font-size:.9rem;color:var(--ink);
+  transition:border-color .2s,box-shadow .2s;outline:none}
+.field input:focus{border-color:var(--blue);background:#fff;
+  box-shadow:0 0 0 3px rgba(42,127,193,.1)}
+.field input::placeholder{color:rgba(74,94,112,.35)}
+
+.forgot{display:block;text-align:right;font-size:.6rem;color:var(--blue);
+  text-decoration:none;margin-top:-.4rem;margin-bottom:1.4rem;opacity:.7;transition:opacity .2s}
+.forgot:hover{opacity:1}
+
+.btn{width:100%;padding:1rem;border-radius:50px;border:none;
+  background:linear-gradient(90deg,var(--blue),var(--blue2));
+  color:#fff;font-family:var(--ff-b);font-size:.7rem;font-weight:700;
+  letter-spacing:.18em;text-transform:uppercase;cursor:pointer;
+  position:relative;overflow:hidden;
+  box-shadow:0 4px 20px rgba(42,127,193,.4);
+  transition:transform .2s,box-shadow .2s}
+.btn::before{content:'';position:absolute;top:0;left:-100%;width:50%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent);
+  transition:left .55s ease}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(42,127,193,.5)}
+.btn:hover::before{left:150%}
+
+.secure{display:flex;align-items:center;justify-content:center;gap:.5rem;
+  margin-top:1.2rem;font-size:.58rem;color:#4A5E70;opacity:.45;letter-spacing:.06em}
+</style>
+</head>
+<body>
+<div class="dots"></div>
+<div class="card">
+  <div class="logo-wrap">
+    <img class="logo-img" src="../logo-transparent.png" alt="NWFL Encounters">
+    <div class="logo-title">NWFL Encounters</div>
+    <div class="logo-sub">Administrator Portal</div>
+  </div>
+  <div class="divider"><span>Secure Sign In</span></div>
+  <form onsubmit="handleLogin(event)">
+    <div class="field">
+      <label>Username</label>
+      <input type="text" id="username" placeholder="Enter your username" autocomplete="username" required>
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password" required>
+    </div>
+    <a href="#" class="forgot">Forgot password?</a>
+    <button class="btn" type="submit">Sign In to Admin</button>
+  </form>
+  <div class="secure">🔒 &nbsp; Secure encrypted connection</div>
+</div>
+<script>
+function handleLogin(e){
+  e.preventDefault();
+  // Placeholder — wire up auth later
+  window.location.href='index.html';
+}
+</script>
+</body>
+</html>

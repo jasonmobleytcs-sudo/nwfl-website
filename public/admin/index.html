@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — NWFL Encounters</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#2A7FC1;--blue2:#1A6099;--blue-lt:#5BA3D9;
+  --gold:#D4891A;--gold2:#F0A830;
+  --teal:#2CA58D;--danger:#E05252;--warn:#F59E0B;
+  --ink:#1A2B3C;--body:#4A5E70;--white:#fff;
+  --sidebar:#1A2B3C;--sidebar-w:240px;
+  --content-bg:#F0F4F8;--card:#fff;
+  --border:rgba(42,127,193,.12);
+  --ff-d:'Cormorant Garamond',Georgia,serif;--ff-b:'Jost',sans-serif;
+}
+html,body{height:100%;font-family:var(--ff-b);background:var(--content-bg);color:var(--ink);overflow:hidden}
+
+/* ── LAYOUT ── */
+.admin-wrap{display:flex;height:100vh}
+
+/* ── SIDEBAR ── */
+.sidebar{width:var(--sidebar-w);background:var(--sidebar);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.sb-brand{padding:1.4rem 1.2rem 1rem;display:flex;align-items:center;gap:.75rem;border-bottom:1px solid rgba(255,255,255,.07)}
+.sb-logo{width:36px;height:36px;object-fit:contain;filter:brightness(0) invert(1);opacity:.85;flex-shrink:0}
+.sb-title{font-family:var(--ff-d);font-size:1rem;font-weight:400;color:#fff;line-height:1.1}
+.sb-sub{font-size:.46rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:rgba(240,168,48,.7)}
+.sb-nav{flex:1;padding:.6rem 0}
+.sb-item,.sb-sub-item{display:flex;align-items:center;gap:.75rem;padding:.65rem 1.2rem;
+  font-size:.62rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
+  color:rgba(255,255,255,.55);cursor:pointer;transition:all .18s;text-decoration:none;border:none;background:none;width:100%;text-align:left}
+.sb-item:hover{color:rgba(255,255,255,.9);background:rgba(255,255,255,.06)}
+.sb-item.active{color:#fff;background:rgba(42,127,193,.25);border-right:3px solid var(--blue)}
+.sb-item svg,.sb-sub-item svg{width:16px;height:16px;flex-shrink:0;opacity:.7}
+.sb-item.active svg{opacity:1}
+.sb-group{margin-bottom:.3rem}
+.sb-group-label{font-size:.5rem;font-weight:700;letter-spacing:.24em;text-transform:uppercase;
+  color:rgba(255,255,255,.25);padding:.8rem 1.2rem .3rem}
+.sb-sub-item{padding:.5rem 1.2rem .5rem 2.8rem;font-size:.6rem}
+.sb-sub-item:hover{color:rgba(255,255,255,.9);background:rgba(255,255,255,.04)}
+.sb-sub-item.active{color:var(--gold2)}
+.sb-footer{padding:1rem 1.2rem;border-top:1px solid rgba(255,255,255,.07)}
+.sb-user{display:flex;align-items:center;gap:.7rem}
+.sb-avatar{width:32px;height:32px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;color:#fff;flex-shrink:0}
+.sb-user-info{flex:1;overflow:hidden}
+.sb-user-name{font-size:.65rem;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-user-role{font-size:.52rem;color:rgba(255,255,255,.4);letter-spacing:.1em;text-transform:uppercase}
+.sb-logout{font-size:.55rem;color:rgba(255,255,255,.35);text-decoration:none;transition:color .2s;flex-shrink:0}
+.sb-logout:hover{color:var(--danger)}
+
+/* ── MAIN ── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+
+/* TOP BAR */
+.topbar{background:var(--white);border-bottom:1px solid var(--border);
+  padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+  box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.topbar-left{display:flex;align-items:center;gap:.5rem}
+.breadcrumb{font-size:.62rem;color:var(--body);opacity:.6}
+.breadcrumb span{color:var(--blue);opacity:1;font-weight:600}
+.topbar-right{display:flex;align-items:center;gap:1rem}
+.topbar-badge{width:36px;height:36px;border-radius:50%;border:1.5px solid var(--border);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;transition:border-color .2s}
+.topbar-badge:hover{border-color:var(--blue)}
+.topbar-badge svg{width:16px;height:16px;color:var(--body)}
+.notif-dot{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;
+  background:var(--danger);border:1.5px solid #fff}
+.topbar-user{display:flex;align-items:center;gap:.6rem;cursor:pointer;padding:.3rem .7rem;
+  border-radius:8px;transition:background .2s}
+.topbar-user:hover{background:var(--content-bg)}
+.topbar-avatar{width:30px;height:30px;border-radius:50%;background:var(--blue);
+  display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:#fff}
+.topbar-uname{font-size:.65rem;font-weight:600;color:var(--ink)}
+
+/* CONTENT */
+.content{flex:1;overflow-y:auto;padding:1.8rem 2rem}
+
+/* SECTION */
+.section{display:none;animation:fadeIn .25s ease}
+.section.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.6rem}
+.section-title{font-family:var(--ff-d);font-size:1.8rem;font-weight:300;color:var(--ink)}
+.section-title em{font-style:italic;color:var(--blue)}
+
+/* STAT CARDS */
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.6rem}
+.stat-card{background:var(--card);border-radius:14px;padding:1.3rem 1.5rem;
+  border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,.04);
+  display:flex;align-items:center;gap:1rem}
+.stat-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.stat-icon svg{width:22px;height:22px}
+.stat-icon.blue{background:rgba(42,127,193,.1)} .stat-icon.blue svg{color:var(--blue)}
+.stat-icon.gold{background:rgba(212,137,26,.1)} .stat-icon.gold svg{color:var(--gold)}
+.stat-icon.green{background:rgba(44,165,141,.1)} .stat-icon.green svg{color:var(--teal)}
+.stat-icon.red{background:rgba(224,82,82,.1)} .stat-icon.red svg{color:var(--danger)}
+.stat-body{}
+.stat-n{font-family:var(--ff-d);font-size:1.9rem;font-weight:300;color:var(--ink);line-height:1}
+.stat-l{font-size:.56rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--body);opacity:.6;margin-top:.2rem}
+.stat-delta{font-size:.62rem;color:var(--teal);font-weight:500;margin-top:.15rem}
+
+/* CARD / TABLE */
+.card{background:var(--card);border-radius:14px;border:1px solid var(--border);
+  box-shadow:0 2px 8px rgba(0,0,0,.04);margin-bottom:1.4rem;overflow:hidden}
+.card-head{padding:1rem 1.4rem;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:.7rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink)}
+.card-badge{font-size:.56rem;font-weight:700;padding:.25rem .8rem;border-radius:50px;
+  background:rgba(42,127,193,.1);color:var(--blue);letter-spacing:.1em;text-transform:uppercase}
+.card-badge.gold{background:rgba(212,137,26,.1);color:var(--gold)}
+.card-badge.red{background:rgba(224,82,82,.1);color:var(--danger)}
+.card-badge.green{background:rgba(44,165,141,.1);color:var(--teal)}
+
+table{width:100%;border-collapse:collapse;font-size:.78rem}
+thead th{padding:.75rem 1rem;text-align:left;font-size:.56rem;font-weight:700;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--body);
+  border-bottom:2px solid var(--border);background:#FAFBFD;white-space:nowrap}
+tbody tr{border-bottom:1px solid rgba(42,127,193,.06);transition:background .15s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:rgba(42,127,193,.03)}
+td{padding:.8rem 1rem;color:var(--body);vertical-align:middle}
+td.name{font-weight:500;color:var(--ink)}
+td.amount{font-weight:600;color:var(--teal)}
+td.unpaid{font-weight:600;color:var(--danger)}
+td.num{font-weight:700;color:var(--ink)}
+td.num-red{font-weight:700;color:var(--danger)}
+tfoot td{padding:.9rem 1rem;font-weight:700;border-top:2px solid var(--border);
+  background:#FAFBFD;font-size:.82rem}
+tfoot td.total-n{color:var(--blue)}
+tfoot td.total-r{color:var(--danger)}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:.35rem;font-size:.56rem;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;padding:.28rem .75rem;border-radius:50px;white-space:nowrap}
+.badge-paid{background:rgba(44,165,141,.1);color:var(--teal)}
+.badge-unpaid{background:rgba(224,82,82,.1);color:var(--danger)}
+.badge-partial{background:rgba(245,158,11,.12);color:#b45309}
+.badge-men{background:rgba(42,127,193,.1);color:var(--blue)}
+.badge-women{background:rgba(212,137,26,.1);color:var(--gold)}
+.badge-active{background:rgba(44,165,141,.12);color:var(--teal)}
+.badge-completed{background:rgba(74,94,112,.1);color:var(--body)}
+
+/* ACTIONS */
+.actions{display:flex;gap:.4rem}
+.btn-icon{width:30px;height:30px;border-radius:8px;border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  background:transparent;transition:all .18s;color:var(--body)}
+.btn-icon:hover{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn-icon.del:hover{background:var(--danger);border-color:var(--danger)}
+.btn-icon svg{width:13px;height:13px}
+
+/* TOP ROW */
+.table-toolbar{padding:.8rem 1.4rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;border-bottom:1px solid var(--border)}
+.search-box{display:flex;align-items:center;gap:.5rem;background:#FAFBFD;
+  border:1.5px solid var(--border);border-radius:8px;padding:.4rem .8rem;flex:1;max-width:280px}
+.search-box input{border:none;background:none;font-family:var(--ff-b);font-size:.78rem;
+  color:var(--ink);outline:none;width:100%}
+.search-box input::placeholder{color:rgba(74,94,112,.4)}
+.search-box svg{width:14px;height:14px;color:var(--body);opacity:.5;flex-shrink:0}
+.btn-sm{font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  padding:.45rem 1rem;border-radius:8px;border:1.5px solid var(--blue);
+  background:var(--blue);color:#fff;cursor:pointer;transition:all .2s;font-family:var(--ff-b)}
+.btn-sm:hover{background:var(--blue2)}
+.btn-sm.outline{background:transparent;color:var(--blue)}
+.btn-sm.outline:hover{background:var(--blue);color:#fff}
+.btn-sm.gold{border-color:var(--gold);background:var(--gold)}
+.btn-sm.gold:hover{background:var(--gold2)}
+
+/* TESTIMONY CARD */
+.testi-grid{display:flex;flex-direction:column;gap:0}
+.testi-row{padding:1.2rem 1.4rem;border-bottom:1px solid rgba(42,127,193,.06);display:grid;grid-template-columns:220px 220px 1fr auto;gap:1rem;align-items:start}
+.testi-row:last-child{border-bottom:none}
+.testi-row:hover{background:rgba(42,127,193,.02)}
+.testi-name{font-weight:600;color:var(--ink);font-size:.82rem}
+.testi-loc{font-size:.62rem;color:var(--body);opacity:.6;margin-top:.15rem}
+.testi-text{font-size:.78rem;color:var(--body);line-height:1.6;font-family:var(--ff-d);font-style:italic}
+.testi-video{display:inline-flex;align-items:center;gap:.4rem;font-size:.6rem;font-weight:600;
+  color:var(--blue);text-decoration:none;padding:.28rem .75rem;border-radius:6px;
+  background:rgba(42,127,193,.08);transition:background .2s}
+.testi-video:hover{background:rgba(42,127,193,.15)}
+
+/* CHECKIN */
+.checkin-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.8rem;padding:1.2rem}
+.checkin-card{border:1.5px solid var(--border);border-radius:12px;padding:1rem;
+  display:flex;flex-direction:column;gap:.4rem;cursor:pointer;transition:all .2s}
+.checkin-card:hover{border-color:var(--blue);box-shadow:0 4px 16px rgba(42,127,193,.12)}
+.checkin-card.checked{border-color:var(--teal);background:rgba(44,165,141,.06)}
+.checkin-name{font-weight:600;font-size:.82rem;color:var(--ink)}
+.checkin-sub{font-size:.6rem;color:var(--body);opacity:.6;text-transform:uppercase;letter-spacing:.1em}
+.checkin-status{font-size:.58rem;font-weight:700;color:var(--teal)}
+
+/* EMPTY STATE */
+.empty{padding:3rem;text-align:center}
+.empty-icon{font-size:2.5rem;margin-bottom:.8rem}
+.empty-msg{font-size:.85rem;color:var(--body);opacity:.5}
+
+/* FORM STYLES */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;padding:1.4rem}
+.form-field{display:flex;flex-direction:column;gap:.4rem}
+.form-field.full{grid-column:span 2}
+.form-field label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--body)}
+.form-field input,.form-field select,.form-field textarea{
+  padding:.7rem .9rem;border-radius:8px;border:1.5px solid var(--border);
+  background:#FAFBFD;font-family:var(--ff-b);font-size:.85rem;color:var(--ink);
+  outline:none;transition:border-color .2s}
+.form-field input:focus,.form-field select:focus,.form-field textarea:focus{
+  border-color:var(--blue);background:#fff;box-shadow:0 0 0 3px rgba(42,127,193,.08)}
+.form-field select{appearance:none;cursor:pointer}
+.form-actions{padding:1rem 1.4rem;border-top:1px solid var(--border);display:flex;gap:.7rem;justify-content:flex-end}
+
+/* REPORTS */
+.report-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.4rem}
+.report-card{background:var(--card);border-radius:14px;padding:1.4rem;
+  border:1px solid var(--border);cursor:pointer;transition:all .2s;
+  display:flex;flex-direction:column;gap:.5rem}
+.report-card:hover{border-color:var(--blue);transform:translateY(-2px);box-shadow:0 6px 20px rgba(42,127,193,.12)}
+.report-icon{font-size:1.4rem}
+.report-name{font-size:.75rem;font-weight:600;color:var(--ink)}
+.report-desc{font-size:.7rem;color:var(--body);opacity:.6;line-height:1.5}
+
+/* SETTINGS */
+.settings-section{margin-bottom:1.4rem}
+.settings-label{font-size:.58rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--body);padding:.8rem 1.4rem;border-bottom:1px solid var(--border)}
+.settings-row{display:flex;align-items:center;justify-content:space-between;
+  padding:.9rem 1.4rem;border-bottom:1px solid rgba(42,127,193,.06)}
+.settings-row:last-child{border-bottom:none}
+.settings-info{font-size:.82rem;color:var(--ink);font-weight:500}
+.settings-sub{font-size:.68rem;color:var(--body);opacity:.5;margin-top:.1rem}
+.toggle{width:42px;height:24px;border-radius:50px;background:var(--border);
+  position:relative;cursor:pointer;transition:background .2s;flex-shrink:0}
+.toggle.on{background:var(--teal)}
+.toggle::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;
+  border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.toggle.on::after{transform:translateX(18px)}
+</style>
+</head>
+<body>
+<div class="admin-wrap">
+
+<!-- ── SIDEBAR ── -->
+<aside class="sidebar">
+  <div class="sb-brand">
+    <img class="sb-logo" src="../logo-transparent.png" alt="">
+    <div>
+      <div class="sb-title">NWFL Encounters</div>
+      <div class="sb-sub">Admin Portal</div>
+    </div>
+  </div>
+
+  <nav class="sb-nav">
+    <button class="sb-item active" onclick="nav('dashboard',this)">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </button>
+
+    <div class="sb-group">
+      <div class="sb-group-label">Participants</div>
+      <button class="sb-sub-item" onclick="nav('men',this)">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M6 20v-1a6 6 0 0112 0v1"/></svg>
+        List Men
+      </button>
+      <button class="sb-sub-item" onclick="nav('women',this)">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M6 20v-1a6 6 0 0112 0v1"/></svg>
+        List Women
+      </button>
+      <button class="sb-sub-item" onclick="nav('register',this)">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12h14"/></svg>
+        Register Participant
+      </button>
+    </div>
+
+    <div class="sb-group">
+      <div class="sb-group-label">Financial</div>
+      <button class="sb-sub-item" onclick="nav('invoices',this)">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 4v5M15 4v5"/></svg>
+        Unpaid Invoices
+      </button>
+      <button class="sb-sub-item" onclick="nav('donations',this)">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M12 21C12 21 4 13.5 4 8a8 8 0 0116 0c0 5.5-8 13-8 13z"/></svg>
+        Donations
+      </button>
+      <button class="sb-sub-item" onclick="nav('balance',this)">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        Balance Encounter
+      </button>
+    </div>
+
+    <div class="sb-group">
+      <div class="sb-group-label">Encounter</div>
+      <button class="sb-sub-item" onclick="nav('encounters',this)">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+        List Encounters
+      </button>
+      <button class="sb-sub-item" onclick="nav('checkin',this)">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M9 12l2 2 4-4M7 20H3a1 1 0 01-1-1V5a1 1 0 011-1h11l5 5v10a1 1 0 01-1 1h-4"/></svg>
+        Encounter Checkin
+      </button>
+    </div>
+
+    <div class="sb-group">
+      <div class="sb-group-label">Content</div>
+      <button class="sb-sub-item" onclick="nav('testimonies',this)">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+        Testimonies
+      </button>
+      <button class="sb-sub-item" onclick="nav('documents',this)">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        Documents
+      </button>
+    </div>
+
+    <div class="sb-group">
+      <div class="sb-group-label">System</div>
+      <button class="sb-sub-item" onclick="nav('reports',this)">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        Reports
+      </button>
+      <button class="sb-sub-item" onclick="nav('settings',this)">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
+        Settings
+      </button>
+    </div>
+  </nav>
+
+  <div class="sb-footer">
+    <div class="sb-user">
+      <div class="sb-avatar">S</div>
+      <div class="sb-user-info">
+        <div class="sb-user-name">Shawn</div>
+        <div class="sb-user-role">SYSADM</div>
+      </div>
+      <a href="login.html" class="sb-logout">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+      </a>
+    </div>
+  </div>
+</aside>
+
+<!-- ── MAIN ── -->
+<div class="main">
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <span class="breadcrumb">NWFL Encounters &rsaquo; <span id="bcTitle">Dashboard</span></span>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-badge">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+        <div class="notif-dot"></div>
+      </div>
+      <div class="topbar-user">
+        <div class="topbar-avatar">S</div>
+        <span class="topbar-uname">Shawn &nbsp;·&nbsp; SYSADM</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CONTENT ── -->
+  <div class="content">
+
+    <!-- ══ DASHBOARD ══ -->
+    <div class="section active" id="s-dashboard">
+      <div class="section-header">
+        <div class="section-title">Dashboard <em>Overview</em></div>
+        <button class="btn-sm">+ New Encounter</button>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-card">
+          <div class="stat-icon blue"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M6 20v-1a6 6 0 0112 0v1"/></svg></div>
+          <div class="stat-body">
+            <div class="stat-n">205</div>
+            <div class="stat-l">Total Participants</div>
+            <div class="stat-delta">↑ 34 from last year</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14l-4-4 1.41-1.41L11 13.17l6.59-6.59L19 8l-8 8z"/></svg></div>
+          <div class="stat-body">
+            <div class="stat-n">$24,970</div>
+            <div class="stat-l">Total Collected</div>
+            <div class="stat-delta">↑ $4,210 from last year</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon red"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></div>
+          <div class="stat-body">
+            <div class="stat-n">$5,555</div>
+            <div class="stat-l">Unpaid Balance</div>
+            <div class="stat-delta">34 open invoices</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon gold"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>
+          <div class="stat-body">
+            <div class="stat-n">4</div>
+            <div class="stat-l">Encounters</div>
+            <div class="stat-delta">0 currently active</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">Active Encounters</div>
+          <span class="card-badge green">0 Active</span>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Encounter Name</th>
+              <th colspan="2">Participants</th>
+              <th colspan="2">Servers</th>
+              <th></th>
+            </tr>
+            <tr>
+              <th></th><th>Paid</th><th>Unpaid</th><th>Paid</th><th>Unpaid</th><th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td colspan="6" class="empty" style="padding:2rem;text-align:center;color:var(--body);opacity:.4;font-size:.78rem">No active encounters at this time</td></tr>
+          </tbody>
+          <tfoot>
+            <tr><td class="name">TOTALS</td><td class="total-n">0</td><td>$0.00</td><td class="total-r">0</td><td class="total-r">$0.00</td><td></td></tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <!-- Completed Unpaid -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">Completed Encounters with Unpaid Balances</div>
+          <span class="card-badge red">$5,555 Outstanding</span>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Encounter Name</th>
+              <th>P. Paid</th><th>P. Paid $</th>
+              <th>P. Unpaid</th><th>P. Unpaid $</th>
+              <th>S. Paid</th><th>S. Paid $</th>
+              <th>S. Unpaid</th><th>S. Unpaid $</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="name">Men's Encounter — April 2026</td>
+              <td class="num">13</td><td class="amount">$2,080</td>
+              <td class="num-red">3</td><td class="unpaid">$480</td>
+              <td class="num">27</td><td class="amount">$2,700</td>
+              <td class="num-red">9</td><td class="unpaid">$720</td>
+              <td><div class="actions"><button class="btn-icon" title="View"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div></td>
+            </tr>
+            <tr>
+              <td class="name">Women's Encounter — April 2026</td>
+              <td class="num">21</td><td class="amount">$3,360</td>
+              <td class="num-red">6</td><td class="unpaid">$940</td>
+              <td class="num">29</td><td class="amount">$2,960</td>
+              <td class="num-red">8</td><td class="unpaid">$755</td>
+              <td><div class="actions"><button class="btn-icon" title="View"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div></td>
+            </tr>
+            <tr>
+              <td class="name">Women's Encounter — November 2025</td>
+              <td class="num">28</td><td class="amount">$4,480</td>
+              <td class="num">0</td><td>$0</td>
+              <td class="num">41</td><td class="amount">$4,190</td>
+              <td class="num-red">3</td><td class="unpaid">$300</td>
+              <td><div class="actions"><button class="btn-icon" title="View"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div></td>
+            </tr>
+            <tr>
+              <td class="name">Men's Encounter — November 2025</td>
+              <td class="num">9</td><td class="amount">$1,440</td>
+              <td class="num-red">2</td><td class="unpaid">$320</td>
+              <td class="num">37</td><td class="amount">$3,760</td>
+              <td class="num-red">3</td><td class="unpaid">$300</td>
+              <td><div class="actions"><button class="btn-icon" title="View"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div></td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td class="name">TOTALS</td>
+              <td class="total-n">71</td><td class="amount">$11,360</td>
+              <td class="total-r">11</td><td class="total-r">$1,740</td>
+              <td class="total-n">134</td><td class="amount">$13,610</td>
+              <td class="total-r">23</td><td class="total-r">$2,075</td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ MEN PARTICIPANTS ══ -->
+    <div class="section" id="s-men">
+      <div class="section-header">
+        <div class="section-title">Men's <em>Participants</em></div>
+        <button class="btn-sm">+ Register</button>
+      </div>
+      <div class="card">
+        <div class="table-toolbar">
+          <div class="search-box"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input type="text" placeholder="Search participants…"></div>
+          <div style="display:flex;gap:.5rem">
+            <button class="btn-sm outline">Filter by Encounter</button>
+            <button class="btn-sm outline">Export CSV</button>
+          </div>
+        </div>
+        <table>
+          <thead><tr><th>Name</th><th>Location</th><th>Encounter</th><th>Paid</th><th>Balance</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr><td class="name">Don Ward</td><td>Baker, FL</td><td>Men's — Jan 2014</td><td class="amount">$160</td><td>$0</td><td><span class="badge badge-paid">✓ Paid</span></td><td><div class="actions"><button class="btn-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button><button class="btn-icon del"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button></div></td></tr>
+            <tr><td class="name">James Davis</td><td>Milton, FL</td><td>Men's — Jan 2014</td><td class="amount">$160</td><td>$0</td><td><span class="badge badge-paid">✓ Paid</span></td><td><div class="actions"><button class="btn-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button><button class="btn-icon del"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button></div></td></tr>
+            <tr><td class="name">Josh Tillman</td><td>Baker, FL</td><td>Men's — Jan 2014</td><td class="amount">$120</td><td class="unpaid">$40</td><td><span class="badge badge-partial">Partial</span></td><td><div class="actions"><button class="btn-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button><button class="btn-icon del"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ WOMEN PARTICIPANTS ══ -->
+    <div class="section" id="s-women">
+      <div class="section-header">
+        <div class="section-title">Women's <em>Participants</em></div>
+        <button class="btn-sm">+ Register</button>
+      </div>
+      <div class="card">
+        <div class="table-toolbar">
+          <div class="search-box"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input type="text" placeholder="Search participants…"></div>
+          <button class="btn-sm outline">Export CSV</button>
+        </div>
+        <table>
+          <thead><tr><th>Name</th><th>Location</th><th>Encounter</th><th>Paid</th><th>Balance</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr><td class="name">Bridget Lusk</td><td>Baker, FL</td><td>Women's — Feb 2015</td><td class="amount">$160</td><td>$0</td><td><span class="badge badge-paid">✓ Paid</span></td><td><div class="actions"><button class="btn-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button></div></td></tr>
+            <tr><td class="name">Brooklyn Clifton</td><td>Crestview, FL</td><td>Women's — Oct 2015</td><td class="amount">$160</td><td>$0</td><td><span class="badge badge-paid">✓ Paid</span></td><td><div class="actions"><button class="btn-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button></div></td></tr>
+            <tr><td class="name">Erika Yant Richards</td><td>Santa Rosa Beach, FL</td><td>Women's — Oct 2016</td><td class="amount">$80</td><td class="unpaid">$80</td><td><span class="badge badge-unpaid">Unpaid</span></td><td><div class="actions"><button class="btn-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ REGISTER ══ -->
+    <div class="section" id="s-register">
+      <div class="section-header">
+        <div class="section-title">Register <em>Participant</em></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">New Registration</div></div>
+        <div class="form-grid">
+          <div class="form-field"><label>First Name</label><input type="text" placeholder="First name"></div>
+          <div class="form-field"><label>Last Name</label><input type="text" placeholder="Last name"></div>
+          <div class="form-field"><label>City</label><input type="text" placeholder="City"></div>
+          <div class="form-field"><label>State</label><input type="text" placeholder="State" maxlength="2"></div>
+          <div class="form-field"><label>Email</label><input type="email" placeholder="email@example.com"></div>
+          <div class="form-field"><label>Phone</label><input type="tel" placeholder="(555) 000-0000"></div>
+          <div class="form-field"><label>Encounter</label><select><option>Men's Encounter — April 2026</option><option>Women's Encounter — April 2026</option></select></div>
+          <div class="form-field"><label>Type</label><select><option>Participant</option><option>Server</option></select></div>
+          <div class="form-field"><label>Total Amount</label><input type="number" placeholder="$160.00"></div>
+          <div class="form-field"><label>Amount Paid</label><input type="number" placeholder="$0.00"></div>
+          <div class="form-field"><label>Payment Method</label><select><option>Credit/Debit Card</option><option>Check</option><option>Cash</option></select></div>
+          <div class="form-field"><label>Check Number</label><input type="text" placeholder="Optional"></div>
+          <div class="form-field full"><label>Notes</label><textarea rows="3" placeholder="Any additional notes…"></textarea></div>
+        </div>
+        <div class="form-actions">
+          <button class="btn-sm outline">Cancel</button>
+          <button class="btn-sm">Save Registration</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ INVOICES ══ -->
+    <div class="section" id="s-invoices">
+      <div class="section-header">
+        <div class="section-title">Unpaid <em>Invoices</em></div>
+        <span style="font-size:.72rem;color:var(--danger);font-weight:600">34 open · $5,555 total</span>
+      </div>
+      <div class="card">
+        <div class="table-toolbar">
+          <div class="search-box"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input type="text" placeholder="Search invoices…"></div>
+          <button class="btn-sm outline">Export</button>
+        </div>
+        <table>
+          <thead><tr><th>Name</th><th>Location</th><th>Encounter</th><th>Type</th><th>Amount Due</th><th>Days Overdue</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr><td class="name">Josh Tillman</td><td>Baker, FL</td><td>Men's — Jan 2014</td><td><span class="badge badge-men">Participant</span></td><td class="unpaid">$40</td><td style="color:var(--danger)">4,133 days</td><td><div class="actions"><button class="btn-sm gold" style="font-size:.55rem;padding:.3rem .7rem">Mark Paid</button></div></td></tr>
+            <tr><td class="name">Erika Yant Richards</td><td>Santa Rosa Beach, FL</td><td>Women's — Oct 2016</td><td><span class="badge badge-women">Participant</span></td><td class="unpaid">$80</td><td style="color:var(--danger)">2,756 days</td><td><div class="actions"><button class="btn-sm gold" style="font-size:.55rem;padding:.3rem .7rem">Mark Paid</button></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ DONATIONS ══ -->
+    <div class="section" id="s-donations">
+      <div class="section-header">
+        <div class="section-title">Donation <em>Records</em></div>
+        <button class="btn-sm">+ Add Donation</button>
+      </div>
+      <div class="card">
+        <div class="table-toolbar">
+          <div class="search-box"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input type="text" placeholder="Search donations…"></div>
+          <button class="btn-sm outline">Export</button>
+        </div>
+        <table>
+          <thead><tr><th>Donor</th><th>Date</th><th>Amount</th><th>Type</th><th>Method</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td class="name">Anonymous</td><td>Apr 15, 2026</td><td class="amount">$100</td><td>Donation</td><td>Card</td><td>—</td></tr>
+            <tr><td class="name">General Fund</td><td>Apr 10, 2026</td><td class="amount">$50</td><td>One-Time Gift</td><td>Cash</td><td>In memory of</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ BALANCE ══ -->
+    <div class="section" id="s-balance">
+      <div class="section-header"><div class="section-title">Balance <em>Encounter</em></div></div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">Select Encounter to Balance</div></div>
+        <div class="form-grid">
+          <div class="form-field full"><label>Encounter</label><select><option>Men's Encounter — April 2026</option><option>Women's Encounter — April 2026</option><option>Women's Encounter — November 2025</option><option>Men's Encounter — November 2025</option></select></div>
+        </div>
+        <div class="form-actions"><button class="btn-sm">Load Encounter Balances</button></div>
+      </div>
+    </div>
+
+    <!-- ══ ENCOUNTERS ══ -->
+    <div class="section" id="s-encounters">
+      <div class="section-header">
+        <div class="section-title">Encounter <em>List</em></div>
+        <button class="btn-sm">+ New Encounter</button>
+      </div>
+      <div class="card">
+        <table>
+          <thead><tr><th>Name</th><th>Date</th><th>Type</th><th>Location</th><th>Participants</th><th>Servers</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr><td class="name">Men's Encounter</td><td>Apr 24–26, 2026</td><td><span class="badge badge-men">Men's</span></td><td>Blue Lake, FL</td><td class="num">16</td><td class="num">36</td><td><span class="badge badge-completed">Completed</span></td><td><div class="actions"><button class="btn-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div></td></tr>
+            <tr><td class="name">Women's Encounter</td><td>Apr 24–26, 2026</td><td><span class="badge badge-women">Women's</span></td><td>Blue Lake, FL</td><td class="num">27</td><td class="num">37</td><td><span class="badge badge-completed">Completed</span></td><td><div class="actions"><button class="btn-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div></td></tr>
+            <tr><td class="name">Women's Encounter</td><td>Nov 2025</td><td><span class="badge badge-women">Women's</span></td><td>Blue Lake, FL</td><td class="num">28</td><td class="num">44</td><td><span class="badge badge-completed">Completed</span></td><td><div class="actions"><button class="btn-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div></td></tr>
+            <tr><td class="name">Men's Encounter</td><td>Nov 2025</td><td><span class="badge badge-men">Men's</span></td><td>Blue Lake, FL</td><td class="num">11</td><td class="num">40</td><td><span class="badge badge-completed">Completed</span></td><td><div class="actions"><button class="btn-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ CHECKIN ══ -->
+    <div class="section" id="s-checkin">
+      <div class="section-header">
+        <div class="section-title">Encounter <em>Check-in</em></div>
+        <div style="display:flex;gap:.6rem;align-items:center">
+          <select style="font-family:var(--ff-b);font-size:.72rem;padding:.4rem .8rem;border-radius:8px;border:1.5px solid var(--border);background:#fff;color:var(--ink);cursor:pointer">
+            <option>Men's Encounter — April 2026</option>
+            <option>Women's Encounter — April 2026</option>
+          </select>
+          <span style="font-size:.65rem;color:var(--teal);font-weight:600">27 / 52 Checked In</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">Participant Check-in</div><div class="card-badge">Tap to Check In</div></div>
+        <div class="checkin-grid">
+          <div class="checkin-card checked" onclick="this.classList.toggle('checked')"><div class="checkin-name">Don Ward</div><div class="checkin-sub">Baker, FL · Participant</div><div class="checkin-status">✓ Checked In</div></div>
+          <div class="checkin-card" onclick="this.classList.toggle('checked')"><div class="checkin-name">James Davis</div><div class="checkin-sub">Milton, FL · Participant</div><div class="checkin-status" style="color:var(--body);opacity:.4">Not checked in</div></div>
+          <div class="checkin-card" onclick="this.classList.toggle('checked')"><div class="checkin-name">Josh Tillman</div><div class="checkin-sub">Baker, FL · Server</div><div class="checkin-status" style="color:var(--body);opacity:.4">Not checked in</div></div>
+          <div class="checkin-card checked" onclick="this.classList.toggle('checked')"><div class="checkin-name">Randy Martin</div><div class="checkin-sub">Baker, FL · Server</div><div class="checkin-status">✓ Checked In</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ TESTIMONIES ══ -->
+    <div class="section" id="s-testimonies">
+      <div class="section-header">
+        <div class="section-title">Testimony <em>List</em></div>
+        <button class="btn-sm">+ Add Testimony</button>
+      </div>
+      <div class="card">
+        <div class="table-toolbar">
+          <div class="search-box"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input type="text" placeholder="Search testimonies…"></div>
+          <span style="font-size:.68rem;color:var(--body);opacity:.6">Showing 9 testimonies</span>
+        </div>
+        <div class="testi-grid">
+          <div class="testi-row"><div><div class="testi-name">Bridget Lusk</div><div class="testi-loc">Baker, FL</div></div><div><div style="font-size:.7rem;color:var(--blue);font-weight:600">Women's — Feb 2015</div></div><div class="testi-text">"When I first came to this Encounter, I was so isolated and alone until I felt how much God loved and wanted me. He broke down the walls of loneliness and insecurity within my life."</div><div class="actions"><button class="btn-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button><button class="btn-icon del"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button></div></div>
+          <div class="testi-row"><div><div class="testi-name">Brooklyn Clifton</div><div class="testi-loc">Crestview, FL</div></div><div><div style="font-size:.7rem;color:var(--blue);font-weight:600">Women's — Oct 2015</div></div><div class="testi-text">"I walked around with a face, like a mask. I smiled everyday and nobody knew. This past weekend, I took that mask off and put a real smile on because I have JOY, REAL TRUE JOY."</div><div class="actions"><button class="btn-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button><button class="btn-icon del"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button></div></div>
+          <div class="testi-row"><div><div class="testi-name">Denise Gibson</div><div class="testi-loc">Milton, FL</div></div><div><div style="font-size:.7rem;color:var(--blue);font-weight:600">Women's — Nov 2019</div></div><div><a href="#" class="testi-video">▶ View Video — Denise_Gibson.mp4</a></div><div class="actions"><button class="btn-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button><button class="btn-icon del"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button></div></div>
+          <div class="testi-row"><div><div class="testi-name">Krista Cross</div><div class="testi-loc">Wing, AL</div></div><div><div style="font-size:.7rem;color:var(--blue);font-weight:600">Women's — Feb 2015</div></div><div class="testi-text">"I was FREED of chains I didn't even realize were there, freed from heartache I didn't know I still harbored, and I felt the power and presence of God like I'd never felt before!"</div><div class="actions"><button class="btn-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button><button class="btn-icon del"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ DOCUMENTS ══ -->
+    <div class="section" id="s-documents">
+      <div class="section-header">
+        <div class="section-title">Ministry <em>Documents</em></div>
+        <button class="btn-sm">+ Upload Document</button>
+      </div>
+      <div class="card">
+        <table>
+          <thead><tr><th>File Name</th><th>Category</th><th>Uploaded</th><th>Size</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr><td class="name">📄 Encounter_Weekend_Schedule.pdf</td><td>Encounter</td><td>Apr 20, 2026</td><td>248 KB</td><td><div class="actions"><button class="btn-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg></button><button class="btn-icon del"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button></div></td></tr>
+            <tr><td class="name">📄 Participant_Handbook_2026.pdf</td><td>Participant</td><td>Mar 10, 2026</td><td>1.2 MB</td><td><div class="actions"><button class="btn-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg></button><button class="btn-icon del"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ REPORTS ══ -->
+    <div class="section" id="s-reports">
+      <div class="section-header"><div class="section-title">Reports &amp; <em>Analytics</em></div></div>
+      <div class="report-grid">
+        <div class="report-card"><div class="report-icon">📊</div><div class="report-name">Financial Summary</div><div class="report-desc">Total collected, outstanding balances, and donation history by encounter</div></div>
+        <div class="report-card"><div class="report-icon">👥</div><div class="report-name">Attendance Report</div><div class="report-desc">Participant and server counts by encounter, gender, and location</div></div>
+        <div class="report-card"><div class="report-icon">💳</div><div class="report-name">Unpaid Balances</div><div class="report-desc">All outstanding balances with contact info and days overdue</div></div>
+        <div class="report-card"><div class="report-icon">📅</div><div class="report-name">Encounter History</div><div class="report-desc">Full history of all encounters with totals and completion status</div></div>
+        <div class="report-card"><div class="report-icon">❤️</div><div class="report-name">Donation Report</div><div class="report-desc">All donations received by date range, type, and donor</div></div>
+        <div class="report-card"><div class="report-icon">📋</div><div class="report-name">Check-in Report</div><div class="report-desc">Check-in status for any encounter with timestamps</div></div>
+      </div>
+    </div>
+
+    <!-- ══ SETTINGS ══ -->
+    <div class="section" id="s-settings">
+      <div class="section-header"><div class="section-title">System <em>Settings</em></div></div>
+      <div class="card settings-section">
+        <div class="settings-label">User Management</div>
+        <div class="settings-row"><div><div class="settings-info">Shawn SYSADM</div><div class="settings-sub">System Administrator · Full Access</div></div><button class="btn-sm outline">Edit</button></div>
+        <div class="settings-row"><div><div class="settings-info">Add Administrator</div><div class="settings-sub">Create a new admin account</div></div><button class="btn-sm">+ Add User</button></div>
+      </div>
+      <div class="card settings-section">
+        <div class="settings-label">Encounter Defaults</div>
+        <div class="settings-row"><div><div class="settings-info">Default Participant Fee</div><div class="settings-sub">Currently set to $160.00</div></div><button class="btn-sm outline">Edit</button></div>
+        <div class="settings-row"><div><div class="settings-info">Default Server Fee</div><div class="settings-sub">Currently set to $100.00</div></div><button class="btn-sm outline">Edit</button></div>
+      </div>
+      <div class="card settings-section">
+        <div class="settings-label">Notifications</div>
+        <div class="settings-row"><div><div class="settings-info">Email on new registration</div><div class="settings-sub">Send email when a new participant registers</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+        <div class="settings-row"><div><div class="settings-info">Unpaid balance reminders</div><div class="settings-sub">Weekly digest of outstanding balances</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+        <div class="settings-row"><div><div class="settings-info">New donation alerts</div><div class="settings-sub">Notify when a donation is received</div></div><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /admin-wrap -->
+
+<script>
+const sections={
+  dashboard:'s-dashboard',men:'s-men',women:'s-women',register:'s-register',
+  invoices:'s-invoices',donations:'s-donations',balance:'s-balance',
+  encounters:'s-encounters',checkin:'s-checkin',testimonies:'s-testimonies',
+  documents:'s-documents',reports:'s-reports',settings:'s-settings'
+};
+const titles={
+  dashboard:'Dashboard',men:'Men\'s Participants',women:'Women\'s Participants',register:'Register Participant',
+  invoices:'Unpaid Invoices',donations:'Donations',balance:'Balance Encounter',
+  encounters:'Encounter List',checkin:'Encounter Check-in',testimonies:'Testimonies',
+  documents:'Documents',reports:'Reports',settings:'Settings'
+};
+function nav(key,btn){
+  // Update sections
+  Object.values(sections).forEach(id=>document.getElementById(id)?.classList.remove('active'));
+  document.getElementById(sections[key])?.classList.add('active');
+  // Update nav items
+  document.querySelectorAll('.sb-item,.sb-sub-item').forEach(el=>el.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  // Update breadcrumb
+  document.getElementById('bcTitle').textContent=titles[key]||key;
+}
+</script>
+</body>
+</html>
