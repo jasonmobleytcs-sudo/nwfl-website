@@ -112,8 +112,10 @@ function convertValue(raw) {
   const v = raw.trim();
   if (v === 'NULL') return null;
   if (v === "''" || v === '') return '';
-  // Remove backslash escapes left over (MySQL-style)
-  return v.replace(/\\'/g, "'").replace(/\\n/g, '\n').replace(/\\r/g, '\r').replace(/\\\\/g, '\\');
+  const decoded = v.replace(/\\'/g, "'").replace(/\\n/g, '\n').replace(/\\r/g, '\r').replace(/\\\\/g, '\\');
+  // Convert MySQL zero dates to null
+  if (decoded === '0000-00-00' || decoded === '0000-00-00 00:00:00') return null;
+  return decoded;
 }
 
 // Get column names from CREATE TABLE statement
@@ -161,11 +163,17 @@ async function migrate() {
 
     // Build array of objects
     const overrides = COLUMN_OVERRIDES[table] || {};
+    const FALLBACK_TS = '1970-01-01T00:00:00Z';
     const objects = rows.map(values => {
       const obj = {};
       columns.forEach((col, i) => {
         const pgCol = overrides[col] ? overrides[col].replace(/"/g,'') : col;
-        obj[pgCol] = values[i] !== undefined ? values[i] : null;
+        let val = values[i] !== undefined ? values[i] : null;
+        // Zero dates became null — use fallback for NOT NULL date/timestamp columns
+        if (val === null && /date|created|modified|paid|inactive|used|lst_pmt/i.test(col)) {
+          val = FALLBACK_TS;
+        }
+        obj[pgCol] = val;
       });
       return obj;
     });

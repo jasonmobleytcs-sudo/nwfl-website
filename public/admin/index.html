@@ -744,6 +744,78 @@ tfoot td.total-r{color:var(--danger)}
 </div><!-- /admin-wrap -->
 
 <script>
+// ── Auth check ───────────────────────────────────────────────
+(async()=>{
+  try{
+    const r=await fetch('/api/admin/me');
+    if(!r.ok) window.location.href='login.html';
+    else{ const u=await r.json(); document.querySelector('.topbar-uname').textContent=u.name+' · '+u.username; document.querySelector('.sb-user-name').textContent=u.name; }
+  }catch(e){ window.location.href='login.html'; }
+})();
+
+// ── Helpers ──────────────────────────────────────────────────
+const $=s=>document.querySelector(s);
+const fmt$=n=>isNaN(n)?'$0.00':'$'+parseFloat(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fmtDate=d=>d&&d!=='1970-01-01T00:00:00Z'?new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';
+
+// ── Load Dashboard ───────────────────────────────────────────
+async function loadDashboard(){
+  const r=await fetch('/api/admin/dashboard');
+  if(!r.ok) return;
+  const {stats,active,completed}=await r.json();
+
+  // Stat cards
+  document.querySelector('.stat-row').innerHTML=`
+    <div class="stat-card"><div class="stat-icon blue"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M6 20v-1a6 6 0 0112 0v1"/></svg></div><div class="stat-body"><div class="stat-n">${stats.total_participants}</div><div class="stat-l">Total Participants</div></div></div>
+    <div class="stat-card"><div class="stat-icon green"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14l-4-4 1.41-1.41L11 13.17l6.59-6.59L19 8l-8 8z"/></svg></div><div class="stat-body"><div class="stat-n">${fmt$(stats.total_collected)}</div><div class="stat-l">Total Collected</div></div></div>
+    <div class="stat-card"><div class="stat-icon red"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></div><div class="stat-body"><div class="stat-n">${fmt$(stats.total_unpaid)}</div><div class="stat-l">Unpaid Balance</div></div></div>
+    <div class="stat-card"><div class="stat-icon gold"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div><div class="stat-body"><div class="stat-n">${stats.total_encounters}</div><div class="stat-l">Encounters</div></div></div>`;
+
+  // Active encounters table
+  const activeRows=active.length?active.map(e=>`
+    <tr><td class="name">${e.short_name}</td>
+    <td class="num">${e.p_paid_count}</td><td class="amount">${fmt$(e.p_paid_amt)}</td>
+    <td class="num-red">${e.p_unpaid_count}</td><td class="unpaid">${fmt$(e.p_unpaid_amt)}</td>
+    <td class="num">${e.s_paid_count}</td><td class="amount">${fmt$(e.s_paid_amt)}</td>
+    <td class="num-red">${e.s_unpaid_count}</td><td class="unpaid">${fmt$(e.s_unpaid_amt)}</td><td></td></tr>`).join('')
+    :`<tr><td colspan="10" style="padding:2rem;text-align:center;color:var(--body);opacity:.4;font-size:.78rem">No active encounters</td></tr>`;
+  document.getElementById('s-dashboard').querySelectorAll('.card')[0].querySelector('tbody').innerHTML=activeRows;
+
+  // Completed with unpaid
+  const compRows=completed.length?completed.map(e=>`
+    <tr><td class="name">${e.short_name}</td>
+    <td class="num">${e.p_paid_count}</td><td class="amount">${fmt$(e.p_paid_amt)}</td>
+    <td class="num-red">${e.p_unpaid_count}</td><td class="unpaid">${fmt$(e.p_unpaid_amt)}</td>
+    <td class="num">${e.s_paid_count}</td><td class="amount">${fmt$(e.s_paid_amt)}</td>
+    <td class="num-red">${e.s_unpaid_count}</td><td class="unpaid">${fmt$(e.s_unpaid_amt)}</td>
+    <td><div class="actions"><button class="btn-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div></td></tr>`).join('')
+    :`<tr><td colspan="10" style="padding:2rem;text-align:center;color:var(--body);opacity:.4;font-size:.78rem">No unpaid balances</td></tr>`;
+  document.getElementById('s-dashboard').querySelectorAll('.card')[1].querySelector('tbody').innerHTML=compRows;
+}
+
+// ── Load Testimonies ─────────────────────────────────────────
+async function loadTestimonies(){
+  const r=await fetch('/api/admin/testimonies');
+  if(!r.ok) return;
+  const data=await r.json();
+  const grid=document.querySelector('.testi-grid');
+  if(!grid) return;
+  grid.innerHTML=data.map(t=>`
+    <div class="testi-row">
+      <div><div class="testi-name">${t.person_name}</div></div>
+      <div><div style="font-size:.7rem;color:var(--blue);font-weight:600">${t.encounters?.short_name||t.encounter_yr_mo}</div></div>
+      <div>${t.video_name?`<a href="#" class="testi-video">▶ ${t.video_name}</a>`:`<div class="testi-text">"${t.testimony.slice(0,200)}${t.testimony.length>200?'…':''}"</div>`}</div>
+      <div class="actions"><button class="btn-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button><button class="btn-icon del"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button></div>
+    </div>`).join('');
+}
+
+// ── Logout ───────────────────────────────────────────────────
+document.querySelector('.sb-logout').addEventListener('click', async e=>{
+  e.preventDefault();
+  await fetch('/api/admin/logout',{method:'POST'});
+  window.location.href='login.html';
+});
+
 const sections={
   dashboard:'s-dashboard',men:'s-men',women:'s-women',register:'s-register',
   invoices:'s-invoices',donations:'s-donations',balance:'s-balance',
@@ -757,15 +829,15 @@ const titles={
   documents:'Documents',reports:'Reports',settings:'Settings'
 };
 function nav(key,btn){
-  // Update sections
   Object.values(sections).forEach(id=>document.getElementById(id)?.classList.remove('active'));
   document.getElementById(sections[key])?.classList.add('active');
-  // Update nav items
   document.querySelectorAll('.sb-item,.sb-sub-item').forEach(el=>el.classList.remove('active'));
   if(btn) btn.classList.add('active');
-  // Update breadcrumb
   document.getElementById('bcTitle').textContent=titles[key]||key;
+  if(key==='testimonies') loadTestimonies();
 }
+// Load dashboard on start
+loadDashboard();
 </script>
 </body>
 </html>

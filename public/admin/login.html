@@ -93,10 +93,33 @@ body::before{content:'';position:absolute;inset:0;
   <div class="secure">🔒 &nbsp; Secure encrypted connection</div>
 </div>
 <script>
-function handleLogin(e){
+async function handleLogin(e){
   e.preventDefault();
-  // Placeholder — wire up auth later
-  window.location.href='index.html';
+  const btn = document.querySelector('.btn');
+  btn.textContent = 'Signing in…';
+  btn.disabled = true;
+  try {
+    const res = await fetch('/api/admin/login', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        username: document.getElementById('username').value.trim(),
+        password: document.getElementById('password').value
+      })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      window.location.href = 'index.html';
+    } else {
+      alert(data.error || 'Login failed');
+      btn.textContent = 'Sign In to Admin';
+      btn.disabled = false;
+    }
+  } catch(err) {
+    alert('Connection error — is the server running?');
+    btn.textContent = 'Sign In to Admin';
+    btn.disabled = false;
+  }
 }
 </script>
 </body>
