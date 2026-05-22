@@ -274,6 +274,45 @@ tfoot td.total-r{color:var(--danger)}
 .toggle::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;
   border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
 .toggle.on::after{transform:translateX(18px)}
+
+/* ── Add Donation Modal ── */
+.don-modal-overlay{position:fixed;inset:0;background:rgba(10,20,35,.55);z-index:900;
+  display:flex;align-items:center;justify-content:center;padding:1rem;
+  opacity:0;pointer-events:none;transition:opacity .25s}
+.don-modal-overlay.open{opacity:1;pointer-events:all}
+.don-modal{background:#fff;border-radius:18px;width:100%;max-width:540px;
+  box-shadow:0 32px 80px rgba(0,0,0,.35);
+  transform:translateY(24px) scale(.98);transition:transform .25s;padding:2rem 2rem 1.5rem}
+.don-modal-overlay.open .don-modal{transform:none}
+.don-modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
+.don-modal-title{font-family:var(--ff-d);font-size:1.5rem;font-weight:300;color:var(--ink)}
+.don-modal-title em{color:var(--teal);font-style:italic}
+.don-modal-close{background:none;border:none;cursor:pointer;font-size:1.3rem;color:var(--body);
+  opacity:.5;transition:opacity .2s;padding:.2rem .5rem;border-radius:6px}
+.don-modal-close:hover{opacity:1;background:var(--bg)}
+.don-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem .9rem}
+.don-form-grid .full{grid-column:1/-1}
+.don-field label{display:block;font-size:.58rem;font-weight:700;letter-spacing:.18em;
+  text-transform:uppercase;color:#4A5E70;margin-bottom:.35rem}
+.don-field input,.don-field select,.don-field textarea{width:100%;padding:.65rem .9rem;
+  border-radius:10px;border:1.5px solid var(--border);background:#FAFBFD;
+  font-family:var(--ff-b);font-size:.85rem;color:var(--ink);outline:none;
+  transition:border-color .2s,box-shadow .2s}
+.don-field input:focus,.don-field select:focus,.don-field textarea:focus{
+  border-color:var(--teal);background:#fff;box-shadow:0 0 0 3px rgba(0,168,150,.1)}
+.don-field .amount-wrap{position:relative}
+.don-field .amount-wrap::before{content:'$';position:absolute;left:.9rem;top:50%;
+  transform:translateY(-50%);color:var(--body);font-size:.85rem;pointer-events:none}
+.don-field .amount-wrap input{padding-left:1.7rem}
+.don-donor-wrap{position:relative}
+.don-donor-results{position:absolute;top:calc(100% + 4px);left:0;right:0;
+  background:#fff;border:1.5px solid var(--teal);border-radius:10px;z-index:10;
+  box-shadow:0 8px 24px rgba(0,0,0,.12);max-height:180px;overflow-y:auto;display:none}
+.don-donor-results.open{display:block}
+.don-donor-result{padding:.5rem .9rem;font-size:.82rem;cursor:pointer;transition:background .15s}
+.don-donor-result:hover{background:var(--bg)}
+.don-modal-footer{display:flex;justify-content:flex-end;gap:.7rem;margin-top:1.5rem;
+  padding-top:1.2rem;border-top:1px solid var(--border)}
 </style>
 </head>
 <body>
@@ -689,7 +728,10 @@ tfoot td.total-r{color:var(--danger)}
     <div class="section" id="s-donations">
       <div class="section-header">
         <div class="section-title">Donation <em>Records</em></div>
-        <span id="don-total-badge" style="font-size:.72rem;color:var(--teal);font-weight:600"></span>
+        <div style="display:flex;align-items:center;gap:1rem">
+          <span id="don-total-badge" style="font-size:.72rem;color:var(--teal);font-weight:600"></span>
+          <button class="btn-sm" onclick="openAddDonation()">+ Add Donation</button>
+        </div>
       </div>
       <div class="card">
         <!-- Type filter tabs -->
@@ -1114,6 +1156,68 @@ function renderDonations(data) {
   ).join('') : '<tr><td colspan="6" style="padding:2rem;text-align:center;opacity:.4">No donations found</td></tr>';
 }
 
+// ── Add Donation ──────────────────────────────────────────────
+function openAddDonation() {
+  // Reset form
+  document.getElementById('don-add-form').reset();
+  // Default date to today
+  document.getElementById('don-add-date').value = new Date().toISOString().slice(0,10);
+  document.getElementById('don-donor-results').classList.remove('open');
+  document.getElementById('don-modal-overlay').classList.add('open');
+}
+function closeAddDonation() {
+  document.getElementById('don-modal-overlay').classList.remove('open');
+}
+
+let donorSearchTimer;
+function searchDonor(q) {
+  clearTimeout(donorSearchTimer);
+  const res = document.getElementById('don-donor-results');
+  if (q.length < 2) { res.classList.remove('open'); return; }
+  donorSearchTimer = setTimeout(async () => {
+    const data = await fetch('/api/admin/participants/search?q=' + encodeURIComponent(q)).then(r=>r.json());
+    if (!data.length) { res.classList.remove('open'); return; }
+    res.innerHTML = data.map(p =>
+      `<div class="don-donor-result" onclick="selectDonor('${p.name.replace(/'/g,"\\'")}')">` + p.name + '</div>'
+    ).join('');
+    res.classList.add('open');
+  }, 220);
+}
+function selectDonor(name) {
+  document.getElementById('don-add-donor').value = name;
+  document.getElementById('don-donor-results').classList.remove('open');
+}
+// Close donor dropdown when clicking outside
+document.addEventListener('click', e => {
+  if (!e.target.closest('.don-donor-wrap')) {
+    document.getElementById('don-donor-results')?.classList.remove('open');
+  }
+});
+
+async function submitDonation(e) {
+  e.preventDefault();
+  const btn = document.getElementById('don-add-submit');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  const body = {
+    type:           document.getElementById('don-add-type').value,
+    amount:         document.getElementById('don-add-amount').value,
+    full_name:      document.getElementById('don-add-donor').value.trim(),
+    reason:         document.getElementById('don-add-reason').value.trim(),
+    payment_method: document.getElementById('don-add-method').value.trim(),
+    date_paid:      document.getElementById('don-add-date').value
+  };
+  try {
+    const res = await fetch('/api/admin/donations', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Save failed');
+    closeAddDonation();
+    await loadDonations();  // refresh the table
+  } catch(err) {
+    alert('Error: ' + err.message);
+  }
+  btn.disabled = false; btn.textContent = 'Save Donation';
+}
+
 // ── Audit Log ─────────────────────────────────────────────────
 async function loadAuditLog() {
   const r = await fetch('/api/admin/audit');
@@ -1135,6 +1239,7 @@ async function loadAuditLog() {
 
 // ── Version Changelog ─────────────────────────────────────────
 const CHANGELOG = [
+  { v:'1.6.0', date:'2026-05-22', items:['Add Donation form — type picklist, donor search, free-type reason with common suggestions, payment method, date'] },
   { v:'1.5.0', date:'2026-05-22', items:['Full invoices view — all columns matching old system','Donations filter tabs by type (Donation, Bereavement, Gift, Tithe, etc.)','Live search on invoices and donations','Audit log — track all edits and deletes','Version changelog added to settings'] },
   { v:'1.4.0', date:'2026-05-22', items:['Fix participants .in() URL limit — now loads full encounter history','Fix gender query: W not F for women','Fix status code: A=Active, C=Closed','Fix apostrophe in Men\'s title'] },
   { v:'1.3.0', date:'2026-05-22', items:['Full participant list with encounter history','View / Edit / Delete participants','3-tab edit form: General, Encounters, Invoices'] },
@@ -1282,5 +1387,100 @@ function nav(key,btn){
 // Load dashboard on start
 loadDashboard();
 </script>
+
+<!-- ══ Add Donation Modal ══ -->
+<div class="don-modal-overlay" id="don-modal-overlay" onclick="if(event.target===this)closeAddDonation()">
+  <div class="don-modal">
+    <div class="don-modal-head">
+      <div class="don-modal-title">Add <em>Donation</em></div>
+      <button class="don-modal-close" onclick="closeAddDonation()">✕</button>
+    </div>
+    <form id="don-add-form" onsubmit="submitDonation(event)">
+      <div class="don-form-grid">
+
+        <!-- Type -->
+        <div class="don-field">
+          <label>Type</label>
+          <select id="don-add-type" required>
+            <option value="">— Select type —</option>
+            <option value="T">One-Time Tithe</option>
+            <option value="DT">Donation - Tithe</option>
+            <option value="D">Donation</option>
+            <option value="G">One-Time Gift</option>
+            <option value="DY">Donation - Ministry</option>
+            <option value="DW">Donation - Weekend</option>
+            <option value="DS">Donation - Special</option>
+            <option value="DB">Donation - Bereavement Fund</option>
+            <option value="DO">Donation - Other</option>
+          </select>
+        </div>
+
+        <!-- Amount -->
+        <div class="don-field">
+          <label>Amount</label>
+          <div class="amount-wrap">
+            <input type="number" id="don-add-amount" min="0.01" step="0.01" placeholder="0.00" required>
+          </div>
+        </div>
+
+        <!-- Donor -->
+        <div class="don-field full">
+          <label>Donor Name</label>
+          <div class="don-donor-wrap">
+            <input type="text" id="don-add-donor" placeholder="Search participant or type name…" autocomplete="off" oninput="searchDonor(this.value)" required>
+            <div class="don-donor-results" id="don-donor-results"></div>
+          </div>
+        </div>
+
+        <!-- Reason -->
+        <div class="don-field full">
+          <label>Reason <span style="font-weight:400;opacity:.5;font-size:.55rem;letter-spacing:.05em">(select common or type your own)</span></label>
+          <input type="text" id="don-add-reason" list="don-reason-list" placeholder="e.g. Monthly Tithe, Memorial Gift for…">
+          <datalist id="don-reason-list">
+            <option value="Monthly Tithe">
+            <option value="Weekly Tithe">
+            <option value="Annual Tithe">
+            <option value="General Donation">
+            <option value="Weekend Support">
+            <option value="Ministry Support">
+            <option value="Bereavement Fund">
+            <option value="Memorial Gift">
+            <option value="Special Offering">
+            <option value="Building Fund">
+            <option value="Missions Support">
+            <option value="One-Time Gift">
+          </datalist>
+        </div>
+
+        <!-- Payment Method -->
+        <div class="don-field">
+          <label>Payment Method</label>
+          <input type="text" id="don-add-method" list="don-method-list" placeholder="Cash, Check, Venmo…">
+          <datalist id="don-method-list">
+            <option value="Cash">
+            <option value="Check">
+            <option value="Venmo">
+            <option value="Zelle">
+            <option value="Credit Card">
+            <option value="Online">
+            <option value="PayPal">
+            <option value="Other">
+          </datalist>
+        </div>
+
+        <!-- Date -->
+        <div class="don-field">
+          <label>Date</label>
+          <input type="date" id="don-add-date">
+        </div>
+
+      </div>
+      <div class="don-modal-footer">
+        <button type="button" class="btn-sm" style="background:var(--bg);color:var(--body);border:1.5px solid var(--border)" onclick="closeAddDonation()">Cancel</button>
+        <button type="submit" class="btn-sm" id="don-add-submit">Save Donation</button>
+      </div>
+    </form>
+  </div>
+</div>
 </body>
 </html>

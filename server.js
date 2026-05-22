@@ -320,6 +320,41 @@ app.get('/api/admin/donations/types', requireAdmin, async (req, res) => {
   res.json(Object.entries(counts).map(([code,count]) => ({ code, label: DONATION_TYPES[code]||code, count })).sort((a,b)=>b.count-a.count));
 });
 
+app.post('/api/admin/donations', requireAdmin, async (req, res) => {
+  const { type, amount, full_name, reason, payment_method, date_paid } = req.body;
+  if (!type || !amount || !full_name) return res.status(400).json({ error: 'type, amount, and full_name are required' });
+  const user = req.session?.adminUser;
+  const now = new Date().toISOString();
+  const { data, error } = await supabase.from('donations').insert({
+    type,
+    amount: parseFloat(amount),
+    full_name: full_name.trim(),
+    reason: (reason || '').trim(),
+    payment_method: (payment_method || '').trim(),
+    date_paid: date_paid ? new Date(date_paid).toISOString() : now,
+    date_created: now,
+    date_modified: now,
+    user_created: user?.user_id || 0,
+    user_modified: user?.user_id || 0
+  }).select().single();
+  if (error) return res.status(500).json({ error: error.message });
+  await logAudit(req, 'CREATE', 'donations', data.donation_id, `${DONATION_TYPES[type]||type} — $${parseFloat(amount).toFixed(2)} from ${full_name}`);
+  res.json(data);
+});
+
+// Participant name search for donor autocomplete
+app.get('/api/admin/participants/search', requireAdmin, async (req, res) => {
+  const q = (req.query.q || '').trim();
+  if (q.length < 2) return res.json([]);
+  const { data, error } = await supabase
+    .from('participants')
+    .select('participant_id,first_name,last_name')
+    .or(`first_name.ilike.%${q}%,last_name.ilike.%${q}%`)
+    .limit(10);
+  if (error) return res.status(500).json({ error: error.message });
+  res.json((data||[]).map(p => ({ id: p.participant_id, name: `${p.first_name} ${p.last_name}`.trim() })));
+});
+
 // ── Testimonies ──────────────────────────────────────────────
 app.get('/api/admin/testimonies', requireAdmin, async (req, res) => {
   const { data, error } = await supabase
