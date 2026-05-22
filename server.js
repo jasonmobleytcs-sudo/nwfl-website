@@ -243,10 +243,52 @@ app.delete('/api/admin/participants/:id', requireAdmin, async (req, res) => {
 
 // ── Encounters ───────────────────────────────────────────────
 app.get('/api/admin/encounters', requireAdmin, async (req, res) => {
-  const { data, error } = await supabase
-    .from('encounters').select('*').order('start_date', { ascending: false });
+  const [{ data: encs, error }, { data: peList }] = await Promise.all([
+    supabase.from('encounters').select('*').order('start_date', { ascending: false }),
+    supabase.from('participants_encounters').select('encounter_id,type')
+  ]);
   if (error) return res.status(500).json({ error: error.message });
-  res.json(data || []);
+  // Attach participant/server counts
+  const counts = {};
+  for (const pe of (peList || [])) {
+    if (!counts[pe.encounter_id]) counts[pe.encounter_id] = { participants: 0, servers: 0 };
+    if (pe.type === 'PART') counts[pe.encounter_id].participants++;
+    else counts[pe.encounter_id].servers++;
+  }
+  res.json((encs || []).map(e => ({
+    ...e,
+    participant_count: (counts[e.encounter_id] || {}).participants || 0,
+    server_count:      (counts[e.encounter_id] || {}).servers || 0
+  })));
+});
+
+app.delete('/api/admin/donations/:id', requireAdmin, async (req, res) => {
+  const { data: existing } = await supabase.from('donations').select('*').eq('donation_id', req.params.id).single();
+  const { error } = await supabase.from('donations').delete().eq('donation_id', req.params.id);
+  if (error) return res.status(500).json({ error: error.message });
+  if (existing) await logAudit(req, 'DELETE', 'donations', req.params.id,
+    `${existing.full_name} — $${parseFloat(existing.amount).toFixed(2)} (${existing.type})`);
+  res.json({ ok: true });
+});
+
+app.patch('/api/admin/donations/:id', requireAdmin, async (req, res) => {
+  const { type, amount, full_name, reason, payment_method, date_paid } = req.body;
+  const user = req.session?.adminUser;
+  const updates = {
+    ...(type           && { type }),
+    ...(amount         && { amount: parseFloat(amount) }),
+    ...(full_name      && { full_name: full_name.trim() }),
+    reason:         (reason || '').trim(),
+    payment_method: (payment_method || '').trim(),
+    ...(date_paid      && { date_paid: new Date(date_paid).toISOString() }),
+    date_modified:  new Date().toISOString(),
+    user_modified:  user?.user_id || 0
+  };
+  const { data, error } = await supabase.from('donations').update(updates).eq('donation_id', req.params.id).select().single();
+  if (error) return res.status(500).json({ error: error.message });
+  await logAudit(req, 'UPDATE', 'donations', req.params.id,
+    `${data.full_name} — $${parseFloat(data.amount).toFixed(2)} (${data.type})`);
+  res.json(data);
 });
 
 // ── Unpaid invoices ──────────────────────────────────────────

@@ -744,8 +744,8 @@ tfoot td.total-r{color:var(--danger)}
           <span id="don-count" style="font-size:.65rem;color:var(--body);opacity:.6"></span>
         </div>
         <div style="overflow-x:auto"><table class="ptable">
-          <thead><tr><th>Date</th><th>Amount</th><th>Reason</th><th>Donor</th><th>Type</th><th>Method</th></tr></thead>
-          <tbody id="don-tbody"><tr><td colspan="6" style="padding:2rem;text-align:center;opacity:.4">Loading…</td></tr></tbody>
+          <thead><tr><th>Date</th><th>Amount</th><th>Reason</th><th>Donor</th><th>Type</th><th>Method</th><th></th></tr></thead>
+          <tbody id="don-tbody"><tr><td colspan="7" style="padding:2rem;text-align:center;opacity:.4">Loading…</td></tr></tbody>
         </table></div>
       </div>
     </div>
@@ -766,18 +766,32 @@ tfoot td.total-r{color:var(--danger)}
     <div class="section" id="s-encounters">
       <div class="section-header">
         <div class="section-title">Encounter <em>List</em></div>
-        <button class="btn-sm">+ New Encounter</button>
+        <div style="display:flex;align-items:center;gap:1rem">
+          <span id="enc-count-badge" style="font-size:.72rem;color:var(--teal);font-weight:600"></span>
+          <button class="btn-sm">+ New Encounter</button>
+        </div>
       </div>
       <div class="card">
-        <table>
-          <thead><tr><th>Name</th><th>Date</th><th>Type</th><th>Location</th><th>Participants</th><th>Servers</th><th>Status</th><th>Actions</th></tr></thead>
-          <tbody>
-            <tr><td class="name">Men's Encounter</td><td>Apr 24–26, 2026</td><td><span class="badge badge-men">Men's</span></td><td>Blue Lake, FL</td><td class="num">16</td><td class="num">36</td><td><span class="badge badge-completed">Completed</span></td><td><div class="actions"><button class="btn-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div></td></tr>
-            <tr><td class="name">Women's Encounter</td><td>Apr 24–26, 2026</td><td><span class="badge badge-women">Women's</span></td><td>Blue Lake, FL</td><td class="num">27</td><td class="num">37</td><td><span class="badge badge-completed">Completed</span></td><td><div class="actions"><button class="btn-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div></td></tr>
-            <tr><td class="name">Women's Encounter</td><td>Nov 2025</td><td><span class="badge badge-women">Women's</span></td><td>Blue Lake, FL</td><td class="num">28</td><td class="num">44</td><td><span class="badge badge-completed">Completed</span></td><td><div class="actions"><button class="btn-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div></td></tr>
-            <tr><td class="name">Men's Encounter</td><td>Nov 2025</td><td><span class="badge badge-men">Men's</span></td><td>Blue Lake, FL</td><td class="num">11</td><td class="num">40</td><td><span class="badge badge-completed">Completed</span></td><td><div class="actions"><button class="btn-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div></td></tr>
-          </tbody>
-        </table>
+        <div class="table-toolbar">
+          <div class="search-box"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input id="enc-search" type="text" placeholder="Search by name, location, or status…" oninput="filterEncounters()"></div>
+          <div style="display:flex;gap:.5rem;align-items:center">
+            <select id="enc-status-filter" onchange="filterEncounters()" style="font-family:var(--ff-b);font-size:.7rem;padding:.35rem .7rem;border-radius:8px;border:1.5px solid var(--border);background:#fff;color:var(--ink)">
+              <option value="">All Statuses</option>
+              <option value="N">New / Upcoming</option>
+              <option value="AC">Active</option>
+              <option value="C">Completed</option>
+            </select>
+            <select id="enc-type-filter" onchange="filterEncounters()" style="font-family:var(--ff-b);font-size:.7rem;padding:.35rem .7rem;border-radius:8px;border:1.5px solid var(--border);background:#fff;color:var(--ink)">
+              <option value="">All Types</option>
+              <option value="M">Men's</option>
+              <option value="W">Women's</option>
+            </select>
+          </div>
+        </div>
+        <div style="overflow-x:auto"><table class="ptable">
+          <thead><tr><th>Name</th><th>Start Date</th><th>End Date</th><th>Type</th><th>Location</th><th class="num">Part.</th><th class="num">Servers</th><th>Max Part.</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="enc-tbody"><tr><td colspan="10" style="padding:2rem;text-align:center;opacity:.4">Loading…</td></tr></tbody>
+        </table></div>
       </div>
     </div>
 
@@ -1152,21 +1166,53 @@ function renderDonations(data) {
     + '<td class="name">' + (d.full_name||'—') + '</td>'
     + '<td><span class="badge badge-men" style="font-size:.52rem">' + (d.type_label||d.type) + '</span></td>'
     + '<td style="font-size:.78rem">' + (d.payment_method||'—') + '</td>'
+    + '<td><div class="actions">'
+    + '<button class="btn-icon" title="Edit" onclick="editDonation(' + d.donation_id + ')">'
+    + '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>'
+    + '<button class="btn-icon del" title="Delete" onclick="deleteDonation(' + d.donation_id + ',\'' + (d.full_name||'').replace(/'/g,"\\'") + '\')">'
+    + '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>'
+    + '</div></td>'
     + '</tr>'
-  ).join('') : '<tr><td colspan="6" style="padding:2rem;text-align:center;opacity:.4">No donations found</td></tr>';
+  ).join('') : '<tr><td colspan="7" style="padding:2rem;text-align:center;opacity:.4">No donations found</td></tr>';
 }
 
-// ── Add Donation ──────────────────────────────────────────────
+// ── Add / Edit Donation ───────────────────────────────────────
+let editingDonationId = null;
+
 function openAddDonation() {
-  // Reset form
+  editingDonationId = null;
   document.getElementById('don-add-form').reset();
-  // Default date to today
   document.getElementById('don-add-date').value = new Date().toISOString().slice(0,10);
   document.getElementById('don-donor-results').classList.remove('open');
+  document.querySelector('.don-modal-title').innerHTML = 'Add <em>Donation</em>';
+  document.getElementById('don-add-submit').textContent = 'Save Donation';
   document.getElementById('don-modal-overlay').classList.add('open');
 }
 function closeAddDonation() {
   document.getElementById('don-modal-overlay').classList.remove('open');
+  editingDonationId = null;
+}
+function editDonation(id) {
+  const d = allDonations.find(x => x.donation_id === id);
+  if (!d) return;
+  editingDonationId = id;
+  document.querySelector('.don-modal-title').innerHTML = 'Edit <em>Donation</em>';
+  document.getElementById('don-add-submit').textContent = 'Update Donation';
+  document.getElementById('don-add-type').value   = d.type || '';
+  document.getElementById('don-add-amount').value = d.amount || '';
+  document.getElementById('don-add-donor').value  = d.full_name || '';
+  document.getElementById('don-add-reason').value = d.reason || '';
+  document.getElementById('don-add-method').value = d.payment_method || '';
+  const dp = d.date_paid ? d.date_paid.slice(0,10) : new Date().toISOString().slice(0,10);
+  document.getElementById('don-add-date').value   = dp;
+  document.getElementById('don-donor-results').classList.remove('open');
+  document.getElementById('don-modal-overlay').classList.add('open');
+}
+async function deleteDonation(id, name) {
+  if (!confirm('Delete donation from ' + name + '? This cannot be undone.')) return;
+  const res = await fetch('/api/admin/donations/' + id, { method:'DELETE' });
+  if (!res.ok) { const d = await res.json(); alert('Error: ' + d.error); return; }
+  await loadDonations();
 }
 
 let donorSearchTimer;
@@ -1187,7 +1233,6 @@ function selectDonor(name) {
   document.getElementById('don-add-donor').value = name;
   document.getElementById('don-donor-results').classList.remove('open');
 }
-// Close donor dropdown when clicking outside
 document.addEventListener('click', e => {
   if (!e.target.closest('.don-donor-wrap')) {
     document.getElementById('don-donor-results')?.classList.remove('open');
@@ -1207,15 +1252,61 @@ async function submitDonation(e) {
     date_paid:      document.getElementById('don-add-date').value
   };
   try {
-    const res = await fetch('/api/admin/donations', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    const url    = editingDonationId ? '/api/admin/donations/' + editingDonationId : '/api/admin/donations';
+    const method = editingDonationId ? 'PATCH' : 'POST';
+    const res = await fetch(url, { method, headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Save failed');
     closeAddDonation();
-    await loadDonations();  // refresh the table
+    await loadDonations();
   } catch(err) {
     alert('Error: ' + err.message);
   }
-  btn.disabled = false; btn.textContent = 'Save Donation';
+  btn.disabled = false;
+  btn.textContent = editingDonationId ? 'Update Donation' : 'Save Donation';
+}
+
+// ── Encounters ────────────────────────────────────────────────
+let allEncounters = [];
+async function loadEncounters() {
+  document.getElementById('enc-tbody').innerHTML = '<tr><td colspan="10" style="padding:2rem;text-align:center;opacity:.4">Loading…</td></tr>';
+  const r = await fetch('/api/admin/encounters');
+  allEncounters = await r.json();
+  filterEncounters();
+}
+function filterEncounters() {
+  const q      = (document.getElementById('enc-search').value || '').toLowerCase();
+  const status = document.getElementById('enc-status-filter').value;
+  const type   = document.getElementById('enc-type-filter').value;
+  let data = allEncounters;
+  if (q)      data = data.filter(e => (e.short_name||'').toLowerCase().includes(q) || (e.city||'').toLowerCase().includes(q) || (e.encounter_location||'').toLowerCase().includes(q));
+  if (status) data = data.filter(e => e.status_code === status);
+  if (type)   data = data.filter(e => e.type === type);
+  renderEncounters(data);
+}
+function renderEncounters(data) {
+  document.getElementById('enc-count-badge').textContent = data.length + ' encounter' + (data.length===1?'':'s');
+  const STATUS_LABEL = { N:'New', AC:'Active', C:'Completed', '':'—' };
+  const STATUS_CLASS = { N:'badge-partial', AC:'badge-paid', C:'badge-completed', '':'' };
+  document.getElementById('enc-tbody').innerHTML = data.length ? data.map(e => {
+    const loc   = [e.city, e.state].filter(Boolean).join(', ') || e.encounter_location || '—';
+    const start = e.start_date ? new Date(e.start_date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—';
+    const end   = e.end_date   ? new Date(e.end_date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})   : '—';
+    const sc    = e.status_code || '';
+    const maxP  = e.max_participants > 0 ? e.max_participants : 'Unlimited';
+    return '<tr>'
+      + '<td class="name">' + (e.short_name||'—') + '</td>'
+      + '<td style="white-space:nowrap;font-size:.78rem">' + start + '</td>'
+      + '<td style="white-space:nowrap;font-size:.78rem">' + end + '</td>'
+      + '<td><span class="badge ' + (e.type==='W'?'badge-women':'badge-men') + '">' + (e.type==='W'?"Women's":"Men's") + '</span></td>'
+      + '<td style="font-size:.78rem">' + loc + '</td>'
+      + '<td class="num">' + (e.participant_count||0) + '</td>'
+      + '<td class="num">' + (e.server_count||0) + '</td>'
+      + '<td style="font-size:.78rem;text-align:center">' + maxP + '</td>'
+      + '<td><span class="badge ' + (STATUS_CLASS[sc]||'') + '">' + (STATUS_LABEL[sc]||sc||'—') + '</span></td>'
+      + '<td><div class="actions"><button class="btn-icon" title="View"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div></td>'
+      + '</tr>';
+  }).join('') : '<tr><td colspan="10" style="padding:2rem;text-align:center;opacity:.4">No encounters found</td></tr>';
 }
 
 // ── Audit Log ─────────────────────────────────────────────────
@@ -1239,6 +1330,7 @@ async function loadAuditLog() {
 
 // ── Version Changelog ─────────────────────────────────────────
 const CHANGELOG = [
+  { v:'1.7.0', date:'2026-05-22', items:['Encounter List — live data from DB, all encounters shown, search + type/status filters, real participant & server counts','Donations — edit and delete per row'] },
   { v:'1.6.0', date:'2026-05-22', items:['Add Donation form — type picklist, donor search, free-type reason with common suggestions, payment method, date'] },
   { v:'1.5.0', date:'2026-05-22', items:['Full invoices view — all columns matching old system','Donations filter tabs by type (Donation, Bereavement, Gift, Tithe, etc.)','Live search on invoices and donations','Audit log — track all edits and deletes','Version changelog added to settings'] },
   { v:'1.4.0', date:'2026-05-22', items:['Fix participants .in() URL limit — now loads full encounter history','Fix gender query: W not F for women','Fix status code: A=Active, C=Closed','Fix apostrophe in Men\'s title'] },
@@ -1381,6 +1473,7 @@ function nav(key,btn){
   if(key==='women') loadParticipants('F');
   if(key==='invoices') loadInvoices();
   if(key==='donations') loadDonations();
+  if(key==='encounters') loadEncounters();
   if(key==='audit') loadAuditLog();
   if(key==='settings') loadChangelog();
 }
