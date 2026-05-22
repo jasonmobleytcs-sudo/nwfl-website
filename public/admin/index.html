@@ -771,26 +771,65 @@ async function loadDashboard(){
     <div class="stat-card"><div class="stat-icon red"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></div><div class="stat-body"><div class="stat-n">${fmt$(stats.total_unpaid)}</div><div class="stat-l">Unpaid Balance</div></div></div>
     <div class="stat-card"><div class="stat-icon gold"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div><div class="stat-body"><div class="stat-n">${stats.total_encounters}</div><div class="stat-l">Encounters</div></div></div>`;
 
-  // Active encounters table
-  const activeRows=active.length?active.map(e=>`
-    <tr><td class="name">${e.short_name}</td>
-    <td class="num">${e.p_paid_count}</td><td class="amount">${fmt$(e.p_paid_amt)}</td>
-    <td class="num-red">${e.p_unpaid_count}</td><td class="unpaid">${fmt$(e.p_unpaid_amt)}</td>
-    <td class="num">${e.s_paid_count}</td><td class="amount">${fmt$(e.s_paid_amt)}</td>
-    <td class="num-red">${e.s_unpaid_count}</td><td class="unpaid">${fmt$(e.s_unpaid_amt)}</td><td></td></tr>`).join('')
-    :`<tr><td colspan="10" style="padding:2rem;text-align:center;color:var(--body);opacity:.4;font-size:.78rem">No active encounters</td></tr>`;
-  document.getElementById('s-dashboard').querySelectorAll('.card')[0].querySelector('tbody').innerHTML=activeRows;
+  // ── Active encounters table ──
+  const activeRows = active.length ? active.map(e=>`
+    <tr>
+      <td class="name">${e.short_name}</td>
+      <td class="num">${e.p_paid_count}</td><td class="amount">${fmt$(e.p_paid_amt)}</td>
+      <td class="num-red">${e.p_unpaid_count}</td><td class="unpaid">${fmt$(e.p_unpaid_amt)}</td>
+      <td class="num">${e.s_paid_count}</td><td class="amount">${fmt$(e.s_paid_amt)}</td>
+      <td class="num-red">${e.s_unpaid_count}</td><td class="unpaid">${fmt$(e.s_unpaid_amt)}</td>
+      <td></td>
+    </tr>`).join('')
+    : `<tr><td colspan="10" style="padding:2rem;text-align:center;color:var(--body);opacity:.4;font-size:.78rem">No active encounters at this time</td></tr>`;
 
-  // Completed with unpaid
-  const compRows=completed.length?completed.map(e=>`
-    <tr><td class="name">${e.short_name}</td>
-    <td class="num">${e.p_paid_count}</td><td class="amount">${fmt$(e.p_paid_amt)}</td>
-    <td class="num-red">${e.p_unpaid_count}</td><td class="unpaid">${fmt$(e.p_unpaid_amt)}</td>
-    <td class="num">${e.s_paid_count}</td><td class="amount">${fmt$(e.s_paid_amt)}</td>
-    <td class="num-red">${e.s_unpaid_count}</td><td class="unpaid">${fmt$(e.s_unpaid_amt)}</td>
-    <td><div class="actions"><button class="btn-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div></td></tr>`).join('')
-    :`<tr><td colspan="10" style="padding:2rem;text-align:center;color:var(--body);opacity:.4;font-size:.78rem">No unpaid balances</td></tr>`;
-  document.getElementById('s-dashboard').querySelectorAll('.card')[1].querySelector('tbody').innerHTML=compRows;
+  const aTotals = active.reduce((t,e)=>({
+    pc:t.pc+e.p_paid_count, pa:t.pa+e.p_paid_amt,
+    pu:t.pu+e.p_unpaid_count, pua:t.pua+e.p_unpaid_amt,
+    sc:t.sc+e.s_paid_count, sa:t.sa+e.s_paid_amt,
+    su:t.su+e.s_unpaid_count, sua:t.sua+e.s_unpaid_amt
+  }),{pc:0,pa:0,pu:0,pua:0,sc:0,sa:0,su:0,sua:0});
+
+  document.getElementById('s-dashboard').querySelectorAll('.card')[0].querySelector('tbody').innerHTML = activeRows;
+  document.getElementById('s-dashboard').querySelectorAll('.card')[0].querySelector('tfoot').innerHTML = `
+    <tr>
+      <td class="name">TOTALS</td>
+      <td class="total-n">${aTotals.pc}</td><td>${fmt$(aTotals.pa)}</td>
+      <td class="total-r">${aTotals.pu}</td><td class="total-r">${fmt$(aTotals.pua)}</td>
+      <td class="total-n">${aTotals.sc}</td><td>${fmt$(aTotals.sa)}</td>
+      <td class="total-r">${aTotals.su}</td><td class="total-r">${fmt$(aTotals.sua)}</td>
+      <td></td>
+    </tr>`;
+
+  // ── Completed encounters with unpaid balances ──
+  const compRows = completed.length ? completed.map(e=>`
+    <tr>
+      <td class="name">${e.short_name}</td>
+      <td class="num">${e.p_paid_count}</td><td class="amount">${fmt$(e.p_paid_amt)}</td>
+      <td class="num-red">${e.p_unpaid_count}</td><td class="unpaid">${fmt$(e.p_unpaid_amt)}</td>
+      <td class="num">${e.s_paid_count}</td><td class="amount">${fmt$(e.s_paid_amt)}</td>
+      <td class="num-red">${e.s_unpaid_count}</td><td class="unpaid">${fmt$(e.s_unpaid_amt)}</td>
+      <td><div class="actions"><button class="btn-icon" title="View"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div></td>
+    </tr>`).join('')
+    : `<tr><td colspan="10" style="padding:2rem;text-align:center;color:var(--body);opacity:.4;font-size:.78rem">No unpaid balances</td></tr>`;
+
+  const cTotals = completed.reduce((t,e)=>({
+    pc:t.pc+e.p_paid_count, pa:t.pa+e.p_paid_amt,
+    pu:t.pu+e.p_unpaid_count, pua:t.pua+e.p_unpaid_amt,
+    sc:t.sc+e.s_paid_count, sa:t.sa+e.s_paid_amt,
+    su:t.su+e.s_unpaid_count, sua:t.sua+e.s_unpaid_amt
+  }),{pc:0,pa:0,pu:0,pua:0,sc:0,sa:0,su:0,sua:0});
+
+  document.getElementById('s-dashboard').querySelectorAll('.card')[1].querySelector('tbody').innerHTML = compRows;
+  document.getElementById('s-dashboard').querySelectorAll('.card')[1].querySelector('tfoot').innerHTML = `
+    <tr>
+      <td class="name">TOTALS</td>
+      <td class="total-n">${cTotals.pc}</td><td class="amount">${fmt$(cTotals.pa)}</td>
+      <td class="total-r">${cTotals.pu}</td><td class="total-r">${fmt$(cTotals.pua)}</td>
+      <td class="total-n">${cTotals.sc}</td><td class="amount">${fmt$(cTotals.sa)}</td>
+      <td class="total-r">${cTotals.su}</td><td class="total-r">${fmt$(cTotals.sua)}</td>
+      <td></td>
+    </tr>`;
 }
 
 // ── Load Testimonies ─────────────────────────────────────────

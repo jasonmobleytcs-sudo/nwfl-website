@@ -75,15 +75,24 @@ app.get('/api/admin/me', (req, res) => {
 // ── Dashboard ────────────────────────────────────────────────
 app.get('/api/admin/dashboard', requireAdmin, async (req, res) => {
   try {
-    const { data: encounters } = await supabase
-      .from('encounters')
-      .select('encounter_id,short_name,type,status_code,start_date,end_date')
-      .order('start_date', { ascending: false });
+    // Separate queries — no FK constraints so no embedded joins
+    const [{ data: encounters }, { data: peList }, { data: invoices }] = await Promise.all([
+      supabase.from('encounters')
+        .select('encounter_id,short_name,type,status_code,start_date,end_date')
+        .order('start_date', { ascending: false }),
+      supabase.from('participants_encounters')
+        .select('participants_encounter_id,encounter_id,type'),
+      supabase.from('invoices')
+        .select('invoice_id,participants_encounter_id,status_code,payments_amount,total_amount')
+    ]);
 
-    const { data: peData } = await supabase
-      .from('participants_encounters')
-      .select('participants_encounter_id,encounter_id,type,invoices(invoice_id,status_code,payments_amount,total_amount)');
+    // Invoice lookup by participants_encounter_id
+    const invMap = {};
+    for (const inv of (invoices || [])) {
+      invMap[inv.participants_encounter_id] = inv;
+    }
 
+    // Build encounter aggregation map
     const map = {};
     for (const e of (encounters || [])) {
       map[e.encounter_id] = { ...e,
@@ -91,26 +100,30 @@ app.get('/api/admin/dashboard', requireAdmin, async (req, res) => {
         s_paid_count:0, s_paid_amt:0, s_unpaid_count:0, s_unpaid_amt:0 };
     }
 
-    for (const pe of (peData || [])) {
+    for (const pe of (peList || [])) {
       const enc = map[pe.encounter_id];
       if (!enc) continue;
-      const inv    = Array.isArray(pe.invoices) ? pe.invoices[0] : pe.invoices;
-      const total  = parseFloat(inv?.total_amount || 0);
+      const inv    = invMap[pe.participants_encounter_id];
+      const total  = parseFloat(inv?.total_amount  || 0);
       const paid   = parseFloat(inv?.payments_amount || 0);
-      const bal    = total - paid;
-      const isPart = /part|participant/i.test(pe.type || '');
+      const bal    = parseFloat((total - paid).toFixed(2));
+      const isPart = pe.type === 'PART';
+
       if (isPart) {
-        if (bal <= 0) { enc.p_paid_count++;   enc.p_paid_amt   += paid; }
-        else          { enc.p_unpaid_count++; enc.p_unpaid_amt += bal;  }
+        if (bal <= 0.01) { enc.p_paid_count++;   enc.p_paid_amt   += paid; }
+        else             { enc.p_unpaid_count++; enc.p_unpaid_amt += bal;  }
       } else {
-        if (bal <= 0) { enc.s_paid_count++;   enc.s_paid_amt   += paid; }
-        else          { enc.s_unpaid_count++; enc.s_unpaid_amt += bal;  }
+        if (bal <= 0.01) { enc.s_paid_count++;   enc.s_paid_amt   += paid; }
+        else             { enc.s_unpaid_count++; enc.s_unpaid_amt += bal;  }
       }
     }
 
-    const all       = Object.values(map);
+    const all = Object.values(map);
+    // AC = actively running, C = completed, N = upcoming/new
     const active    = all.filter(e => e.status_code === 'AC');
-    const completed = all.filter(e => e.status_code !== 'AC' && (e.p_unpaid_count > 0 || e.s_unpaid_count > 0));
+    const completed = all.filter(e => e.status_code === 'C' &&
+      (e.p_unpaid_count > 0 || e.s_unpaid_count > 0));
+
     const stats = {
       total_participants: all.reduce((s,e) => s + e.p_paid_count + e.p_unpaid_count, 0),
       total_collected:    all.reduce((s,e) => s + e.p_paid_amt + e.s_paid_amt, 0).toFixed(2),
