@@ -26,8 +26,10 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_KEY  // service role — bypasses RLS
 );
 
-// Tables to migrate (in dependency order)
-const TABLE_ORDER = [
+// Tables to migrate — put incomplete ones first, skip already-complete ones
+// Run with: node scripts/migrate-to-supabase.js --all  to migrate everything
+// Default: only re-run tables that had issues
+const ALL_TABLES = [
   'countries', 'states', 'groups', 'permissions', 'groups_permissions',
   'users', 'settings', 'settings_positions', 'settings_sessions',
   'products', 'encounters', 'encounters_positions', 'encounters_sessions',
@@ -37,6 +39,8 @@ const TABLE_ORDER = [
   'events', 'events_registrations', 'fellowships',
   'freedom_affiliates', 'freedom_profiles', 'sms_messages'
 ];
+const INCOMPLETE_TABLES = ['participants', 'participants_encounters'];
+const TABLE_ORDER = process.argv.includes('--all') ? ALL_TABLES : INCOMPLETE_TABLES;
 
 // MySQL column name → PostgreSQL column name overrides
 const COLUMN_OVERRIDES = {
@@ -47,23 +51,33 @@ const COLUMN_OVERRIDES = {
 
 function parseInsertStatements(sql, tableName) {
   const rows = [];
-  // Match: INSERT INTO `tableName` VALUES (...),(...),...;
-  // or:    INSERT INTO `tableName` (`col`,...) VALUES (...);
-  const tableEscaped = tableName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const insertReg = new RegExp(
-    `INSERT INTO \`${tableEscaped}\`(?:\\s*\\([^)]+\\))?\\s+VALUES\\s*([\\s\\S]*?);`,
-    'g'
-  );
+  const searchStr = `INSERT INTO \`${tableName}\``;
+  let pos = 0;
 
-  let match;
-  while ((match = insertReg.exec(sql)) !== null) {
-    const valueBlock = match[1].trim();
-    // Split individual row tuples
+  while ((pos = sql.indexOf(searchStr, pos)) !== -1) {
+    // Find VALUES keyword after the table name
+    const valuesPos = sql.indexOf('VALUES', pos + searchStr.length);
+    if (valuesPos === -1) { pos++; continue; }
+
+    // Scan forward from VALUES to find the real end-of-statement semicolon
+    // (ignoring semicolons inside quoted strings)
+    let i = valuesPos + 6;
+    let inStr = false, escape = false;
+    while (i < sql.length) {
+      const ch = sql[i];
+      if (escape)            { escape = false; i++; continue; }
+      if (ch === '\\')       { escape = true;  i++; continue; }
+      if (ch === "'")        { inStr = !inStr;  i++; continue; }
+      if (!inStr && ch === ';') break;
+      i++;
+    }
+
+    const valueBlock = sql.slice(valuesPos + 6, i).trim();
     const tuples = splitTuples(valueBlock);
     for (const tuple of tuples) {
-      const values = parseTuple(tuple);
-      rows.push(values);
+      rows.push(parseTuple(tuple));
     }
+    pos = i + 1;
   }
   return rows;
 }

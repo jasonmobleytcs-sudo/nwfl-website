@@ -140,7 +140,9 @@ app.get('/api/admin/participants', requireAdmin, async (req, res) => {
   let q = supabase.from('participants')
     .select('participant_id,first_name,last_name,city,state,postal,email,phone,status_code,gender,birth_date,date_created')
     .order('last_name').limit(1000);
-  if (gender) q = q.eq('gender', gender);
+  // MySQL stored 'M'=men, 'W'=women (not 'F')
+  const genderVal = gender === 'F' ? 'W' : gender;
+  if (genderVal) q = q.eq('gender', genderVal);
   if (search) q = q.or(`first_name.ilike.%${search}%,last_name.ilike.%${search}%,email.ilike.%${search}%,city.ilike.%${search}%`);
   const { data: participants, error } = await q;
   if (error) return res.status(500).json({ error: error.message });
