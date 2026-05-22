@@ -46,9 +46,10 @@ app.post('/api/admin/login', async (req, res) => {
   if (!users || !users.length) return res.status(401).json({ error: 'Invalid credentials' });
   const user = users[0];
 
-  // Old system stored MD5 passwords — support both MD5 and plain
-  const md5 = crypto.createHash('md5').update(password).digest('hex');
-  if (password !== user.password && md5 !== user.password) {
+  // Old system stored SHA1 passwords
+  const sha1 = crypto.createHash('sha1').update(password).digest('hex');
+  const md5  = crypto.createHash('md5').update(password).digest('hex');
+  if (password !== user.password && sha1 !== user.password && md5 !== user.password) {
     return res.status(401).json({ error: 'Invalid credentials' });
   }
 
