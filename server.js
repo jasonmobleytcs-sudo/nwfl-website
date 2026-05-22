@@ -149,21 +149,22 @@ app.get('/api/admin/participants', requireAdmin, async (req, res) => {
 
   if (!participants?.length) return res.json([]);
 
-  // Get encounter history for these participants
-  const ids = participants.map(p => p.participant_id);
+  // Fetch ALL PE and encounters then join in Node (avoids .in() URL length limits)
   const [{ data: peData }, { data: encounters }] = await Promise.all([
     supabase.from('participants_encounters')
-      .select('participants_encounter_id,participant_id,encounter_id,type,attended,status_code')
-      .in('participant_id', ids),
+      .select('participants_encounter_id,participant_id,encounter_id,type,attended,status_code'),
     supabase.from('encounters')
       .select('encounter_id,short_name,start_date,type')
   ]);
+  // Build participant ID set for fast lookup
+  const partSet = new Set(participants.map(p => p.participant_id));
 
   const encMap = {};
   for (const e of (encounters || [])) encMap[e.encounter_id] = e;
 
   const peByPart = {};
   for (const pe of (peData || [])) {
+    if (!partSet.has(pe.participant_id)) continue;
     if (!peByPart[pe.participant_id]) peByPart[pe.participant_id] = [];
     peByPart[pe.participant_id].push({ ...pe, encounter: encMap[pe.encounter_id] });
   }
@@ -227,6 +228,8 @@ app.put('/api/admin/participants/:id', requireAdmin, async (req, res) => {
   updates.date_modified = new Date().toISOString();
   const { error } = await supabase.from('participants').update(updates).eq('participant_id', req.params.id);
   if (error) return res.status(500).json({ error: error.message });
+  const b = req.body;
+  await logAudit(req,'UPDATE','participants',parseInt(req.params.id),`Updated ${b.first_name||''} ${b.last_name||''}`.trim());
   res.json({ ok: true });
 });
 
@@ -234,6 +237,7 @@ app.put('/api/admin/participants/:id', requireAdmin, async (req, res) => {
 app.delete('/api/admin/participants/:id', requireAdmin, async (req, res) => {
   const { error } = await supabase.from('participants').delete().eq('participant_id', req.params.id);
   if (error) return res.status(500).json({ error: error.message });
+  await logAudit(req,'DELETE','participants',parseInt(req.params.id),`Deleted participant #${req.params.id}`);
   res.json({ ok: true });
 });
 
@@ -247,23 +251,73 @@ app.get('/api/admin/encounters', requireAdmin, async (req, res) => {
 
 // ── Unpaid invoices ──────────────────────────────────────────
 app.get('/api/admin/invoices/unpaid', requireAdmin, async (req, res) => {
-  const { data, error } = await supabase
+  const { search } = req.query;
+  const { data: invs, error } = await supabase
     .from('invoices')
-    .select('invoice_id,status_code,total_amount,payments_amount,invoice_date,billing_first_name,billing_last_name,participants_encounters(type,first_name,last_name,city,state,email,encounters(short_name,start_date))')
-    .neq('status_code','P')
+    .select('invoice_id,status_code,total_amount,payments_amount,encounters_amount,products_amount,fees_amount,invoice_date,payment_method,billing_first_name,billing_last_name,billing_address1,billing_city,billing_state,billing_postal,participants_encounter_id')
     .order('invoice_date', { ascending: false })
-    .limit(300);
+    .limit(500);
   if (error) return res.status(500).json({ error: error.message });
-  const unpaid = (data||[]).filter(i => parseFloat(i.total_amount) - parseFloat(i.payments_amount) > 0.01);
+
+  // Filter to unpaid only
+  let unpaid = (invs||[]).filter(i => parseFloat(i.total_amount) - parseFloat(i.payments_amount) > 0.01);
+
+  // Join PE + encounters
+  const peIds = [...new Set(unpaid.map(i => i.participants_encounter_id).filter(Boolean))];
+  let peMap = {}, encMap = {};
+  if (peIds.length) {
+    const { data: pes } = await supabase.from('participants_encounters')
+      .select('participants_encounter_id,encounter_id,first_name,last_name,type')
+      .in('participants_encounter_id', peIds);
+    const encIds = [...new Set((pes||[]).map(pe=>pe.encounter_id))];
+    const { data: encs } = await supabase.from('encounters')
+      .select('encounter_id,short_name').in('encounter_id', encIds);
+    for (const pe of (pes||[])) peMap[pe.participants_encounter_id] = pe;
+    for (const e of (encs||[])) encMap[e.encounter_id] = e;
+  }
+
+  unpaid = unpaid.map(inv => ({
+    ...inv,
+    pe: peMap[inv.participants_encounter_id] || null,
+    encounter: encMap[peMap[inv.participants_encounter_id]?.encounter_id] || null,
+    balance: parseFloat(inv.total_amount) - parseFloat(inv.payments_amount)
+  }));
+
+  if (search) {
+    const s = search.toLowerCase();
+    unpaid = unpaid.filter(i =>
+      (i.billing_first_name+' '+i.billing_last_name).toLowerCase().includes(s) ||
+      (i.encounter?.short_name||'').toLowerCase().includes(s) ||
+      (i.billing_address1||'').toLowerCase().includes(s)
+    );
+  }
   res.json(unpaid);
 });
 
-// ── Donations ────────────────────────────────────────────────
+// ── Donations type map ───────────────────────────────────────
+const DONATION_TYPES = {
+  D:'Donation', DB:'Donation - Bereavement Fund', DO:'Donation - Other',
+  G:'One-Time Gift', T:'One-Time Tithe', DT:'Donation - Tithe',
+  DY:'Donation - Ministry', DS:'Donation - Special', DW:'Donation - Weekend'
+};
 app.get('/api/admin/donations', requireAdmin, async (req, res) => {
-  const { data, error } = await supabase
-    .from('donations').select('*').order('date_paid', { ascending: false }).limit(200);
+  const { type, search } = req.query;
+  let q = supabase.from('donations').select('*').order('date_paid', { ascending: false }).limit(500);
+  if (type) q = q.eq('type', type);
+  const { data, error } = await q;
   if (error) return res.status(500).json({ error: error.message });
-  res.json(data || []);
+  let rows = (data||[]).map(d => ({ ...d, type_label: DONATION_TYPES[d.type] || d.type }));
+  if (search) {
+    const s = search.toLowerCase();
+    rows = rows.filter(d => (d.full_name||'').toLowerCase().includes(s) || (d.reason||'').toLowerCase().includes(s));
+  }
+  res.json(rows);
+});
+app.get('/api/admin/donations/types', requireAdmin, async (req, res) => {
+  const { data } = await supabase.from('donations').select('type');
+  const counts = {};
+  for (const r of (data||[])) counts[r.type] = (counts[r.type]||0)+1;
+  res.json(Object.entries(counts).map(([code,count]) => ({ code, label: DONATION_TYPES[code]||code, count })).sort((a,b)=>b.count-a.count));
 });
 
 // ── Testimonies ──────────────────────────────────────────────
@@ -292,6 +346,25 @@ app.patch('/api/admin/checkin/:pe_id', requireAdmin, async (req, res) => {
     .eq('participants_encounter_id', req.params.pe_id);
   if (error) return res.status(500).json({ error: error.message });
   res.json({ ok: true });
+});
+
+// ── Audit log ────────────────────────────────────────────────
+async function logAudit(req, action, tableName, recordId, summary) {
+  const user = req.session?.adminUser;
+  await supabase.from('audit_log').insert({
+    user_id: user?.user_id || 0,
+    username: user?.username || 'unknown',
+    action, table_name: tableName,
+    record_id: recordId || null,
+    summary: summary || null,
+    ip_address: req.ip || req.connection?.remoteAddress || null
+  });
+}
+app.get('/api/admin/audit', requireAdmin, async (req, res) => {
+  const { data, error } = await supabase.from('audit_log')
+    .select('*').order('created_at', { ascending: false }).limit(200);
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data || []);
 });
 
 // ── Catch-all ─────────────────────────────────────────────────

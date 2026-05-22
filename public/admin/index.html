@@ -357,6 +357,10 @@ tfoot td.total-r{color:var(--danger)}
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
         Reports
       </button>
+      <button class="sb-sub-item" onclick="nav('audit',this)">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        Audit Log
+      </button>
       <button class="sb-sub-item" onclick="nav('settings',this)">
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
         Settings
@@ -537,7 +541,7 @@ tfoot td.total-r{color:var(--danger)}
     <!-- ══ MEN PARTICIPANTS ══ -->
     <div class="section" id="s-men">
       <div class="section-header">
-        <div class="section-title">Men\'s <em>Participants</em></div>
+        <div class="section-title">Men's <em>Participants</em></div>
         <button class="btn-sm" onclick="nav(\'register\',null)">+ Register</button>
       </div>
       <div class="card">
@@ -555,7 +559,7 @@ tfoot td.total-r{color:var(--danger)}
     <!-- ══ WOMEN PARTICIPANTS ══ -->
     <div class="section" id="s-women">
       <div class="section-header">
-        <div class="section-title">Women\'s <em>Participants</em></div>
+        <div class="section-title">Women's <em>Participants</em></div>
         <button class="btn-sm" onclick="nav(\'register\',null)">+ Register</button>
       </div>
       <div class="card">
@@ -667,20 +671,17 @@ tfoot td.total-r{color:var(--danger)}
     <div class="section" id="s-invoices">
       <div class="section-header">
         <div class="section-title">Unpaid <em>Invoices</em></div>
-        <span style="font-size:.72rem;color:var(--danger);font-weight:600">34 open · $5,555 total</span>
+        <span id="inv-total-badge" style="font-size:.72rem;color:var(--danger);font-weight:600"></span>
       </div>
       <div class="card">
         <div class="table-toolbar">
-          <div class="search-box"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input type="text" placeholder="Search invoices…"></div>
-          <button class="btn-sm outline">Export</button>
+          <div class="search-box"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input id="inv-search" type="text" placeholder="Search by name, encounter, address…" oninput="filterInvoices()"></div>
+          <span id="inv-count" style="font-size:.65rem;color:var(--body);opacity:.6"></span>
         </div>
-        <table>
-          <thead><tr><th>Name</th><th>Location</th><th>Encounter</th><th>Type</th><th>Amount Due</th><th>Days Overdue</th><th>Actions</th></tr></thead>
-          <tbody>
-            <tr><td class="name">Josh Tillman</td><td>Baker, FL</td><td>Men's — Jan 2014</td><td><span class="badge badge-men">Participant</span></td><td class="unpaid">$40</td><td style="color:var(--danger)">4,133 days</td><td><div class="actions"><button class="btn-sm gold" style="font-size:.55rem;padding:.3rem .7rem">Mark Paid</button></div></td></tr>
-            <tr><td class="name">Erika Yant Richards</td><td>Santa Rosa Beach, FL</td><td>Women's — Oct 2016</td><td><span class="badge badge-women">Participant</span></td><td class="unpaid">$80</td><td style="color:var(--danger)">2,756 days</td><td><div class="actions"><button class="btn-sm gold" style="font-size:.55rem;padding:.3rem .7rem">Mark Paid</button></div></td></tr>
-          </tbody>
-        </table>
+        <div style="overflow-x:auto"><table class="ptable">
+          <thead><tr><th>Inv Date</th><th>Encounter Name</th><th>Billing Name</th><th>Billing Address</th><th>Pmt Type</th><th>Enc Amt</th><th>Prods Amt</th><th>Fee Amt</th><th>Pmts Amt</th><th>Total Amt</th><th>Balance</th><th>Actions</th></tr></thead>
+          <tbody id="inv-tbody"><tr><td colspan="12" style="padding:2rem;text-align:center;opacity:.4">Loading…</td></tr></tbody>
+        </table></div>
       </div>
     </div>
 
@@ -688,20 +689,22 @@ tfoot td.total-r{color:var(--danger)}
     <div class="section" id="s-donations">
       <div class="section-header">
         <div class="section-title">Donation <em>Records</em></div>
-        <button class="btn-sm">+ Add Donation</button>
+        <span id="don-total-badge" style="font-size:.72rem;color:var(--teal);font-weight:600"></span>
       </div>
       <div class="card">
-        <div class="table-toolbar">
-          <div class="search-box"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input type="text" placeholder="Search donations…"></div>
-          <button class="btn-sm outline">Export</button>
+        <!-- Type filter tabs -->
+        <div style="display:flex;gap:0;border-bottom:2px solid var(--border);padding:0 1rem;flex-wrap:wrap">
+          <button class="edit-tab active" id="don-tab-all" onclick="filterDonations(null,this)">All Types</button>
+          <span id="don-type-tabs"></span>
         </div>
-        <table>
-          <thead><tr><th>Donor</th><th>Date</th><th>Amount</th><th>Type</th><th>Method</th><th>Notes</th></tr></thead>
-          <tbody>
-            <tr><td class="name">Anonymous</td><td>Apr 15, 2026</td><td class="amount">$100</td><td>Donation</td><td>Card</td><td>—</td></tr>
-            <tr><td class="name">General Fund</td><td>Apr 10, 2026</td><td class="amount">$50</td><td>One-Time Gift</td><td>Cash</td><td>In memory of</td></tr>
-          </tbody>
-        </table>
+        <div class="table-toolbar" style="margin-top:0;border-top:none">
+          <div class="search-box"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input id="don-search" type="text" placeholder="Search by name or reason…" oninput="filterDonations(currentDonType,null,true)"></div>
+          <span id="don-count" style="font-size:.65rem;color:var(--body);opacity:.6"></span>
+        </div>
+        <div style="overflow-x:auto"><table class="ptable">
+          <thead><tr><th>Date</th><th>Amount</th><th>Reason</th><th>Donor</th><th>Type</th><th>Method</th></tr></thead>
+          <tbody id="don-tbody"><tr><td colspan="6" style="padding:2rem;text-align:center;opacity:.4">Loading…</td></tr></tbody>
+        </table></div>
       </div>
     </div>
 
@@ -809,6 +812,17 @@ tfoot td.total-r{color:var(--danger)}
       </div>
     </div>
 
+    <!-- ══ AUDIT LOG ══ -->
+    <div class="section" id="s-audit">
+      <div class="section-header">
+        <div class="section-title">Audit <em>Log</em></div>
+        <span style="font-size:.65rem;color:var(--body);opacity:.6">All admin actions tracked here</span>
+      </div>
+      <div class="card">
+        <div id="audit-log-content" style="padding:1rem"><div style="padding:2rem;text-align:center;opacity:.4">Loading…</div></div>
+      </div>
+    </div>
+
     <!-- ══ SETTINGS ══ -->
     <div class="section" id="s-settings">
       <div class="section-header"><div class="section-title">System <em>Settings</em></div></div>
@@ -822,6 +836,11 @@ tfoot td.total-r{color:var(--danger)}
         <div class="settings-row"><div><div class="settings-info">Default Participant Fee</div><div class="settings-sub">Currently set to $160.00</div></div><button class="btn-sm outline">Edit</button></div>
         <div class="settings-row"><div><div class="settings-info">Default Server Fee</div><div class="settings-sub">Currently set to $100.00</div></div><button class="btn-sm outline">Edit</button></div>
       </div>
+      <div class="card settings-section">
+        <div class="settings-label">Version History</div>
+        <div id="changelog-content" style="padding:1.2rem"></div>
+      </div>
+
       <div class="card settings-section">
         <div class="settings-label">Notifications</div>
         <div class="settings-row"><div><div class="settings-info">Email on new registration</div><div class="settings-sub">Send email when a new participant registers</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
@@ -871,7 +890,7 @@ function renderParticipants(gender,data){
   if(!data.length){tbody.innerHTML='<tr><td colspan="5" style="padding:2rem;text-align:center;opacity:.4">No participants found</td></tr>';return;}
   const iStyle='width:100%;padding:.65rem .9rem;border-radius:8px;border:1.5px solid rgba(42,127,193,.18);background:#FAFBFD;font-family:var(--ff-b);font-size:.85rem;color:var(--ink);outline:none;box-sizing:border-box';
   tbody.innerHTML=data.map(p=>{
-    const statusBadge=p.status_code==='AC'?'<span class="p-status-badge p-status-active">Active</span>':'<span class="p-status-badge p-status-inactive">Inactive</span>';
+    const statusBadge=p.status_code==='A'?'<span class="p-status-badge p-status-active">Active</span>':'<span class="p-status-badge p-status-inactive">Inactive</span>';
     const addrParts=[p.address1,[p.city,p.state].filter(Boolean).join(', '),p.postal].filter(Boolean);
     const addrHtml='<div style="font-size:.78rem;color:var(--body);line-height:1.6">'+addrParts.join('<br>')+'</div>';
     const encHtml=(p.encounters||[]).length?p.encounters.map(e=>{
@@ -919,7 +938,7 @@ async function viewParticipant(id,gender){
     +'<div class="p-detail-contact">'+(p.email||'')+'<br>'+(p.phone||'')+'</div>'
     +'</div><button class="btn-sm" onclick="editParticipant('+id+',\''+gender+'\')">Edit Participant</button></div>'
     +'<div class="p-detail-grid">'
-    +[['Status',p.status_code==='AC'?'Active':'Inactive'],['Username',p.username||'—'],
+    +[['Status',p.status_code==='A'?'Active':'Inactive'],['Username',p.username||'—'],
       ['Emergency Contact',p.emergency_name||'—'],['Emergency Relation',p.emergency_relation||'—'],
       ['Emergency Phone',p.emergency_phone||'—'],['Marital Status',mstatus[p.marital_status]||p.marital_status||'—'],
       ['Birth Date',p.birth_date&&p.birth_date!=='1970-01-01'?fmtDate(p.birth_date):'—'],
@@ -1001,6 +1020,140 @@ function switchEditTab(btn,tabId){
   btn.classList.add('active');
   document.querySelectorAll('.edit-tab-content').forEach(t=>t.classList.remove('active'));
   document.getElementById(tabId).classList.add('active');
+}
+
+// ── Invoices ─────────────────────────────────────────────────
+let allInvoices = [];
+async function loadInvoices() {
+  document.getElementById('inv-tbody').innerHTML = '<tr><td colspan="12" style="padding:2rem;text-align:center;opacity:.4">Loading…</td></tr>';
+  const r = await fetch('/api/admin/invoices/unpaid');
+  allInvoices = await r.json();
+  renderInvoices(allInvoices);
+}
+function renderInvoices(data) {
+  const total = data.reduce((s,i) => s + (i.balance||0), 0);
+  document.getElementById('inv-total-badge').textContent = data.length + ' open · ' + fmt$(total);
+  document.getElementById('inv-count').textContent = data.length + ' invoices';
+  const pmtIcon = m => m==='CASH'?'💵':m==='CHECK'?'📝':'💳';
+  document.getElementById('inv-tbody').innerHTML = data.length ? data.map(inv => {
+    const name = (inv.billing_first_name||'') + ' ' + (inv.billing_last_name||'');
+    const addr = [inv.billing_address1, inv.billing_city, inv.billing_state, inv.billing_postal].filter(Boolean).join(', ');
+    return '<tr>'
+      + '<td style="white-space:nowrap">' + fmtDate(inv.invoice_date) + '</td>'
+      + '<td class="name">' + (inv.encounter?.short_name||'—') + '</td>'
+      + '<td class="name">' + name.trim() + '</td>'
+      + '<td style="font-size:.75rem;color:var(--body)">' + addr + '</td>'
+      + '<td style="text-align:center;font-size:1.1rem">' + pmtIcon(inv.payment_method) + '</td>'
+      + '<td class="amount">' + fmt$(inv.encounters_amount) + '</td>'
+      + '<td>' + fmt$(inv.products_amount) + '</td>'
+      + '<td>' + fmt$(inv.fees_amount) + '</td>'
+      + '<td class="amount">' + fmt$(inv.payments_amount) + '</td>'
+      + '<td style="font-weight:600">' + fmt$(inv.total_amount) + '</td>'
+      + '<td class="unpaid" style="font-weight:700">' + fmt$(inv.balance) + '</td>'
+      + '<td><button class="btn-sm gold" style="font-size:.54rem;padding:.25rem .65rem" onclick="markInvoicePaid('+inv.invoice_id+')">Mark Paid</button></td>'
+      + '</tr>';
+  }).join('') : '<tr><td colspan="12" style="padding:2rem;text-align:center;opacity:.4">No unpaid invoices</td></tr>';
+}
+function filterInvoices() {
+  const q = document.getElementById('inv-search').value.toLowerCase();
+  if (!q) { renderInvoices(allInvoices); return; }
+  const f = allInvoices.filter(i =>
+    ((i.billing_first_name||'')+(i.billing_last_name||'')).toLowerCase().includes(q) ||
+    (i.encounter?.short_name||'').toLowerCase().includes(q) ||
+    (i.billing_address1||'').toLowerCase().includes(q) ||
+    (i.billing_city||'').toLowerCase().includes(q)
+  );
+  renderInvoices(f);
+}
+async function markInvoicePaid(id) {
+  if (!confirm('Mark invoice #'+id+' as paid?')) return;
+  alert('Invoice marking — coming soon');
+}
+
+// ── Donations ─────────────────────────────────────────────────
+let allDonations = [], currentDonType = null;
+async function loadDonations() {
+  document.getElementById('don-tbody').innerHTML = '<tr><td colspan="6" style="padding:2rem;text-align:center;opacity:.4">Loading…</td></tr>';
+  const [rDons, rTypes] = await Promise.all([
+    fetch('/api/admin/donations'),
+    fetch('/api/admin/donations/types')
+  ]);
+  allDonations = await rDons.json();
+  const types = await rTypes.json();
+  // Build type filter tabs
+  document.getElementById('don-type-tabs').innerHTML = types.map(t =>
+    '<button class="edit-tab" onclick="filterDonations(''+t.code+'',this)">'+t.label+' <span style="opacity:.5;font-size:.55rem">('+t.count+')</span></button>'
+  ).join('');
+  renderDonations(allDonations);
+}
+function filterDonations(typeCode, btn, searchOnly) {
+  if (!searchOnly) {
+    currentDonType = typeCode;
+    document.querySelectorAll('#s-donations .edit-tab').forEach(t => t.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    else document.getElementById('don-tab-all').classList.add('active');
+  }
+  const q = document.getElementById('don-search').value.toLowerCase();
+  let data = currentDonType ? allDonations.filter(d => d.type === currentDonType) : allDonations;
+  if (q) data = data.filter(d => (d.full_name||'').toLowerCase().includes(q) || (d.reason||'').toLowerCase().includes(q));
+  renderDonations(data);
+}
+function renderDonations(data) {
+  const total = data.reduce((s,d) => s + parseFloat(d.amount||0), 0);
+  document.getElementById('don-total-badge').textContent = data.length + ' records · ' + fmt$(total);
+  document.getElementById('don-count').textContent = data.length + ' donations';
+  document.getElementById('don-tbody').innerHTML = data.length ? data.map(d =>
+    '<tr>'
+    + '<td style="white-space:nowrap">' + fmtDate(d.date_paid) + '</td>'
+    + '<td class="amount">' + fmt$(d.amount) + '</td>'
+    + '<td style="font-size:.78rem;color:var(--body)">' + (d.reason||'—') + '</td>'
+    + '<td class="name">' + (d.full_name||'—') + '</td>'
+    + '<td><span class="badge badge-men" style="font-size:.52rem">' + (d.type_label||d.type) + '</span></td>'
+    + '<td style="font-size:.78rem">' + (d.payment_method||'—') + '</td>'
+    + '</tr>'
+  ).join('') : '<tr><td colspan="6" style="padding:2rem;text-align:center;opacity:.4">No donations found</td></tr>';
+}
+
+// ── Audit Log ─────────────────────────────────────────────────
+async function loadAuditLog() {
+  const r = await fetch('/api/admin/audit');
+  const data = await r.json();
+  const cont = document.getElementById('audit-log-content');
+  if (!cont) return;
+  cont.innerHTML = data.length ? '<table class="ptable"><thead><tr><th>Date/Time</th><th>User</th><th>Action</th><th>Table</th><th>Record</th><th>Summary</th></tr></thead><tbody>'
+    + data.map(a => '<tr>'
+      + '<td style="white-space:nowrap;font-size:.72rem">' + new Date(a.created_at).toLocaleString() + '</td>'
+      + '<td class="name">' + (a.username||'—') + '</td>'
+      + '<td><span class="badge ' + (a.action==='DELETE'?'badge-unpaid':a.action==='UPDATE'?'badge-partial':'badge-paid') + '">' + a.action + '</span></td>'
+      + '<td style="font-size:.72rem">' + (a.table_name||'—') + '</td>'
+      + '<td style="font-size:.72rem">#' + (a.record_id||'—') + '</td>'
+      + '<td style="font-size:.75rem;color:var(--body)">' + (a.summary||'—') + '</td>'
+      + '</tr>').join('')
+    + '</tbody></table>'
+    : '<div style="padding:2rem;text-align:center;opacity:.4">No audit entries yet</div>';
+}
+
+// ── Version Changelog ─────────────────────────────────────────
+const CHANGELOG = [
+  { v:'1.5.0', date:'2026-05-22', items:['Full invoices view — all columns matching old system','Donations filter tabs by type (Donation, Bereavement, Gift, Tithe, etc.)','Live search on invoices and donations','Audit log — track all edits and deletes','Version changelog added to settings'] },
+  { v:'1.4.0', date:'2026-05-22', items:['Fix participants .in() URL limit — now loads full encounter history','Fix gender query: W not F for women','Fix status code: A=Active, C=Closed','Fix apostrophe in Men\'s title'] },
+  { v:'1.3.0', date:'2026-05-22', items:['Full participant list with encounter history','View / Edit / Delete participants','3-tab edit form: General, Encounters, Invoices'] },
+  { v:'1.2.0', date:'2026-05-21', items:['Dashboard live data from Supabase','Separate queries fix (no FK constraints)','Correct PART/SRVR type mapping','Status C=completed, N=upcoming'] },
+  { v:'1.1.0', date:'2026-05-21', items:['MySQL → Supabase migration (13,609 rows)','Fixed zero-date handling','Fixed SHA1 password auth'] },
+  { v:'1.0.0', date:'2026-05-20', items:['Admin portal launched','Login page, dashboard, all sections','Supabase project created'] }
+];
+function loadChangelog() {
+  const cont = document.getElementById('changelog-content');
+  if (!cont) return;
+  cont.innerHTML = CHANGELOG.map(r =>
+    '<div style="margin-bottom:1.5rem">'
+    + '<div style="display:flex;align-items:center;gap:1rem;margin-bottom:.6rem">'
+    + '<span class="badge badge-active" style="font-size:.7rem">v'+r.v+'</span>'
+    + '<span style="font-size:.7rem;color:var(--body);opacity:.6">'+r.date+'</span></div>'
+    + '<ul style="list-style:none;display:flex;flex-direction:column;gap:.3rem">'
+    + r.items.map(i => '<li style="font-size:.8rem;color:var(--body);display:flex;align-items:flex-start;gap:.5rem"><span style="color:var(--teal);flex-shrink:0">✓</span>'+i+'</li>').join('')
+    + '</ul></div>'
+  ).join('');
 }
 
 // ── Load Dashboard ───────────────────────────────────────────
@@ -1101,7 +1254,7 @@ document.querySelector('.sb-logout').addEventListener('click', async e=>{
 });
 
 const sections={
-  dashboard:'s-dashboard',men:'s-men',women:'s-women','participant-detail':'s-participant-detail','participant-edit':'s-participant-edit',register:'s-register',
+  dashboard:'s-dashboard',men:'s-men',women:'s-women','participant-detail':'s-participant-detail','participant-edit':'s-participant-edit',register:'s-register',audit:'s-audit',
   invoices:'s-invoices',donations:'s-donations',balance:'s-balance',
   encounters:'s-encounters',checkin:'s-checkin',testimonies:'s-testimonies',
   documents:'s-documents',reports:'s-reports',settings:'s-settings'
@@ -1121,6 +1274,10 @@ function nav(key,btn){
   if(key==='testimonies') loadTestimonies();
   if(key==='men') loadParticipants('M');
   if(key==='women') loadParticipants('F');
+  if(key==='invoices') loadInvoices();
+  if(key==='donations') loadDonations();
+  if(key==='audit') loadAuditLog();
+  if(key==='settings') loadChangelog();
 }
 // Load dashboard on start
 loadDashboard();
