@@ -428,14 +428,15 @@ app.patch('/api/admin/checkin/:pe_id', requireAdmin, async (req, res) => {
 // ── Audit log ────────────────────────────────────────────────
 async function logAudit(req, action, tableName, recordId, summary) {
   const user = req.session?.adminUser;
-  await supabase.from('audit_log').insert({
+  const { error } = await supabase.from('audit_log').insert({
     user_id: user?.user_id || 0,
     username: user?.username || 'unknown',
     action, table_name: tableName,
-    record_id: recordId || null,
+    record_id: recordId ? String(recordId) : null,
     summary: summary || null,
     ip_address: req.ip || req.connection?.remoteAddress || null
   });
+  if (error) console.error('[audit]', error.message);
 }
 app.get('/api/admin/audit', requireAdmin, async (req, res) => {
   const { data, error } = await supabase.from('audit_log')
