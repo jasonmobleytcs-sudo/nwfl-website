@@ -169,6 +169,44 @@ tfoot td.total-r{color:var(--danger)}
 .btn-sm.gold{border-color:var(--gold);background:var(--gold)}
 .btn-sm.gold:hover{background:var(--gold2)}
 
+/* PARTICIPANT LIST */
+.ptable{width:100%;border-collapse:collapse;font-size:.8rem}
+.ptable th{padding:.7rem 1rem;text-align:left;font-size:.56rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--body);border-bottom:2px solid var(--border);background:#FAFBFD;white-space:nowrap}
+.ptable td{padding:.85rem 1rem;border-bottom:1px solid rgba(42,127,193,.06);vertical-align:top}
+.ptable tr:hover td{background:rgba(42,127,193,.02)}
+.ptable td:last-child{white-space:nowrap}
+.p-name{font-weight:700;color:var(--ink);font-size:.88rem}
+.p-location{font-size:.78rem;color:var(--body);margin-top:.1rem}
+.p-enc-list{display:flex;flex-direction:column;gap:.2rem}
+.p-enc-item{font-size:.7rem;color:var(--blue)}
+.p-enc-item.did-not{color:var(--body);opacity:.5;text-decoration:line-through}
+.p-status-badge{font-size:.54rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.22rem .65rem;border-radius:50px}
+.p-status-active{background:rgba(44,165,141,.1);color:var(--teal)}
+.p-status-inactive{background:rgba(74,94,112,.1);color:var(--body)}
+/* Participant detail / edit panel */
+.p-panel{background:var(--card);border-radius:14px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,.04);padding:2rem;margin-bottom:1.4rem}
+.p-panel-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.8rem}
+.p-detail-name{font-family:var(--ff-d);font-size:1.9rem;font-weight:300;color:var(--ink)}
+.p-detail-addr{font-size:.82rem;color:var(--body);line-height:1.7;margin-top:.3rem}
+.p-detail-contact{font-size:.82rem;color:var(--blue);margin-top:.4rem;line-height:1.7}
+.p-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;margin-bottom:1.8rem}
+.p-detail-field{display:flex;flex-direction:column;gap:.2rem}
+.p-detail-label{font-size:.56rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--body);opacity:.6}
+.p-detail-value{font-size:.85rem;color:var(--ink);font-weight:500}
+.p-enc-table{width:100%;border-collapse:collapse;font-size:.78rem;margin-top:.8rem}
+.p-enc-table th{padding:.6rem .9rem;text-align:left;font-size:.54rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--body);border-bottom:2px solid var(--border);background:#FAFBFD}
+.p-enc-table td{padding:.75rem .9rem;border-bottom:1px solid rgba(42,127,193,.06);vertical-align:middle}
+.back-link{display:inline-flex;align-items:center;gap:.5rem;font-size:.62rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--blue);cursor:pointer;padding:.4rem .9rem;border-radius:8px;border:1.5px solid rgba(42,127,193,.2);background:none;transition:all .2s;font-family:var(--ff-b)}
+.back-link:hover{background:var(--blue);color:#fff;border-color:var(--blue)}
+/* Edit form tabs */
+.edit-tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:1.8rem}
+.edit-tab{font-size:.62rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;padding:.7rem 1.4rem;cursor:pointer;color:var(--body);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;background:none;border-top:none;border-left:none;border-right:none;font-family:var(--ff-b)}
+.edit-tab.active{color:var(--blue);border-bottom-color:var(--blue)}
+.edit-tab-content{display:none}.edit-tab-content.active{display:block}
+.edit-form-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1.4rem}
+.edit-form-grid .full{grid-column:span 3}
+.edit-form-grid .half{grid-column:span 1}
+
 /* TESTIMONY CARD */
 .testi-grid{display:flex;flex-direction:column;gap:0}
 .testi-row{padding:1.2rem 1.4rem;border-bottom:1px solid rgba(42,127,193,.06);display:grid;grid-template-columns:220px 220px 1fr auto;gap:1rem;align-items:start}
@@ -499,47 +537,100 @@ tfoot td.total-r{color:var(--danger)}
     <!-- ══ MEN PARTICIPANTS ══ -->
     <div class="section" id="s-men">
       <div class="section-header">
-        <div class="section-title">Men's <em>Participants</em></div>
-        <button class="btn-sm">+ Register</button>
+        <div class="section-title">Men\'s <em>Participants</em></div>
+        <button class="btn-sm" onclick="nav(\'register\',null)">+ Register</button>
       </div>
       <div class="card">
         <div class="table-toolbar">
-          <div class="search-box"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input type="text" placeholder="Search participants…"></div>
-          <div style="display:flex;gap:.5rem">
-            <button class="btn-sm outline">Filter by Encounter</button>
-            <button class="btn-sm outline">Export CSV</button>
-          </div>
+          <div class="search-box"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input id="men-search" type="text" placeholder="Search by name, city, email…" oninput="filterParticipants(\'M\')"></div>
+          <span id="men-count" style="font-size:.65rem;color:var(--body);opacity:.6"></span>
         </div>
-        <table>
-          <thead><tr><th>Name</th><th>Location</th><th>Encounter</th><th>Paid</th><th>Balance</th><th>Status</th><th>Actions</th></tr></thead>
-          <tbody>
-            <tr><td class="name">Don Ward</td><td>Baker, FL</td><td>Men's — Jan 2014</td><td class="amount">$160</td><td>$0</td><td><span class="badge badge-paid">✓ Paid</span></td><td><div class="actions"><button class="btn-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button><button class="btn-icon del"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button></div></td></tr>
-            <tr><td class="name">James Davis</td><td>Milton, FL</td><td>Men's — Jan 2014</td><td class="amount">$160</td><td>$0</td><td><span class="badge badge-paid">✓ Paid</span></td><td><div class="actions"><button class="btn-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button><button class="btn-icon del"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button></div></td></tr>
-            <tr><td class="name">Josh Tillman</td><td>Baker, FL</td><td>Men's — Jan 2014</td><td class="amount">$120</td><td class="unpaid">$40</td><td><span class="badge badge-partial">Partial</span></td><td><div class="actions"><button class="btn-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button><button class="btn-icon del"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button></div></td></tr>
-          </tbody>
-        </table>
+        <div style="overflow-x:auto"><table class="ptable">
+          <thead><tr><th>Name</th><th>Status</th><th>Address</th><th>Encounters Attended</th><th>Actions</th></tr></thead>
+          <tbody id="men-tbody"><tr><td colspan="5" style="padding:2rem;text-align:center;opacity:.4">Loading…</td></tr></tbody>
+        </table></div>
       </div>
     </div>
 
     <!-- ══ WOMEN PARTICIPANTS ══ -->
     <div class="section" id="s-women">
       <div class="section-header">
-        <div class="section-title">Women's <em>Participants</em></div>
-        <button class="btn-sm">+ Register</button>
+        <div class="section-title">Women\'s <em>Participants</em></div>
+        <button class="btn-sm" onclick="nav(\'register\',null)">+ Register</button>
       </div>
       <div class="card">
         <div class="table-toolbar">
-          <div class="search-box"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input type="text" placeholder="Search participants…"></div>
-          <button class="btn-sm outline">Export CSV</button>
+          <div class="search-box"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input id="women-search" type="text" placeholder="Search by name, city, email…" oninput="filterParticipants(\'F\')"></div>
+          <span id="women-count" style="font-size:.65rem;color:var(--body);opacity:.6"></span>
         </div>
-        <table>
-          <thead><tr><th>Name</th><th>Location</th><th>Encounter</th><th>Paid</th><th>Balance</th><th>Status</th><th>Actions</th></tr></thead>
-          <tbody>
-            <tr><td class="name">Bridget Lusk</td><td>Baker, FL</td><td>Women's — Feb 2015</td><td class="amount">$160</td><td>$0</td><td><span class="badge badge-paid">✓ Paid</span></td><td><div class="actions"><button class="btn-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button></div></td></tr>
-            <tr><td class="name">Brooklyn Clifton</td><td>Crestview, FL</td><td>Women's — Oct 2015</td><td class="amount">$160</td><td>$0</td><td><span class="badge badge-paid">✓ Paid</span></td><td><div class="actions"><button class="btn-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button></div></td></tr>
-            <tr><td class="name">Erika Yant Richards</td><td>Santa Rosa Beach, FL</td><td>Women's — Oct 2016</td><td class="amount">$80</td><td class="unpaid">$80</td><td><span class="badge badge-unpaid">Unpaid</span></td><td><div class="actions"><button class="btn-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button></div></td></tr>
-          </tbody>
-        </table>
+        <div style="overflow-x:auto"><table class="ptable">
+          <thead><tr><th>Name</th><th>Status</th><th>Address</th><th>Encounters Attended</th><th>Actions</th></tr></thead>
+          <tbody id="women-tbody"><tr><td colspan="5" style="padding:2rem;text-align:center;opacity:.4">Loading…</td></tr></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- ══ PARTICIPANT DETAIL ══ -->
+    <div class="section" id="s-participant-detail">
+      <div class="section-header">
+        <div class="section-title">View <em>Participant</em></div>
+        <button class="back-link" onclick="navBack()">&#8592; Back to List</button>
+      </div>
+      <div id="participant-detail-content"><div style="padding:3rem;text-align:center;opacity:.4">Loading…</div></div>
+    </div>
+
+    <!-- ══ PARTICIPANT EDIT ══ -->
+    <div class="section" id="s-participant-edit">
+      <div class="section-header">
+        <div class="section-title">Edit <em>Participant</em></div>
+        <button class="back-link" onclick="navBack()">&#8592; Back</button>
+      </div>
+      <div class="card" style="padding:1.5rem">
+        <div class="edit-tabs">
+          <button class="edit-tab active" onclick="switchEditTab(this,\'tab-general\')">General</button>
+          <button class="edit-tab" onclick="switchEditTab(this,\'tab-encounters\')">Encounters</button>
+          <button class="edit-tab" onclick="switchEditTab(this,\'tab-invoices\')">Invoices</button>
+        </div>
+        <div class="edit-tab-content active" id="tab-general">
+          <form id="edit-form">
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1rem">
+              <div class="field"><label class="type-label">First Name</label><input class="form-input" type="text" name="first_name"></div>
+              <div class="field"><label class="type-label">Last Name</label><input class="form-input" type="text" name="last_name"></div>
+              <div class="field"><label class="type-label">Nick Name</label><input class="form-input" type="text" name="nick_name"></div>
+              <div class="field"><label class="type-label">Status</label><select class="form-input" name="status_code"><option value="AC">Active</option><option value="IN">Inactive</option></select></div>
+              <div class="field"><label class="type-label">Gender</label><select class="form-input" name="gender"><option value="M">Man</option><option value="F">Woman</option></select></div>
+              <div class="field"><label class="type-label">Marital Status</label><select class="form-input" name="marital_status"><option value="M">Married</option><option value="S">Single</option><option value="D">Divorced</option><option value="W">Widowed</option></select></div>
+              <div class="field"><label class="type-label">Address 1</label><input class="form-input" type="text" name="address1"></div>
+              <div class="field"><label class="type-label">Address 2</label><input class="form-input" type="text" name="address2"></div>
+              <div class="field"><label class="type-label">City</label><input class="form-input" type="text" name="city"></div>
+              <div class="field"><label class="type-label">State</label><input class="form-input" type="text" name="state" maxlength="5"></div>
+              <div class="field"><label class="type-label">Postal</label><input class="form-input" type="text" name="postal"></div>
+              <div class="field"><label class="type-label">Country</label><input class="form-input" type="text" name="country"></div>
+              <div class="field"><label class="type-label">Email</label><input class="form-input" type="email" name="email"></div>
+              <div class="field"><label class="type-label">Phone</label><input class="form-input" type="tel" name="phone"></div>
+              <div class="field"><label class="type-label">Birth Date</label><input class="form-input" type="date" name="birth_date"></div>
+              <div class="field"><label class="type-label">Emergency Name</label><input class="form-input" type="text" name="emergency_name"></div>
+              <div class="field"><label class="type-label">Emergency Relation</label><input class="form-input" type="text" name="emergency_relation"></div>
+              <div class="field"><label class="type-label">Emergency Phone</label><input class="form-input" type="tel" name="emergency_phone"></div>
+              <div class="field"><label class="type-label">Who Referred You</label><input class="form-input" type="text" name="referred_by"></div>
+              <div class="field"><label class="type-label">Username</label><input class="form-input" type="text" name="username"></div>
+              <div class="field"><label class="type-label">Shirt Size</label><select class="form-input" name="shirt_size"><option value="">&#8212;</option><option>SM</option><option>MD</option><option>LG</option><option>XL</option><option>2XL</option><option>3XL</option></select></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.4rem">
+              <div class="field"><label class="type-label">Special Personal Needs</label><textarea class="form-input" name="special_personal_needs" rows="3" style="resize:vertical"></textarea></div>
+              <div class="field"><label class="type-label">Special Dietary Needs</label><textarea class="form-input" name="special_dietary_needs" rows="3" style="resize:vertical"></textarea></div>
+            </div>
+            <label style="display:flex;align-items:center;gap:.6rem;font-size:.78rem;color:var(--body);margin-bottom:1.4rem;cursor:pointer">
+              <input type="checkbox" name="send_text_messages" value="1"> Send Text Messages
+            </label>
+            <div style="display:flex;gap:.8rem">
+              <button type="submit" class="btn-sm">Save Data</button>
+              <button type="button" class="btn-sm outline" onclick="navBack()">Cancel</button>
+            </div>
+          </form>
+        </div>
+        <div class="edit-tab-content" id="tab-encounters"><div id="edit-encounters-content" style="padding:1rem 0"></div></div>
+        <div class="edit-tab-content" id="tab-invoices"><div id="edit-invoices-content" style="padding:1rem 0"></div></div>
       </div>
     </div>
 
@@ -758,6 +849,160 @@ const $=s=>document.querySelector(s);
 const fmt$=n=>isNaN(n)?'$0.00':'$'+parseFloat(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
 const fmtDate=d=>d&&d!=='1970-01-01T00:00:00Z'?new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';
 
+// ── Participants ─────────────────────────────────────────────
+const pCache={M:null,F:null};
+let lastGender='M', lastParticipantId=null, lastParticipantGender='M';
+
+async function loadParticipants(gender){
+  lastGender=gender;
+  const tbody=document.getElementById(gender==='M'?'men-tbody':'women-tbody');
+  const countEl=document.getElementById(gender==='M'?'men-count':'women-count');
+  tbody.innerHTML='<tr><td colspan="5" style="padding:2rem;text-align:center;opacity:.4">Loading…</td></tr>';
+  const r=await fetch('/api/admin/participants?gender='+gender);
+  if(!r.ok){tbody.innerHTML='<tr><td colspan="5" style="color:var(--danger);padding:2rem;text-align:center">Error loading</td></tr>';return;}
+  const data=await r.json();
+  pCache[gender]=data;
+  renderParticipants(gender,data);
+  countEl.textContent=data.length+' participants';
+}
+
+function renderParticipants(gender,data){
+  const tbody=document.getElementById(gender==='M'?'men-tbody':'women-tbody');
+  if(!data.length){tbody.innerHTML='<tr><td colspan="5" style="padding:2rem;text-align:center;opacity:.4">No participants found</td></tr>';return;}
+  const iStyle='width:100%;padding:.65rem .9rem;border-radius:8px;border:1.5px solid rgba(42,127,193,.18);background:#FAFBFD;font-family:var(--ff-b);font-size:.85rem;color:var(--ink);outline:none;box-sizing:border-box';
+  tbody.innerHTML=data.map(p=>{
+    const statusBadge=p.status_code==='AC'?'<span class="p-status-badge p-status-active">Active</span>':'<span class="p-status-badge p-status-inactive">Inactive</span>';
+    const addrParts=[p.address1,[p.city,p.state].filter(Boolean).join(', '),p.postal].filter(Boolean);
+    const addrHtml='<div style="font-size:.78rem;color:var(--body);line-height:1.6">'+addrParts.join('<br>')+'</div>';
+    const encHtml=(p.encounters||[]).length?p.encounters.map(e=>{
+      const n=e.encounter?.short_name||'Unknown Encounter';
+      const t=e.type==='PART'?'Participant':'Server';
+      const a=e.attended?'Attended':'Did Not Attend';
+      return '<div class="p-enc-item'+(e.attended?'':' did-not')+'">'+n+' as '+t+' &#8212; '+a+'</div>';
+    }).join(''):'<span style="opacity:.35;font-size:.72rem">No encounters on record</span>';
+    return '<tr>'
+      +'<td><div class="p-name">'+p.last_name+', '+p.first_name+'</div><div style="font-size:.72rem;color:var(--body);margin-top:.15rem">'+( p.email||'')+'</div></td>'
+      +'<td>'+statusBadge+'</td>'
+      +'<td>'+addrHtml+'</td>'
+      +'<td><div class="p-enc-list">'+encHtml+'</div></td>'
+      +'<td><div class="actions">'
+        +'<button class="btn-icon" title="View" onclick="viewParticipant('+p.participant_id+',\''+gender+'\')"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>'
+        +'<button class="btn-icon" title="Edit" onclick="editParticipant('+p.participant_id+',\''+gender+'\')"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>'
+        +'<button class="btn-icon del" title="Delete" onclick="deleteParticipant('+p.participant_id+',\''+gender+'\',\''+p.first_name.replace(/'/g,"\\'")+' '+p.last_name.replace(/'/g,"\\'")+'\')" ><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>'
+      +'</div></td></tr>';
+  }).join('');
+}
+
+function filterParticipants(gender){
+  const search=document.getElementById(gender==='M'?'men-search':'women-search').value.toLowerCase().trim();
+  const data=pCache[gender]||[];
+  if(!search){renderParticipants(gender,data);document.getElementById(gender==='M'?'men-count':'women-count').textContent=data.length+' participants';return;}
+  const f=data.filter(p=>(p.first_name+' '+p.last_name+' '+(p.email||'')+' '+(p.city||'')).toLowerCase().includes(search));
+  renderParticipants(gender,f);
+  document.getElementById(gender==='M'?'men-count':'women-count').textContent=f.length+' of '+data.length;
+}
+
+async function viewParticipant(id,gender){
+  lastParticipantId=id;lastParticipantGender=gender;
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s-participant-detail').classList.add('active');
+  document.getElementById('bcTitle').textContent='View Participant';
+  document.getElementById('participant-detail-content').innerHTML='<div style="padding:3rem;text-align:center;opacity:.4">Loading…</div>';
+  const r=await fetch('/api/admin/participants/'+id);
+  const p=await r.json();
+  const mstatus={M:'Married',S:'Single',D:'Divorced',W:'Widowed'};
+  document.getElementById('participant-detail-content').innerHTML=
+    '<div class="p-panel">'
+    +'<div class="p-panel-header"><div>'
+    +'<div class="p-detail-name">'+p.first_name+' '+p.last_name+'</div>'
+    +'<div class="p-detail-addr">'+[p.address1,[p.city,p.state].filter(Boolean).join(', '),p.postal].filter(Boolean).join('<br>')+'</div>'
+    +'<div class="p-detail-contact">'+(p.email||'')+'<br>'+(p.phone||'')+'</div>'
+    +'</div><button class="btn-sm" onclick="editParticipant('+id+',\''+gender+'\')">Edit Participant</button></div>'
+    +'<div class="p-detail-grid">'
+    +[['Status',p.status_code==='AC'?'Active':'Inactive'],['Username',p.username||'—'],
+      ['Emergency Contact',p.emergency_name||'—'],['Emergency Relation',p.emergency_relation||'—'],
+      ['Emergency Phone',p.emergency_phone||'—'],['Marital Status',mstatus[p.marital_status]||p.marital_status||'—'],
+      ['Birth Date',p.birth_date&&p.birth_date!=='1970-01-01'?fmtDate(p.birth_date):'—'],
+      ['Referred By',p.referred_by||'—'],
+      ['Special Personal Needs',p.special_personal_needs||'—'],
+      ['Special Dietary Needs',p.special_dietary_needs||'—']
+    ].map(([l,v])=>'<div class="p-detail-field"><div class="p-detail-label">'+l+'</div><div class="p-detail-value">'+v+'</div></div>').join('')
+    +'</div>'
+    +'<div class="card-head" style="margin-top:1rem"><div class="card-title">Encounters</div><span style="font-size:.65rem;color:var(--body);font-style:italic">Hover row for details</span></div>'
+    +'<table class="p-enc-table"><thead><tr><th>Status</th><th>Type</th><th>Encounter Name</th><th>Location</th><th>Starts</th><th>Ends</th></tr></thead><tbody>'
+    +(p.encounter_history||[]).map(h=>{
+      const inv=h.invoice;
+      const paid=parseFloat(inv?.payments_amount||0),total=parseFloat(inv?.total_amount||0),bal=total-paid;
+      const statusCell=bal<=0.01?'<span class="badge badge-paid">Paid '+fmt$(paid)+'</span>':'<span class="badge badge-partial">Paid '+fmt$(paid)+' / Owed '+fmt$(bal)+'</span>';
+      const type=h.type==='PART'?'Participant':'Server';
+      const enc=h.encounter;
+      return '<tr><td>'+statusCell+'</td><td>'+type+'</td><td>'+(enc?.short_name||'—')+'</td><td>'+(enc?.encounter_location||'—')+'</td>'
+        +'<td>'+(enc?.start_date?new Date(enc.start_date).toLocaleString():'—')+'</td><td>'+(enc?.end_date?new Date(enc.end_date).toLocaleString():'—')+'</td></tr>';
+    }).join('')||'<tr><td colspan="6" style="padding:1.5rem;text-align:center;opacity:.4">No encounter history</td></tr>'
+    +'</tbody></table></div>';
+}
+
+async function editParticipant(id,gender){
+  lastParticipantId=id;lastParticipantGender=gender;
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s-participant-edit').classList.add('active');
+  document.getElementById('bcTitle').textContent='Edit Participant';
+  const r=await fetch('/api/admin/participants/'+id);
+  const p=await r.json();
+  const form=document.getElementById('edit-form');
+  const iStyle='width:100%;padding:.65rem .9rem;border-radius:8px;border:1.5px solid rgba(42,127,193,.18);background:#FAFBFD;font-family:var(--ff-b);font-size:.85rem;color:var(--ink);outline:none;box-sizing:border-box';
+  document.querySelectorAll('#edit-form input,#edit-form select,#edit-form textarea').forEach(el=>el.style.cssText=iStyle);
+  for(const [k,v] of Object.entries(p)){
+    const el=form.elements[k];
+    if(!el) continue;
+    if(el.type==='checkbox') el.checked=parseInt(v)===1;
+    else if(k==='birth_date'&&v&&v!=='1970-01-01') el.value=v.slice(0,10);
+    else el.value=v||'';
+  }
+  // Encounters tab
+  const iStyle2=iStyle;
+  document.getElementById('edit-encounters-content').innerHTML='<table class="p-enc-table"><thead><tr><th>Encounter</th><th>Type</th><th>Status</th><th>Attended</th></tr></thead><tbody>'
+    +(p.encounter_history||[]).map(h=>'<tr><td>'+(h.encounter?.short_name||'—')+'</td><td>'+(h.type==='PART'?'Participant':'Server')+'</td><td>'+(h.status_code||'—')+'</td><td>'+(h.attended?'Yes':'No')+'</td></tr>').join('')
+    ||'<tr><td colspan="4" style="padding:1.5rem;text-align:center;opacity:.4">None</td></tr>'+'</tbody></table>';
+  // Invoices tab
+  document.getElementById('edit-invoices-content').innerHTML='<table class="p-enc-table"><thead><tr><th>Invoice</th><th>Total</th><th>Paid</th><th>Balance</th><th>Status</th></tr></thead><tbody>'
+    +(p.encounter_history||[]).filter(h=>h.invoice).map(h=>{
+      const inv=h.invoice,bal=parseFloat(inv.total_amount)-parseFloat(inv.payments_amount);
+      return '<tr><td>#'+inv.invoice_id+'</td><td>'+fmt$(inv.total_amount)+'</td><td class="amount">'+fmt$(inv.payments_amount)+'</td><td class="'+(bal>0.01?'unpaid':'')+'">'+fmt$(bal)+'</td><td><span class="badge '+(bal<=0.01?'badge-paid':'badge-partial')+'">'+(bal<=0.01?'✓ Paid':'Partial')+'</span></td></tr>';
+    }).join('')||'<tr><td colspan="5" style="padding:1.5rem;text-align:center;opacity:.4">None</td></tr>'+'</tbody></table>';
+
+  form.onsubmit=async(e)=>{
+    e.preventDefault();
+    const body={};
+    new FormData(form).forEach((v,k)=>body[k]=v);
+    body.send_text_messages=form.elements.send_text_messages?.checked?1:0;
+    const res=await fetch('/api/admin/participants/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    if(res.ok){pCache[gender]=null;alert('Saved successfully!');navBack();}
+    else alert('Error saving');
+  };
+}
+
+async function deleteParticipant(id,gender,name){
+  if(!confirm('Delete '+name+'?\n\nThis cannot be undone.')) return;
+  const r=await fetch('/api/admin/participants/'+id,{method:'DELETE'});
+  if(r.ok){pCache[gender]=null;loadParticipants(gender);}
+  else alert('Error deleting participant');
+}
+
+function navBack(){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  const key=lastParticipantGender==='M'?'men':'women';
+  document.getElementById('s-'+key).classList.add('active');
+  document.getElementById('bcTitle').textContent=lastParticipantGender==='M'?"Men's Participants":"Women's Participants";
+}
+
+function switchEditTab(btn,tabId){
+  btn.closest('.card').querySelectorAll('.edit-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.edit-tab-content').forEach(t=>t.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+}
+
 // ── Load Dashboard ───────────────────────────────────────────
 async function loadDashboard(){
   const r=await fetch('/api/admin/dashboard');
@@ -856,7 +1101,7 @@ document.querySelector('.sb-logout').addEventListener('click', async e=>{
 });
 
 const sections={
-  dashboard:'s-dashboard',men:'s-men',women:'s-women',register:'s-register',
+  dashboard:'s-dashboard',men:'s-men',women:'s-women','participant-detail':'s-participant-detail','participant-edit':'s-participant-edit',register:'s-register',
   invoices:'s-invoices',donations:'s-donations',balance:'s-balance',
   encounters:'s-encounters',checkin:'s-checkin',testimonies:'s-testimonies',
   documents:'s-documents',reports:'s-reports',settings:'s-settings'
@@ -874,6 +1119,8 @@ function nav(key,btn){
   if(btn) btn.classList.add('active');
   document.getElementById('bcTitle').textContent=titles[key]||key;
   if(key==='testimonies') loadTestimonies();
+  if(key==='men') loadParticipants('M');
+  if(key==='women') loadParticipants('F');
 }
 // Load dashboard on start
 loadDashboard();

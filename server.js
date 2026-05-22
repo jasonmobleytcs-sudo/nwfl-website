@@ -134,19 +134,105 @@ app.get('/api/admin/dashboard', requireAdmin, async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// ── Participants ─────────────────────────────────────────────
+// ── Participants — full list with encounter history ───────────
 app.get('/api/admin/participants', requireAdmin, async (req, res) => {
-  const { gender, encounter_id } = req.query;
-  let q = supabase
-    .from('participants_encounters')
-    .select('participants_encounter_id,participant_id,encounter_id,type,first_name,last_name,city,state,email,phone,checked_in,invoices(invoice_id,status_code,total_amount,payments_amount)')
-    .order('last_name').limit(500);
-  if (encounter_id) q = q.eq('encounter_id', encounter_id);
-  if (gender === 'M') q = q.ilike('type', '%part%');
-  if (gender === 'F') q = q.ilike('type', '%serv%');
-  const { data, error } = await q;
+  const { gender, search } = req.query;
+  let q = supabase.from('participants')
+    .select('participant_id,first_name,last_name,city,state,postal,email,phone,status_code,gender,birth_date,date_created')
+    .order('last_name').limit(1000);
+  if (gender) q = q.eq('gender', gender);
+  if (search) q = q.or(`first_name.ilike.%${search}%,last_name.ilike.%${search}%,email.ilike.%${search}%,city.ilike.%${search}%`);
+  const { data: participants, error } = await q;
   if (error) return res.status(500).json({ error: error.message });
-  res.json(data || []);
+
+  if (!participants?.length) return res.json([]);
+
+  // Get encounter history for these participants
+  const ids = participants.map(p => p.participant_id);
+  const [{ data: peData }, { data: encounters }] = await Promise.all([
+    supabase.from('participants_encounters')
+      .select('participants_encounter_id,participant_id,encounter_id,type,attended,status_code')
+      .in('participant_id', ids),
+    supabase.from('encounters')
+      .select('encounter_id,short_name,start_date,type')
+  ]);
+
+  const encMap = {};
+  for (const e of (encounters || [])) encMap[e.encounter_id] = e;
+
+  const peByPart = {};
+  for (const pe of (peData || [])) {
+    if (!peByPart[pe.participant_id]) peByPart[pe.participant_id] = [];
+    peByPart[pe.participant_id].push({ ...pe, encounter: encMap[pe.encounter_id] });
+  }
+
+  res.json(participants.map(p => ({
+    ...p,
+    encounters: (peByPart[p.participant_id] || [])
+      .sort((a,b) => new Date(b.encounter?.start_date||0) - new Date(a.encounter?.start_date||0))
+  })));
+});
+
+// ── Participant detail (single) ───────────────────────────────
+app.get('/api/admin/participants/:id', requireAdmin, async (req, res) => {
+  const [{ data: p }, { data: peData }] = await Promise.all([
+    supabase.from('participants').select('*').eq('participant_id', req.params.id).single(),
+    supabase.from('participants_encounters')
+      .select('participants_encounter_id,encounter_id,type,attended,status_code,position,cabin')
+      .eq('participant_id', req.params.id).order('date_created', { ascending: false })
+  ]);
+  if (!p) return res.status(404).json({ error: 'Not found' });
+
+  const encIds = [...new Set((peData||[]).map(pe=>pe.encounter_id))];
+  let encounters = [];
+  if (encIds.length) {
+    const { data } = await supabase.from('encounters')
+      .select('encounter_id,short_name,start_date,end_date,encounter_location,type')
+      .in('encounter_id', encIds);
+    encounters = data || [];
+  }
+  const encMap = {};
+  for (const e of encounters) encMap[e.encounter_id] = e;
+
+  // Get invoice data per PE
+  const peIds = (peData||[]).map(pe=>pe.participants_encounter_id);
+  let invMap = {};
+  if (peIds.length) {
+    const { data: invs } = await supabase.from('invoices')
+      .select('invoice_id,participants_encounter_id,status_code,total_amount,payments_amount')
+      .in('participants_encounter_id', peIds);
+    for (const inv of (invs||[])) invMap[inv.participants_encounter_id] = inv;
+  }
+
+  res.json({
+    ...p,
+    encounter_history: (peData||[]).map(pe => ({
+      ...pe,
+      encounter: encMap[pe.encounter_id] || null,
+      invoice: invMap[pe.participants_encounter_id] || null
+    }))
+  });
+});
+
+// ── Update participant ────────────────────────────────────────
+app.put('/api/admin/participants/:id', requireAdmin, async (req, res) => {
+  const allowed = ['first_name','last_name','nick_name','address1','address2','city','state','postal',
+    'country','phone','email','status_code','gender','birth_date','marital_status',
+    'special_personal_needs','special_dietary_needs','referred_by','emergency_name',
+    'emergency_phone','emergency_relation','shirt_size','username','send_text_messages'];
+  const updates = {};
+  for (const k of allowed) if (req.body[k] !== undefined) updates[k] = req.body[k];
+  updates.date_modified = new Date().toISOString();
+  const { error } = await supabase.from('participants').update(updates).eq('participant_id', req.params.id);
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ ok: true });
+});
+
+// ── Delete participant ────────────────────────────────────────
+app.delete('/api/admin/participants/:id', requireAdmin, async (req, res) => {
+  const { error } = await supabase.from('participants').delete().eq('participant_id', req.params.id);
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ ok: true });
 });
 
 // ── Encounters ───────────────────────────────────────────────
