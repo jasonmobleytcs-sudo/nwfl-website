@@ -1082,7 +1082,7 @@ async function loadDonations() {
   const types = await rTypes.json();
   // Build type filter tabs
   document.getElementById('don-type-tabs').innerHTML = types.map(t =>
-    '<button class="edit-tab" onclick="filterDonations(''+t.code+'',this)">'+t.label+' <span style="opacity:.5;font-size:.55rem">('+t.count+')</span></button>'
+    `<button class="edit-tab" onclick="filterDonations('${t.code}',this)">${t.label} <span style="opacity:.5;font-size:.55rem">(${t.count})</span></button>`
   ).join('');
   renderDonations(allDonations);
 }
