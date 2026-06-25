@@ -74,7 +74,8 @@ const INCOMPLETE_TABLES = ['participants', 'participants_encounters'];
 const TABLE_ORDER = process.argv.includes('--all') ? ALL_TABLES : INCOMPLETE_TABLES;
 
 // Tables that need location_id injected
-const LOCATION_SCOPED_TABLES = new Set(['encounters', 'donations', 'users']);
+// users: only for non-FL locations (FL users keep location_id=0 = super-admin)
+const LOCATION_SCOPED_TABLES = new Set(LOCATION_ID === 1 ? ['encounters', 'donations'] : ['encounters', 'donations', 'users']);
 
 // PK and FK columns that need the ID offset applied (keyed by table name)
 const OFFSET_SCHEMA = {

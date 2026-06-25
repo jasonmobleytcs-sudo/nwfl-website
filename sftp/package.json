@@ -1,0 +1,10 @@
+{
+  "name": "nwfl-backup-sftp",
+  "version": "1.0.0",
+  "description": "SFTP server for receiving MySQL backup files and auto-triggering migrations",
+  "main": "watcher.js",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "dotenv": "^16.3.1"
+  }
+}
