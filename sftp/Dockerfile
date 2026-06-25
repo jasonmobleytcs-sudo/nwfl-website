@@ -14,11 +14,15 @@ COPY watcher.js ./
 COPY entrypoint.sh ./
 RUN chmod +x entrypoint.sh
 
-# SSH config: SFTP-only, no shell
-RUN echo "Subsystem sftp internal-sftp" >> /etc/ssh/sshd_config && \
-    echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config && \
-    echo "PermitRootLogin no" >> /etc/ssh/sshd_config && \
-    echo "Port 22" >> /etc/ssh/sshd_config
+# Write a clean sshd_config (overwrite default so our settings take effect)
+RUN printf '\
+Port 22\n\
+PermitRootLogin no\n\
+PasswordAuthentication yes\n\
+ChallengeResponseAuthentication no\n\
+UsePAM no\n\
+Subsystem sftp internal-sftp\n\
+' > /etc/ssh/sshd_config
 
 EXPOSE 22
 
