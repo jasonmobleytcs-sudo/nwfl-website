@@ -14,6 +14,7 @@ WORKDIR /app
 COPY package.json ./
 RUN npm install
 COPY watcher.js ./
+COPY http-server.js ./
 COPY entrypoint.sh ./
 RUN chmod +x entrypoint.sh
 
