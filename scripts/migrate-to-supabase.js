@@ -16,29 +16,41 @@ const path = require('path');
 const { createClient } = require('@supabase/supabase-js');
 
 // ── Config ────────────────────────────────────────────────────
-const BACKUP_FILE = path.join(
-  process.env.HOME,
-  'Library/CloudStorage/Dropbox/Encounter/Website Redesign/root/backups/nwflme_backup.2026.05.13.sql'
-);
-
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_KEY  // service role — bypasses RLS
 );
 
 // ── Location config ───────────────────────────────────────────
-// Pass --location=AL (or FL, MS, KY, KS, OH) to tag migrated data with that location_id.
-// Default: FL (location_id=1, the original NWFL dataset).
+// Pass --location=AL (or FL, MS, KY, KS, OH) to tag migrated data.
+// Pass --file=/path/to/backup.sql to specify a backup file.
+// Default location: FL (location_id=1).
 const LOCATION_CODES = { FL:1, AL:2, MS:3, KY:4, KS:5, OH:6 };
 const locationArg = (process.argv.find(a => a.startsWith('--location=')) || '--location=FL').split('=')[1].toUpperCase();
 const LOCATION_ID  = LOCATION_CODES[locationArg];
 if (!LOCATION_ID) { console.error(`Unknown location: ${locationArg}. Valid: ${Object.keys(LOCATION_CODES).join(', ')}`); process.exit(1); }
-console.log(`📍 Location: ${locationArg} (location_id=${LOCATION_ID})\n`);
 
-// Tables to migrate — put incomplete ones first, skip already-complete ones
-// Run with: node scripts/migrate-to-supabase.js --all  to migrate everything
-// Run with: node scripts/migrate-to-supabase.js --all --location=AL  for a different location
-// Default: only re-run tables that had issues
+// ID offset: each location gets 100,000 ID space to avoid collisions
+// FL=0 offset, AL=100000, MS=200000, KY=300000, KS=400000, OH=500000
+const ID_OFFSET = (LOCATION_ID - 1) * 100000;
+
+// Backup file: use --file= flag or fall back to location-specific defaults
+const fileArg = process.argv.find(a => a.startsWith('--file='));
+const BACKUP_DEFAULTS = {
+  FL: path.join(process.env.HOME, 'Library/CloudStorage/Dropbox/Encounter/Website Redesign/root/backups/nwflme_backup.2026.05.13.sql'),
+  AL: path.join(process.env.HOME, 'Library/CloudStorage/Dropbox/Encounter/Website Redesign/root/backups/alme_backup.sql'),
+  MS: path.join(process.env.HOME, 'Library/CloudStorage/Dropbox/Encounter/Website Redesign/root/backups/msme_backup.sql'),
+  KY: path.join(process.env.HOME, 'Library/CloudStorage/Dropbox/Encounter/Website Redesign/root/backups/kyme_backup.sql'),
+  KS: path.join(process.env.HOME, 'Library/CloudStorage/Dropbox/Encounter/Website Redesign/root/backups/ksme_backup.sql'),
+  OH: path.join(process.env.HOME, 'Library/CloudStorage/Dropbox/Encounter/Website Redesign/root/backups/ohme_backup.sql'),
+};
+const BACKUP_FILE = fileArg ? fileArg.split('=').slice(1).join('=') : BACKUP_DEFAULTS[locationArg];
+
+console.log(`📍 Location: ${locationArg} (location_id=${LOCATION_ID}, id_offset=${ID_OFFSET})`);
+console.log(`📂 Backup:   ${BACKUP_FILE}\n`);
+
+// Tables to migrate
+// Run with: node scripts/migrate-to-supabase.js --all --location=AL
 const ALL_TABLES = [
   'countries', 'states', 'groups', 'permissions', 'groups_permissions',
   'users', 'settings', 'settings_positions', 'settings_sessions',
@@ -49,11 +61,37 @@ const ALL_TABLES = [
   'events', 'events_registrations', 'fellowships',
   'freedom_affiliates', 'freedom_profiles', 'sms_messages'
 ];
+
+// Shared tables: only import from FL; skip for other locations
+const SHARED_TABLES = new Set([
+  'countries', 'states', 'groups', 'permissions', 'groups_permissions',
+  'settings', 'settings_positions', 'settings_sessions', 'products',
+  'events', 'events_registrations', 'fellowships',
+  'freedom_affiliates', 'freedom_profiles', 'sms_messages'
+]);
+
 const INCOMPLETE_TABLES = ['participants', 'participants_encounters'];
 const TABLE_ORDER = process.argv.includes('--all') ? ALL_TABLES : INCOMPLETE_TABLES;
 
-// Tables that need a location_id injected
-const LOCATION_SCOPED_TABLES = new Set(['encounters', 'donations']);
+// Tables that need location_id injected
+const LOCATION_SCOPED_TABLES = new Set(['encounters', 'donations', 'users']);
+
+// PK and FK columns that need the ID offset applied (keyed by table name)
+const OFFSET_SCHEMA = {
+  encounters:              { pk: 'encounter_id',              fks: [] },
+  encounters_positions:    { pk: 'encounters_position_id',    fks: ['encounter_id'] },
+  encounters_sessions:     { pk: 'encounters_session_id',     fks: ['encounter_id'] },
+  encounters_receipts:     { pk: 'encounters_receipt_id',     fks: ['encounter_id'] },
+  participants:            { pk: 'participant_id',             fks: [] },
+  participants_encounters: { pk: 'participants_encounter_id', fks: ['participant_id', 'encounter_id'] },
+  invoices:                { pk: 'invoice_id',                fks: ['participants_encounter_id'] },
+  invoices_details:        { pk: 'invoices_detail_id',        fks: ['invoice_id'] },
+  invoices_payments:       { pk: 'invoices_payments_id',      fks: ['invoice_id'] },
+  donations:               { pk: 'donation_id',               fks: [] },
+  notes:                   { pk: 'note_id',                   fks: ['participant_id', 'encounter_id'] },
+  testimonies:             { pk: 'testimony_id',              fks: ['encounter_id'] },
+  users:                   { pk: 'user_id',                   fks: [] },
+};
 
 // MySQL column name → PostgreSQL column name overrides
 const COLUMN_OVERRIDES = {
@@ -176,6 +214,12 @@ async function migrate() {
   for (const table of TABLE_ORDER) {
     process.stdout.write(`⏳  ${table.padEnd(35)}`);
 
+    // Skip shared lookup tables for non-FL locations (already imported from FL)
+    if (LOCATION_ID !== 1 && SHARED_TABLES.has(table)) {
+      console.log('—  (shared, FL only)');
+      continue;
+    }
+
     const columns = getColumns(sql, table);
     if (!columns) {
       console.log('⚠️  CREATE TABLE not found, skipping');
@@ -191,6 +235,7 @@ async function migrate() {
     // Build array of objects
     const overrides = COLUMN_OVERRIDES[table] || {};
     const FALLBACK_TS = '1970-01-01T00:00:00Z';
+    const offsetSchema = OFFSET_SCHEMA[table];
     const objects = rows.map(values => {
       const obj = {};
       columns.forEach((col, i) => {
@@ -202,6 +247,13 @@ async function migrate() {
         }
         obj[pgCol] = val;
       });
+      // Apply ID offset for non-FL locations to avoid PK collisions
+      if (ID_OFFSET > 0 && offsetSchema) {
+        if (obj[offsetSchema.pk] != null) obj[offsetSchema.pk] = Number(obj[offsetSchema.pk]) + ID_OFFSET;
+        for (const fk of offsetSchema.fks) {
+          if (obj[fk] != null) obj[fk] = Number(obj[fk]) + ID_OFFSET;
+        }
+      }
       // Inject location_id for multi-tenant tables
       if (LOCATION_SCOPED_TABLES.has(table)) obj.location_id = LOCATION_ID;
       return obj;
