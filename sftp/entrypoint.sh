@@ -1,27 +1,28 @@
 #!/bin/sh
-set -e
+set -x  # print every command for debugging
 
 SFTP_USER="${SFTP_USER:-backupuser}"
 SFTP_PASSWORD="${SFTP_PASSWORD:-changeme}"
 
-# Create user with hashed password (more reliable than chpasswd on Alpine)
+echo "[entrypoint] Starting with user=$SFTP_USER"
+
+# Create user if not exists
 if ! id "$SFTP_USER" >/dev/null 2>&1; then
-  HASHED=$(echo "$SFTP_PASSWORD" | openssl passwd -6 -stdin)
-  adduser -D -h /uploads -s /sbin/nologin -p "$HASHED" "$SFTP_USER"
-else
-  # Update password if user already exists
-  HASHED=$(echo "$SFTP_PASSWORD" | openssl passwd -6 -stdin)
-  usermod -p "$HASHED" "$SFTP_USER"
+  adduser -D -h /uploads -s /sbin/nologin "$SFTP_USER"
 fi
 
-# Fix chroot permissions (must be owned by root, not writable by others)
+# Set password via chpasswd (shadow package)
+printf '%s:%s\n' "$SFTP_USER" "$SFTP_PASSWORD" | chpasswd
+echo "[entrypoint] Password set"
+
+# Fix chroot permissions
 chown root:root /uploads
 chmod 755 /uploads
 mkdir -p /uploads/incoming
 chown "$SFTP_USER":"$SFTP_USER" /uploads/incoming
 chmod 755 /uploads/incoming
 
-# Append per-user SFTP jail to sshd_config
+# Append per-user SFTP jail
 cat >> /etc/ssh/sshd_config <<EOF
 
 Match User ${SFTP_USER}
@@ -31,15 +32,16 @@ Match User ${SFTP_USER}
     X11Forwarding no
 EOF
 
-# Generate host keys if missing
-ssh-keygen -A
-
-# Log effective config for debugging
 echo "[entrypoint] sshd_config:"
 cat /etc/ssh/sshd_config
 
-# Start file watcher in background
+# Generate host keys
+ssh-keygen -A
+
+echo "[entrypoint] Starting sshd..."
+
+# Start watcher in background
 node /app/watcher.js &
 
-# Start SSH daemon in foreground
+# Start sshd in foreground
 exec /usr/sbin/sshd -D -e
