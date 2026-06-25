@@ -4,6 +4,7 @@ const path     = require('path');
 const crypto   = require('crypto');
 const session  = require('express-session');
 const http     = require('http');
+const https    = require('https');
 const { createClient } = require('@supabase/supabase-js');
 
 // SFTP service internal URL (Railway private network or override via env)
@@ -531,14 +532,15 @@ app.get('/api/admin/audit', requireAdmin, async (req, res) => {
 // ── SFTP File Manager ─────────────────────────────────────────
 function sftpRequest(method, path, body, res) {
   const url = new URL(SFTP_SERVICE_URL + path);
+  const transport = url.protocol === 'https:' ? https : http;
   const opts = {
     hostname: url.hostname,
-    port: url.port || 80,
+    port: url.port || (url.protocol === 'https:' ? 443 : 80),
     path: url.pathname,
     method,
     headers: { 'Authorization': `Bearer ${SFTP_API_KEY}`, 'Content-Type': 'application/json' },
   };
-  const req = http.request(opts, upstream => {
+  const req = transport.request(opts, upstream => {
     res.status(upstream.statusCode);
     Object.entries(upstream.headers).forEach(([k, v]) => {
       if (['content-type','content-disposition','content-length'].includes(k)) res.setHeader(k, v);
