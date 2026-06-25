@@ -400,6 +400,10 @@ tfoot td.total-r{color:var(--danger)}
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
         Audit Log
       </button>
+      <button class="sb-sub-item" onclick="nav('locations',this)">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        Locations
+      </button>
       <button class="sb-sub-item" onclick="nav('settings',this)">
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
         Settings
@@ -888,6 +892,20 @@ tfoot td.total-r{color:var(--danger)}
       </div>
       <div class="card">
         <div id="audit-log-content" style="padding:1rem"><div style="padding:2rem;text-align:center;opacity:.4">Loading…</div></div>
+      </div>
+    </div>
+
+    <!-- ══ LOCATIONS ══ -->
+    <div class="section" id="s-locations">
+      <div class="section-header">
+        <div class="section-title">Encounter <em>Locations</em></div>
+        <button class="btn-sm" onclick="openAddLocation()">+ Add Location</button>
+      </div>
+      <div class="card" style="padding:0">
+        <table class="ptable">
+          <thead><tr><th>Code</th><th>Name</th><th>Region</th><th>Status</th><th>Next Men's</th><th>Next Women's</th><th>URL</th><th>Actions</th></tr></thead>
+          <tbody id="loc-tbody"><tr><td colspan="8" style="padding:2rem;text-align:center;opacity:.4">Loading…</td></tr></tbody>
+        </table>
       </div>
     </div>
 
@@ -1467,7 +1485,7 @@ const sections={
   dashboard:'s-dashboard',men:'s-men',women:'s-women','participant-detail':'s-participant-detail','participant-edit':'s-participant-edit',register:'s-register',audit:'s-audit',
   invoices:'s-invoices',donations:'s-donations',balance:'s-balance',
   encounters:'s-encounters',checkin:'s-checkin',testimonies:'s-testimonies',
-  documents:'s-documents',reports:'s-reports',settings:'s-settings'
+  documents:'s-documents',reports:'s-reports',settings:'s-settings',locations:'s-locations'
 };
 const titles={
   dashboard:'Dashboard',men:'Men\'s Participants',women:'Women\'s Participants',register:'Register Participant',
@@ -1488,8 +1506,99 @@ function nav(key,btn){
   if(key==='donations') loadDonations();
   if(key==='encounters') loadEncounters();
   if(key==='audit') loadAuditLog();
+  if(key==='locations') loadLocations();
   if(key==='settings') loadChangelog();
 }
+// ── Locations Management ──────────────────────────────────────
+let editingLocationId = null;
+
+async function loadLocations() {
+  document.getElementById('loc-tbody').innerHTML = '<tr><td colspan="8" style="padding:2rem;text-align:center;opacity:.4">Loading…</td></tr>';
+  const r = await fetch('/api/admin/locations');
+  const data = await r.json();
+  allLocations = data; // keep in sync with switcher list
+  buildLocMenu();
+  const STATUS = { active:'Active', coming_soon:'Coming Soon' };
+  document.getElementById('loc-tbody').innerHTML = data.length ? data.map(l => `
+    <tr>
+      <td><span style="font-weight:700;color:var(--teal);font-size:.82rem">${l.code}</span></td>
+      <td class="name">${l.name}</td>
+      <td style="font-size:.78rem">${l.region}</td>
+      <td><span class="badge ${l.status==='active'?'badge-paid':'badge-partial'}" style="font-size:.52rem">${STATUS[l.status]||l.status}</span></td>
+      <td style="font-size:.75rem">${l.next_enc_men||'—'}</td>
+      <td style="font-size:.75rem">${l.next_enc_women||'—'}</td>
+      <td style="font-size:.72rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.url ? `<a href="${l.url}" target="_blank" style="color:var(--teal)">${l.url}</a>` : '—'}</td>
+      <td><div class="actions">
+        <button class="btn-icon" title="Edit" onclick="openEditLocation(${l.location_id})">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+        </button>
+      </div></td>
+    </tr>`).join('') : '<tr><td colspan="8" style="padding:2rem;text-align:center;opacity:.4">No locations found</td></tr>';
+}
+
+function openAddLocation() {
+  editingLocationId = null;
+  document.getElementById('loc-edit-form').reset();
+  document.getElementById('loc-edit-status').value = 'active';
+  document.querySelector('.loc-modal-title').innerHTML = 'Add <em>Location</em>';
+  document.getElementById('loc-edit-submit').textContent = 'Add Location';
+  document.getElementById('loc-modal-overlay').classList.add('open');
+}
+
+function openEditLocation(id) {
+  const l = allLocations.find(x => x.location_id === id);
+  if (!l) return;
+  editingLocationId = id;
+  document.querySelector('.loc-modal-title').innerHTML = 'Edit <em>Location</em>';
+  document.getElementById('loc-edit-submit').textContent = 'Save Changes';
+  document.getElementById('loc-edit-code').value         = l.code || '';
+  document.getElementById('loc-edit-name').value         = l.name || '';
+  document.getElementById('loc-edit-region').value       = l.region || '';
+  document.getElementById('loc-edit-state').value        = l.state_abbr || '';
+  document.getElementById('loc-edit-url').value          = l.url || '';
+  document.getElementById('loc-edit-status').value       = l.status || 'active';
+  document.getElementById('loc-edit-men').value          = l.next_enc_men || '';
+  document.getElementById('loc-edit-women').value        = l.next_enc_women || '';
+  document.getElementById('loc-modal-overlay').classList.add('open');
+}
+
+function closeLocModal() {
+  document.getElementById('loc-modal-overlay').classList.remove('open');
+  editingLocationId = null;
+}
+
+async function submitLocation(e) {
+  e.preventDefault();
+  const btn = document.getElementById('loc-edit-submit');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  const body = {
+    name:          document.getElementById('loc-edit-name').value.trim(),
+    region:        document.getElementById('loc-edit-region').value.trim(),
+    url:           document.getElementById('loc-edit-url').value.trim(),
+    status:        document.getElementById('loc-edit-status').value,
+    next_enc_men:  document.getElementById('loc-edit-men').value.trim(),
+    next_enc_women:document.getElementById('loc-edit-women').value.trim(),
+  };
+  try {
+    let res;
+    if (editingLocationId) {
+      res = await fetch('/api/admin/locations/' + editingLocationId, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    } else {
+      body.code      = document.getElementById('loc-edit-code').value.trim().toUpperCase();
+      body.state_abbr= document.getElementById('loc-edit-state').value.trim().toUpperCase();
+      res = await fetch('/api/admin/locations', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    }
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Save failed');
+    closeLocModal();
+    await loadLocations();
+  } catch(err) {
+    alert('Error: ' + err.message);
+  }
+  btn.disabled = false;
+  btn.textContent = editingLocationId ? 'Save Changes' : 'Add Location';
+}
+
 // ── Location Switcher ─────────────────────────────────────────
 let allLocations = [], currentLocation = null;
 
@@ -1569,6 +1678,60 @@ document.addEventListener('click', e => {
 // Start
 initAdmin();
 </script>
+
+<!-- ══ Location Edit Modal ══ -->
+<div class="don-modal-overlay" id="loc-modal-overlay" onclick="if(event.target===this)closeLocModal()">
+  <div class="don-modal" style="max-width:560px">
+    <div class="don-modal-head">
+      <div class="don-modal-title loc-modal-title">Edit <em>Location</em></div>
+      <button class="don-modal-close" onclick="closeLocModal()">✕</button>
+    </div>
+    <form id="loc-edit-form" onsubmit="submitLocation(event)">
+      <div class="don-form-grid">
+        <div class="don-field">
+          <label>Code <span style="font-weight:400;opacity:.5;font-size:.55rem">(e.g. FL)</span></label>
+          <input type="text" id="loc-edit-code" maxlength="5" placeholder="FL" style="text-transform:uppercase">
+        </div>
+        <div class="don-field">
+          <label>State Abbr</label>
+          <input type="text" id="loc-edit-state" maxlength="2" placeholder="FL" style="text-transform:uppercase">
+        </div>
+        <div class="don-field full">
+          <label>Organization Name</label>
+          <input type="text" id="loc-edit-name" placeholder="NWFL Encounters" required>
+        </div>
+        <div class="don-field full">
+          <label>Region</label>
+          <input type="text" id="loc-edit-region" placeholder="Northwest Florida" required>
+        </div>
+        <div class="don-field full">
+          <label>Website URL</label>
+          <input type="url" id="loc-edit-url" placeholder="https://nwflencounters.com">
+        </div>
+        <div class="don-field">
+          <label>Status</label>
+          <select id="loc-edit-status">
+            <option value="active">Active</option>
+            <option value="coming_soon">Coming Soon</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+        <div class="don-field">
+          <label>Next Men's Encounter</label>
+          <input type="text" id="loc-edit-men" placeholder="Men's — Apr 24–26">
+        </div>
+        <div class="don-field full">
+          <label>Next Women's Encounter</label>
+          <input type="text" id="loc-edit-women" placeholder="Women's — Apr 17–19">
+        </div>
+      </div>
+      <div class="don-modal-footer">
+        <button type="button" class="btn-sm" style="background:var(--bg);color:var(--body);border:1.5px solid var(--border)" onclick="closeLocModal()">Cancel</button>
+        <button type="submit" class="btn-sm" id="loc-edit-submit">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
 
 <!-- ══ Add Donation Modal ══ -->
 <div class="don-modal-overlay" id="don-modal-overlay" onclick="if(event.target===this)closeAddDonation()">

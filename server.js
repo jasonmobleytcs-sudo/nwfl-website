@@ -117,6 +117,22 @@ app.post('/api/admin/switch-location', requireAdmin, async (req, res) => {
   res.json({ ok: true, location: loc });
 });
 
+app.post('/api/admin/locations', requireAdmin, async (req, res) => {
+  const user = req.session.adminUser;
+  if (user.location_id > 0) return res.status(403).json({ error: 'Not authorized' });
+  const { code, name, region, state_abbr, url, status, next_enc_men, next_enc_women } = req.body;
+  if (!code || !name) return res.status(400).json({ error: 'code and name are required' });
+  const { data, error } = await supabase.from('locations').insert({
+    code: code.toUpperCase().slice(0,5),
+    name, region: region||'', state_abbr: (state_abbr||'').toUpperCase().slice(0,2),
+    url: url||'', status: status||'active',
+    next_enc_men: next_enc_men||'', next_enc_women: next_enc_women||'',
+    sort_order: 99
+  }).select().single();
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
 app.put('/api/admin/locations/:id', requireAdmin, async (req, res) => {
   const user = req.session.adminUser;
   if (user.location_id > 0) return res.status(403).json({ error: 'Not authorized' });
