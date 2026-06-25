@@ -26,8 +26,18 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_KEY  // service role — bypasses RLS
 );
 
+// ── Location config ───────────────────────────────────────────
+// Pass --location=AL (or FL, MS, KY, KS, OH) to tag migrated data with that location_id.
+// Default: FL (location_id=1, the original NWFL dataset).
+const LOCATION_CODES = { FL:1, AL:2, MS:3, KY:4, KS:5, OH:6 };
+const locationArg = (process.argv.find(a => a.startsWith('--location=')) || '--location=FL').split('=')[1].toUpperCase();
+const LOCATION_ID  = LOCATION_CODES[locationArg];
+if (!LOCATION_ID) { console.error(`Unknown location: ${locationArg}. Valid: ${Object.keys(LOCATION_CODES).join(', ')}`); process.exit(1); }
+console.log(`📍 Location: ${locationArg} (location_id=${LOCATION_ID})\n`);
+
 // Tables to migrate — put incomplete ones first, skip already-complete ones
 // Run with: node scripts/migrate-to-supabase.js --all  to migrate everything
+// Run with: node scripts/migrate-to-supabase.js --all --location=AL  for a different location
 // Default: only re-run tables that had issues
 const ALL_TABLES = [
   'countries', 'states', 'groups', 'permissions', 'groups_permissions',
@@ -41,6 +51,9 @@ const ALL_TABLES = [
 ];
 const INCOMPLETE_TABLES = ['participants', 'participants_encounters'];
 const TABLE_ORDER = process.argv.includes('--all') ? ALL_TABLES : INCOMPLETE_TABLES;
+
+// Tables that need a location_id injected
+const LOCATION_SCOPED_TABLES = new Set(['encounters', 'donations']);
 
 // MySQL column name → PostgreSQL column name overrides
 const COLUMN_OVERRIDES = {
@@ -189,6 +202,8 @@ async function migrate() {
         }
         obj[pgCol] = val;
       });
+      // Inject location_id for multi-tenant tables
+      if (LOCATION_SCOPED_TABLES.has(table)) obj.location_id = LOCATION_ID;
       return obj;
     });
 

@@ -31,6 +31,22 @@ function requireAdmin(req, res, next) {
   res.status(401).json({ error: 'Unauthorized' });
 }
 
+// Returns the active location_id for the session (null = all locations / super-admin view)
+function getLocationId(req) {
+  const user = req.session?.adminUser;
+  if (!user) return null;
+  // If user has a fixed location (non-zero), always use it
+  if (user.location_id && user.location_id > 0) return user.location_id;
+  // Super-admin: use whichever location they've switched to (null = all)
+  return req.session.locationId || null;
+}
+
+// Apply location filter to a Supabase query builder
+function withLocation(query, locationId, column = 'location_id') {
+  if (locationId) return query.eq(column, locationId);
+  return query;
+}
+
 // ── Login / Logout ───────────────────────────────────────────
 app.post('/api/admin/login', async (req, res) => {
   const { username, password } = req.body;
@@ -54,11 +70,14 @@ app.post('/api/admin/login', async (req, res) => {
   }
 
   req.session.adminUser = {
-    user_id: user.user_id,
-    username: user.username,
-    name: `${user.first_name} ${user.last_name}`.trim(),
-    group_id: user.group_id
+    user_id:     user.user_id,
+    username:    user.username,
+    name:        `${user.first_name} ${user.last_name}`.trim(),
+    group_id:    user.group_id,
+    location_id: user.location_id || 0   // 0 = super-admin (all locations)
   };
+  // Default session location: user's fixed location, or 1 (FL) for super-admins
+  req.session.locationId = user.location_id > 0 ? user.location_id : 1;
   res.json({ ok: true, user: req.session.adminUser });
 });
 
@@ -68,17 +87,55 @@ app.post('/api/admin/logout', (req, res) => {
 });
 
 app.get('/api/admin/me', (req, res) => {
-  if (req.session?.adminUser) return res.json(req.session.adminUser);
+  if (req.session?.adminUser) return res.json({ ...req.session.adminUser, currentLocationId: req.session.locationId || 1 });
   res.status(401).json({ error: 'Not logged in' });
+});
+
+// ── Locations ────────────────────────────────────────────────
+app.get('/api/admin/locations', requireAdmin, async (req, res) => {
+  const { data, error } = await supabase.from('locations').select('*').order('sort_order');
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data || []);
+});
+
+// Public endpoint — used by the hub page
+app.get('/api/locations', async (req, res) => {
+  const { data, error } = await supabase.from('locations').select('location_id,code,name,region,state_abbr,url,theme_color,status,next_enc_men,next_enc_women,sort_order').order('sort_order');
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data || []);
+});
+
+app.post('/api/admin/switch-location', requireAdmin, async (req, res) => {
+  const user = req.session.adminUser;
+  // Only super-admins (location_id=0) can switch
+  if (user.location_id > 0) return res.status(403).json({ error: 'Not authorized to switch locations' });
+  const locationId = parseInt(req.body.location_id);
+  if (!locationId) return res.status(400).json({ error: 'location_id required' });
+  const { data: loc } = await supabase.from('locations').select('*').eq('location_id', locationId).single();
+  if (!loc) return res.status(404).json({ error: 'Location not found' });
+  req.session.locationId = locationId;
+  res.json({ ok: true, location: loc });
+});
+
+app.put('/api/admin/locations/:id', requireAdmin, async (req, res) => {
+  const user = req.session.adminUser;
+  if (user.location_id > 0) return res.status(403).json({ error: 'Not authorized' });
+  const allowed = ['name','region','url','logo_url','theme_color','status','next_enc_men','next_enc_women','sort_order'];
+  const updates = {};
+  for (const k of allowed) if (req.body[k] !== undefined) updates[k] = req.body[k];
+  const { data, error } = await supabase.from('locations').update(updates).eq('location_id', req.params.id).select().single();
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
 });
 
 // ── Dashboard ────────────────────────────────────────────────
 app.get('/api/admin/dashboard', requireAdmin, async (req, res) => {
   try {
+    const locId = getLocationId(req);
     // Separate queries — no FK constraints so no embedded joins
     const [{ data: encounters }, { data: peList }, { data: invoices }] = await Promise.all([
-      supabase.from('encounters')
-        .select('encounter_id,short_name,type,status_code,start_date,end_date')
+      withLocation(supabase.from('encounters')
+        .select('encounter_id,short_name,type,status_code,start_date,end_date'), locId)
         .order('start_date', { ascending: false }),
       supabase.from('participants_encounters')
         .select('participants_encounter_id,encounter_id,type'),
@@ -243,8 +300,9 @@ app.delete('/api/admin/participants/:id', requireAdmin, async (req, res) => {
 
 // ── Encounters ───────────────────────────────────────────────
 app.get('/api/admin/encounters', requireAdmin, async (req, res) => {
+  const locId = getLocationId(req);
   const [{ data: encs, error }, { data: peList }] = await Promise.all([
-    supabase.from('encounters').select('*').order('start_date', { ascending: false }),
+    withLocation(supabase.from('encounters').select('*'), locId).order('start_date', { ascending: false }),
     supabase.from('participants_encounters').select('encounter_id,type')
   ]);
   if (error) return res.status(500).json({ error: error.message });
@@ -344,7 +402,8 @@ const DONATION_TYPES = {
 };
 app.get('/api/admin/donations', requireAdmin, async (req, res) => {
   const { type, search } = req.query;
-  let q = supabase.from('donations').select('*').order('date_paid', { ascending: false }).limit(500);
+  const locId = getLocationId(req);
+  let q = withLocation(supabase.from('donations').select('*'), locId).order('date_paid', { ascending: false }).limit(500);
   if (type) q = q.eq('type', type);
   const { data, error } = await q;
   if (error) return res.status(500).json({ error: error.message });
@@ -356,7 +415,8 @@ app.get('/api/admin/donations', requireAdmin, async (req, res) => {
   res.json(rows);
 });
 app.get('/api/admin/donations/types', requireAdmin, async (req, res) => {
-  const { data } = await supabase.from('donations').select('type');
+  const locId = getLocationId(req);
+  const { data } = await withLocation(supabase.from('donations').select('type'), locId);
   const counts = {};
   for (const r of (data||[])) counts[r.type] = (counts[r.type]||0)+1;
   res.json(Object.entries(counts).map(([code,count]) => ({ code, label: DONATION_TYPES[code]||code, count })).sort((a,b)=>b.count-a.count));
@@ -366,6 +426,7 @@ app.post('/api/admin/donations', requireAdmin, async (req, res) => {
   const { type, amount, full_name, reason, payment_method, date_paid } = req.body;
   if (!type || !amount || !full_name) return res.status(400).json({ error: 'type, amount, and full_name are required' });
   const user = req.session?.adminUser;
+  const locId = getLocationId(req) || 1;
   const now = new Date().toISOString();
   const { data, error } = await supabase.from('donations').insert({
     type,
@@ -374,6 +435,7 @@ app.post('/api/admin/donations', requireAdmin, async (req, res) => {
     reason: (reason || '').trim(),
     payment_method: (payment_method || '').trim(),
     date_paid: date_paid ? new Date(date_paid).toISOString() : now,
+    location_id: locId,
     date_created: now,
     date_modified: now,
     user_created: user?.user_id || 0,
