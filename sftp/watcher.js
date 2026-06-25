@@ -87,12 +87,5 @@ function handleFile(filename) {
   }, 5000);
 }
 
-// Watch for new files
-fs.watch(WATCH_DIR, (eventType, filename) => {
-  if (eventType === 'rename' && filename) handleFile(filename);
-});
-
-// Also pick up any files already present on startup
-fs.readdirSync(WATCH_DIR).forEach(f => handleFile(f));
-
-console.log(`[watcher] Watching ${WATCH_DIR} for .sql backups...`);
+console.log(`[watcher] SFTP server ready. Files uploaded to ${WATCH_DIR} will NOT auto-migrate.`);
+console.log(`[watcher] To run a migration manually, use the admin portal or run the migration script directly.`);
