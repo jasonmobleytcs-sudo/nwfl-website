@@ -404,6 +404,10 @@ tfoot td.total-r{color:var(--danger)}
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
         Locations
       </button>
+      <button class="sb-sub-item" onclick="nav('sftp-files',this)">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>
+        SFTP Backups
+      </button>
       <button class="sb-sub-item" onclick="nav('settings',this)">
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
         Settings
@@ -905,6 +909,42 @@ tfoot td.total-r{color:var(--danger)}
         <table class="ptable">
           <thead><tr><th>Code</th><th>Name</th><th>Region</th><th>Status</th><th>Next Men's</th><th>Next Women's</th><th>URL</th><th>Actions</th></tr></thead>
           <tbody id="loc-tbody"><tr><td colspan="8" style="padding:2rem;text-align:center;opacity:.4">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ SFTP BACKUPS ══ -->
+    <div class="section" id="s-sftp-files">
+      <div class="section-header">
+        <div class="section-title">SFTP <em>Backups</em></div>
+        <div style="display:flex;gap:.6rem;align-items:center">
+          <span id="sftp-sel-count" style="font-size:.8rem;opacity:.5"></span>
+          <button class="btn-sm outline" id="sftp-dl-zip-btn" onclick="downloadSftpZip()" style="display:none">⬇ Download Zip</button>
+          <button class="btn-sm outline" onclick="loadSftpFiles()">↻ Refresh</button>
+        </div>
+      </div>
+
+      <!-- Empty / error state -->
+      <div id="sftp-empty" class="card" style="padding:2.5rem;text-align:center;display:none">
+        <div style="font-size:2.5rem;margin-bottom:.5rem">📂</div>
+        <div style="opacity:.5" id="sftp-empty-msg">No backup files uploaded yet.</div>
+      </div>
+
+      <!-- File table -->
+      <div class="card" style="padding:0;overflow:hidden" id="sftp-table-wrap">
+        <table class="ptable" id="sftp-table">
+          <thead>
+            <tr>
+              <th style="width:2.5rem"><input type="checkbox" id="sftp-chk-all" onchange="toggleAllSftpFiles(this.checked)" title="Select all"></th>
+              <th>Filename</th>
+              <th>Size</th>
+              <th>Uploaded</th>
+              <th style="width:130px">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="sftp-tbody">
+            <tr><td colspan="5" style="padding:2rem;text-align:center;opacity:.4">Loading…</td></tr>
+          </tbody>
         </table>
       </div>
     </div>
@@ -1485,7 +1525,8 @@ const sections={
   dashboard:'s-dashboard',men:'s-men',women:'s-women','participant-detail':'s-participant-detail','participant-edit':'s-participant-edit',register:'s-register',audit:'s-audit',
   invoices:'s-invoices',donations:'s-donations',balance:'s-balance',
   encounters:'s-encounters',checkin:'s-checkin',testimonies:'s-testimonies',
-  documents:'s-documents',reports:'s-reports',settings:'s-settings',locations:'s-locations'
+  documents:'s-documents',reports:'s-reports',settings:'s-settings',locations:'s-locations',
+  'sftp-files':'s-sftp-files'
 };
 const titles={
   dashboard:'Dashboard',men:'Men\'s Participants',women:'Women\'s Participants',register:'Register Participant',
@@ -1508,7 +1549,139 @@ function nav(key,btn){
   if(key==='audit') loadAuditLog();
   if(key==='locations') loadLocations();
   if(key==='settings') loadChangelog();
+  if(key==='sftp-files') loadSftpFiles();
 }
+
+// ── SFTP File Manager ─────────────────────────────────────────
+let sftpFiles = [];
+
+function fmtBytes(b) {
+  if (b < 1024) return b + ' B';
+  if (b < 1048576) return (b/1024).toFixed(1) + ' KB';
+  return (b/1048576).toFixed(2) + ' MB';
+}
+
+function fmtTs(iso) {
+  const d = new Date(iso);
+  return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) + ' ' +
+         d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+}
+
+async function loadSftpFiles() {
+  const tbody = document.getElementById('sftp-tbody');
+  const empty = document.getElementById('sftp-empty');
+  const wrap  = document.getElementById('sftp-table-wrap');
+  tbody.innerHTML = '<tr><td colspan="5" style="padding:2rem;text-align:center;opacity:.4">Loading…</td></tr>';
+  empty.style.display = 'none';
+  wrap.style.display = '';
+
+  try {
+    const r = await fetch('/api/admin/sftp-files');
+    if (!r.ok) throw new Error('Service unavailable');
+    sftpFiles = await r.json();
+    renderSftpFiles();
+  } catch(e) {
+    sftpFiles = [];
+    wrap.style.display = 'none';
+    empty.style.display = '';
+    document.getElementById('sftp-empty-msg').textContent = 'Could not connect to SFTP service: ' + e.message;
+  }
+}
+
+function renderSftpFiles() {
+  const tbody = document.getElementById('sftp-tbody');
+  const empty = document.getElementById('sftp-empty');
+  const wrap  = document.getElementById('sftp-table-wrap');
+  if (!sftpFiles.length) {
+    wrap.style.display = 'none';
+    empty.style.display = '';
+    document.getElementById('sftp-empty-msg').textContent = 'No backup files uploaded yet.';
+    document.getElementById('sftp-sel-count').textContent = '';
+    document.getElementById('sftp-dl-zip-btn').style.display = 'none';
+    return;
+  }
+  wrap.style.display = '';
+  empty.style.display = 'none';
+  tbody.innerHTML = sftpFiles.map(f => `
+    <tr id="sftp-row-${CSS.escape(f.name)}">
+      <td><input type="checkbox" class="sftp-chk" value="${f.name}" onchange="updateSftpSelection()"></td>
+      <td style="font-family:monospace;font-size:.85rem">${f.name}</td>
+      <td style="white-space:nowrap">${fmtBytes(f.size)}</td>
+      <td style="white-space:nowrap;opacity:.7">${fmtTs(f.modified)}</td>
+      <td style="white-space:nowrap">
+        <button class="btn-sm" onclick="downloadSftpFile('${f.name}')" title="Download">⬇</button>
+        <button class="btn-sm outline" onclick="deleteSftpFile('${f.name}')" title="Delete" style="color:#c0392b;border-color:#c0392b">✕</button>
+      </td>
+    </tr>`).join('');
+  updateSftpSelection();
+}
+
+function updateSftpSelection() {
+  const checked = [...document.querySelectorAll('.sftp-chk:checked')];
+  const total   = document.querySelectorAll('.sftp-chk').length;
+  const zipBtn  = document.getElementById('sftp-dl-zip-btn');
+  const countEl = document.getElementById('sftp-sel-count');
+  document.getElementById('sftp-chk-all').checked = checked.length === total && total > 0;
+  document.getElementById('sftp-chk-all').indeterminate = checked.length > 0 && checked.length < total;
+  if (checked.length > 1) {
+    zipBtn.style.display = '';
+    zipBtn.textContent = `⬇ Download ${checked.length} as Zip`;
+    countEl.textContent = `${checked.length} selected`;
+  } else {
+    zipBtn.style.display = 'none';
+    countEl.textContent = checked.length === 1 ? '1 selected' : '';
+  }
+}
+
+function toggleAllSftpFiles(checked) {
+  document.querySelectorAll('.sftp-chk').forEach(c => c.checked = checked);
+  updateSftpSelection();
+}
+
+function downloadSftpFile(name) {
+  const a = document.createElement('a');
+  a.href = `/api/admin/sftp-files/download/${encodeURIComponent(name)}`;
+  a.download = name;
+  a.click();
+}
+
+async function downloadSftpZip() {
+  const files = [...document.querySelectorAll('.sftp-chk:checked')].map(c => c.value);
+  if (!files.length) return;
+  const btn = document.getElementById('sftp-dl-zip-btn');
+  btn.textContent = 'Preparing…';
+  btn.disabled = true;
+  try {
+    const r = await fetch('/api/admin/sftp-files/zip', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ files })
+    });
+    if (!r.ok) throw new Error('Zip failed');
+    const blob = await r.blob();
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url; a.download = 'backups.zip'; a.click();
+    URL.revokeObjectURL(url);
+  } catch(e) {
+    alert('Download failed: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    updateSftpSelection();
+  }
+}
+
+async function deleteSftpFile(name) {
+  if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
+  const r = await fetch(`/api/admin/sftp-files/${encodeURIComponent(name)}`, { method: 'DELETE' });
+  if (r.ok) {
+    sftpFiles = sftpFiles.filter(f => f.name !== name);
+    renderSftpFiles();
+  } else {
+    alert('Delete failed.');
+  }
+}
+
 // ── Locations Management ──────────────────────────────────────
 let editingLocationId = null;
 

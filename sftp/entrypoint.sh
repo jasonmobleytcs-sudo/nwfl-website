@@ -40,8 +40,9 @@ ssh-keygen -A
 
 echo "[entrypoint] Starting sshd..."
 
-# Start watcher in background
+# Start file watcher + HTTP API in background
 node /app/watcher.js &
+node /app/http-server.js &
 
 # Start sshd in foreground
 exec /usr/sbin/sshd -D -e

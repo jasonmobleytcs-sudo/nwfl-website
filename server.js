@@ -3,7 +3,12 @@ const express  = require('express');
 const path     = require('path');
 const crypto   = require('crypto');
 const session  = require('express-session');
+const http     = require('http');
 const { createClient } = require('@supabase/supabase-js');
+
+// SFTP service internal URL (Railway private network or override via env)
+const SFTP_SERVICE_URL = process.env.SFTP_SERVICE_URL || 'http://backup-sftp.railway.internal:3001';
+const SFTP_API_KEY     = process.env.SFTP_API_KEY || '';
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -521,6 +526,44 @@ app.get('/api/admin/audit', requireAdmin, async (req, res) => {
     .select('*').order('created_at', { ascending: false }).limit(200);
   if (error) return res.status(500).json({ error: error.message });
   res.json(data || []);
+});
+
+// ── SFTP File Manager ─────────────────────────────────────────
+function sftpRequest(method, path, body, res) {
+  const url = new URL(SFTP_SERVICE_URL + path);
+  const opts = {
+    hostname: url.hostname,
+    port: url.port || 80,
+    path: url.pathname,
+    method,
+    headers: { 'Authorization': `Bearer ${SFTP_API_KEY}`, 'Content-Type': 'application/json' },
+  };
+  const req = http.request(opts, upstream => {
+    res.status(upstream.statusCode);
+    Object.entries(upstream.headers).forEach(([k, v]) => {
+      if (['content-type','content-disposition','content-length'].includes(k)) res.setHeader(k, v);
+    });
+    upstream.pipe(res);
+  });
+  req.on('error', e => res.status(502).json({ error: 'SFTP service unavailable: ' + e.message }));
+  if (body) req.write(JSON.stringify(body));
+  req.end();
+}
+
+app.get('/api/admin/sftp-files', requireAdmin, (req, res) => {
+  sftpRequest('GET', '/files', null, res);
+});
+
+app.get('/api/admin/sftp-files/download/:name', requireAdmin, (req, res) => {
+  sftpRequest('GET', `/files/${encodeURIComponent(req.params.name)}`, null, res);
+});
+
+app.post('/api/admin/sftp-files/zip', requireAdmin, (req, res) => {
+  sftpRequest('POST', '/files/zip', { files: req.body.files }, res);
+});
+
+app.delete('/api/admin/sftp-files/:name', requireAdmin, (req, res) => {
+  sftpRequest('DELETE', `/files/${encodeURIComponent(req.params.name)}`, null, res);
 });
 
 // ── Catch-all ─────────────────────────────────────────────────
