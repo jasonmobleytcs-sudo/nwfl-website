@@ -408,6 +408,10 @@ tfoot td.total-r{color:var(--danger)}
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>
         SFTP Backups
       </button>
+      <button class="sb-sub-item" onclick="nav('changelog',this)">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+        Version History
+      </button>
       <button class="sb-sub-item" onclick="nav('settings',this)">
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
         Settings
@@ -949,6 +953,12 @@ tfoot td.total-r{color:var(--danger)}
       </div>
     </div>
 
+    <!-- ══ VERSION HISTORY ══ -->
+    <div class="section" id="s-changelog">
+      <div class="section-header"><div class="section-title">Version <em>History</em></div></div>
+      <div class="card" style="padding:1.5rem 2rem" id="s-changelog-content"></div>
+    </div>
+
     <!-- ══ SETTINGS ══ -->
     <div class="section" id="s-settings">
       <div class="section-header"><div class="section-title">System <em>Settings</em></div></div>
@@ -1340,8 +1350,15 @@ async function submitDonation(e) {
 let allEncounters = [];
 async function loadEncounters() {
   document.getElementById('enc-tbody').innerHTML = '<tr><td colspan="10" style="padding:2rem;text-align:center;opacity:.4">Loading…</td></tr>';
-  const r = await fetch('/api/admin/encounters');
-  allEncounters = await r.json();
+  try {
+    const r = await fetch('/api/admin/encounters');
+    const json = await r.json();
+    allEncounters = Array.isArray(json) ? json : [];
+    if (!r.ok) console.error('Encounters API error:', json);
+  } catch(e) {
+    allEncounters = [];
+    console.error('Encounters fetch failed:', e);
+  }
   filterEncounters();
 }
 function filterEncounters() {
@@ -1400,29 +1417,38 @@ async function loadAuditLog() {
 
 // ── Version Changelog ─────────────────────────────────────────
 const CHANGELOG = [
-  { v:'1.8.0', date:'2026-05-22', items:['Multi-location platform — locations table, location_id on encounters/donations/users','Admin location switcher — super-admin can flip between FL/AL/MS/KY/KS/OH, all data auto-scopes','Public location cards hydrated live from DB (next encounter dates, URLs)','Migration script supports --location=AL flag for importing other location data'] },
-  { v:'1.7.0', date:'2026-05-22', items:['Encounter List — live data from DB, all encounters shown, search + type/status filters, real participant & server counts','Donations — edit and delete per row'] },
-  { v:'1.6.0', date:'2026-05-22', items:['Add Donation form — type picklist, donor search, free-type reason with common suggestions, payment method, date'] },
-  { v:'1.5.0', date:'2026-05-22', items:['Full invoices view — all columns matching old system','Donations filter tabs by type (Donation, Bereavement, Gift, Tithe, etc.)','Live search on invoices and donations','Audit log — track all edits and deletes','Version changelog added to settings'] },
-  { v:'1.4.0', date:'2026-05-22', items:['Fix participants .in() URL limit — now loads full encounter history','Fix gender query: W not F for women','Fix status code: A=Active, C=Closed','Fix apostrophe in Men\'s title'] },
+  { v:'2.4.0', date:'2026-09-22', items:['Version History — dedicated page in System nav with full release notes','Encounter status codes fixed to match migrated data (A=Active, C=Completed, X=Cancelled)','Participant list now shows full street address (address1 was missing from API)','Encounter list error handling — no longer shows "undefined encounters" on API failure'] },
+  { v:'2.3.0', date:'2026-09-22', items:['FL database re-migration from 9/19/2026 backup (14,818 rows)','Fixed participants_encounters: strip shirt_size column not in Supabase schema','Fixed participants: expanded shirt_size to varchar(10) to match MySQL source','Added --skip-users flag to migration script — prevents admin password reset on re-migrations'] },
+  { v:'2.2.0', date:'2026-09-21', items:['SFTP Backups file browser in admin portal — timestamps, file sizes, single download, multi-file zip','SFTP service HTTP API secured with SFTP_API_KEY bearer token','Fixed Dockerfile: http-server.js was missing from COPY commands','Fixed SFTP proxy: switched from http to https module for public Railway domain','Fixed SFTP connection: generated public HTTP domain on backup-sftp service'] },
+  { v:'2.1.0', date:'2026-09-21', items:['SFTP backup server deployed on Railway (backup-sftp service)','OpenSSH + Node.js HTTP API on separate service','Password auth fixed: chpasswd via shadow package replaces openssl passwd','Auto-migration on file upload disabled per request'] },
+  { v:'2.0.0', date:'2026-09-19', items:['AL (North Alabama) MySQL migration with 100,000 ID offset to prevent PK collisions','ID offset system: FL=0, AL=100000, MS=200000, KY=300000, KS=400000, OH=500000','Shared tables (countries, states, groups, etc.) skipped for non-FL locations','Users scoped by location for non-FL; FL users retain location_id=0 (super-admin)','Admin password reset to YESGOD68 after FL re-import'] },
+  { v:'1.8.0', date:'2026-05-22', items:['Multi-location platform — locations table, location_id on encounters/donations/users','Admin location switcher — super-admin can flip between FL/AL/MS/KY/KS/OH','Migration script supports --location= flag (FL, AL, MS, KY, KS, OH)'] },
+  { v:'1.7.0', date:'2026-05-22', items:['Encounter List — live data, all encounters shown, search + type/status filters, real participant & server counts','Donations — edit and delete per row'] },
+  { v:'1.6.0', date:'2026-05-22', items:['Add Donation form — type picklist, donor search, payment method, date'] },
+  { v:'1.5.0', date:'2026-05-22', items:['Full invoices view — all columns matching old system','Donations filter tabs by type','Live search on invoices and donations','Audit log — tracks all edits and deletes'] },
+  { v:'1.4.0', date:'2026-05-22', items:['Fix participants .in() URL limit — full encounter history now loads','Fix gender query: W not F for women','Fix apostrophe in Men\'s title'] },
   { v:'1.3.0', date:'2026-05-22', items:['Full participant list with encounter history','View / Edit / Delete participants','3-tab edit form: General, Encounters, Invoices'] },
-  { v:'1.2.0', date:'2026-05-21', items:['Dashboard live data from Supabase','Separate queries fix (no FK constraints)','Correct PART/SRVR type mapping','Status C=completed, N=upcoming'] },
+  { v:'1.2.0', date:'2026-05-21', items:['Dashboard live data from Supabase','Correct PART/SRVR type mapping'] },
   { v:'1.1.0', date:'2026-05-21', items:['MySQL → Supabase migration (13,609 rows)','Fixed zero-date handling','Fixed SHA1 password auth'] },
   { v:'1.0.0', date:'2026-05-20', items:['Admin portal launched','Login page, dashboard, all sections','Supabase project created'] }
 ];
-function loadChangelog() {
-  const cont = document.getElementById('changelog-content');
+
+function renderChangelog(targetId) {
+  const cont = document.getElementById(targetId);
   if (!cont) return;
-  cont.innerHTML = CHANGELOG.map(r =>
-    '<div style="margin-bottom:1.5rem">'
-    + '<div style="display:flex;align-items:center;gap:1rem;margin-bottom:.6rem">'
-    + '<span class="badge badge-active" style="font-size:.7rem">v'+r.v+'</span>'
-    + '<span style="font-size:.7rem;color:var(--body);opacity:.6">'+r.date+'</span></div>'
-    + '<ul style="list-style:none;display:flex;flex-direction:column;gap:.3rem">'
-    + r.items.map(i => '<li style="font-size:.8rem;color:var(--body);display:flex;align-items:flex-start;gap:.5rem"><span style="color:var(--teal);flex-shrink:0">✓</span>'+i+'</li>').join('')
+  cont.innerHTML = CHANGELOG.map((r, i) =>
+    '<div style="margin-bottom:1.8rem;padding-bottom:1.8rem;border-bottom:1px solid var(--border)">'
+    + '<div style="display:flex;align-items:center;gap:1rem;margin-bottom:.8rem">'
+    + '<span class="badge badge-active" style="font-size:.72rem;padding:.25rem .8rem">v'+r.v+'</span>'
+    + (i===0 ? '<span class="badge badge-paid" style="font-size:.65rem">Latest</span>' : '')
+    + '<span style="font-size:.72rem;color:var(--body);opacity:.6">'+r.date+'</span></div>'
+    + '<ul style="list-style:none;display:flex;flex-direction:column;gap:.4rem">'
+    + r.items.map(item => '<li style="font-size:.82rem;color:var(--body);display:flex;align-items:flex-start;gap:.6rem"><span style="color:var(--teal);flex-shrink:0;margin-top:.05rem">✓</span><span>'+item+'</span></li>').join('')
     + '</ul></div>'
   ).join('');
 }
+function loadChangelog()     { renderChangelog('changelog-content'); }
+function loadChangelogPage() { renderChangelog('s-changelog-content'); }
 
 // ── Load Dashboard ───────────────────────────────────────────
 async function loadDashboard(){
@@ -1526,7 +1552,8 @@ const sections={
   invoices:'s-invoices',donations:'s-donations',balance:'s-balance',
   encounters:'s-encounters',checkin:'s-checkin',testimonies:'s-testimonies',
   documents:'s-documents',reports:'s-reports',settings:'s-settings',locations:'s-locations',
-  'sftp-files':'s-sftp-files'
+  'sftp-files':'s-sftp-files',
+  'changelog':'s-changelog'
 };
 const titles={
   dashboard:'Dashboard',men:'Men\'s Participants',women:'Women\'s Participants',register:'Register Participant',
@@ -1549,6 +1576,7 @@ function nav(key,btn){
   if(key==='audit') loadAuditLog();
   if(key==='locations') loadLocations();
   if(key==='settings') loadChangelog();
+  if(key==='changelog') loadChangelogPage();
   if(key==='sftp-files') loadSftpFiles();
 }
 
