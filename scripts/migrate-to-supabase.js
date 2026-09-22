@@ -71,7 +71,11 @@ const SHARED_TABLES = new Set([
 ]);
 
 const INCOMPLETE_TABLES = ['participants', 'participants_encounters'];
-const TABLE_ORDER = process.argv.includes('--all') ? ALL_TABLES : INCOMPLETE_TABLES;
+
+// --skip-users: exclude users table (use after first import to preserve admin passwords)
+const SKIP_USERS = process.argv.includes('--skip-users');
+const TABLE_ORDER = (process.argv.includes('--all') ? ALL_TABLES : INCOMPLETE_TABLES)
+  .filter(t => !(SKIP_USERS && t === 'users'));
 
 // Tables that need location_id injected
 // users: only for non-FL locations (FL users keep location_id=0 = super-admin)
