@@ -660,7 +660,7 @@ tfoot td.total-r{color:var(--danger)}
               <div class="field"><label class="type-label">First Name</label><input class="form-input" type="text" name="first_name"></div>
               <div class="field"><label class="type-label">Last Name</label><input class="form-input" type="text" name="last_name"></div>
               <div class="field"><label class="type-label">Nick Name</label><input class="form-input" type="text" name="nick_name"></div>
-              <div class="field"><label class="type-label">Status</label><select class="form-input" name="status_code"><option value="AC">Active</option><option value="IN">Inactive</option></select></div>
+              <div class="field"><label class="type-label">Status</label><select class="form-input" name="status_code"><option value="A">Active</option><option value="C">Completed</option><option value="X">Cancelled</option></select></div>
               <div class="field"><label class="type-label">Gender</label><select class="form-input" name="gender"><option value="M">Man</option><option value="F">Woman</option></select></div>
               <div class="field"><label class="type-label">Marital Status</label><select class="form-input" name="marital_status"><option value="M">Married</option><option value="S">Single</option><option value="D">Divorced</option><option value="W">Widowed</option></select></div>
               <div class="field"><label class="type-label">Address 1</label><input class="form-input" type="text" name="address1"></div>
@@ -797,9 +797,9 @@ tfoot td.total-r{color:var(--danger)}
           <div style="display:flex;gap:.5rem;align-items:center">
             <select id="enc-status-filter" onchange="filterEncounters()" style="font-family:var(--ff-b);font-size:.7rem;padding:.35rem .7rem;border-radius:8px;border:1.5px solid var(--border);background:#fff;color:var(--ink)">
               <option value="">All Statuses</option>
-              <option value="N">New / Upcoming</option>
-              <option value="AC">Active</option>
+              <option value="A">Active / Upcoming</option>
               <option value="C">Completed</option>
+              <option value="X">Cancelled</option>
             </select>
             <select id="enc-type-filter" onchange="filterEncounters()" style="font-family:var(--ff-b);font-size:.7rem;padding:.35rem .7rem;border-radius:8px;border:1.5px solid var(--border);background:#fff;color:var(--ink)">
               <option value="">All Types</option>
@@ -1356,8 +1356,8 @@ function filterEncounters() {
 }
 function renderEncounters(data) {
   document.getElementById('enc-count-badge').textContent = data.length + ' encounter' + (data.length===1?'':'s');
-  const STATUS_LABEL = { N:'New', AC:'Active', C:'Completed', '':'—' };
-  const STATUS_CLASS = { N:'badge-partial', AC:'badge-paid', C:'badge-completed', '':'' };
+  const STATUS_LABEL = { A:'Active', N:'New', AC:'Active', C:'Completed', X:'Cancelled', '':'—' };
+  const STATUS_CLASS = { A:'badge-paid', N:'badge-partial', AC:'badge-paid', C:'badge-completed', X:'badge-partial', '':'' };
   document.getElementById('enc-tbody').innerHTML = data.length ? data.map(e => {
     const loc   = [e.city, e.state].filter(Boolean).join(', ') || e.encounter_location || '—';
     const start = e.start_date ? new Date(e.start_date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—';
