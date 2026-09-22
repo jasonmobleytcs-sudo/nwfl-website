@@ -52,12 +52,44 @@ nav{position:fixed;top:0;left:0;right:0;z-index:300;display:flex;align-items:cen
 .reg-hero h1 em{font-style:italic;color:var(--blue);display:block}
 .reg-hero-body{font-size:1rem;font-weight:300;line-height:1.9;color:var(--body);max-width:520px;margin:.8rem auto 0}
 
-/* STATUS BANNER */
-.status-banner{background:var(--gold-lt);border-top:3px solid var(--gold);border-bottom:3px solid var(--gold);padding:1.4rem 4rem}
-.status-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:1.2rem}
-.status-icon{font-size:1.4rem;flex-shrink:0}
-.status-text{font-size:.85rem;font-weight:400;color:var(--ink);line-height:1.5}
-.status-text strong{color:var(--gold);font-weight:600}
+/* UPCOMING ENCOUNTER CARDS */
+.enc-pick-sec{background:var(--cream);padding:4rem 4rem 5rem}
+.enc-pick-intro{text-align:center;margin-bottom:2.5rem}
+.enc-pick-intro h2{font-family:var(--ff-d);font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:300;color:var(--ink);margin-bottom:.5rem}
+.enc-pick-intro h2 em{font-style:italic;color:var(--blue)}
+.enc-pick-intro p{font-size:.9rem;color:var(--body);font-weight:300}
+.enc-pick-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;max-width:900px;margin:0 auto}
+.enc-card{border-radius:20px;overflow:hidden;box-shadow:0 8px 36px rgba(0,0,0,.1);transition:transform .3s,box-shadow .3s}
+.enc-card:hover{transform:translateY(-5px);box-shadow:0 16px 52px rgba(0,0,0,.14)}
+.enc-card-hd{padding:2rem 2rem 1.6rem}
+.enc-card.enc-men .enc-card-hd{background:linear-gradient(135deg,var(--blue) 0%,var(--blue2) 100%)}
+.enc-card.enc-women .enc-card-hd{background:linear-gradient(135deg,#C67B10 0%,var(--gold) 100%)}
+.enc-card-eyebrow{font-size:.56rem;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:rgba(255,255,255,.72);margin-bottom:.4rem}
+.enc-card-name{font-family:var(--ff-d);font-size:1.55rem;font-weight:400;color:var(--white);line-height:1.15;margin-bottom:.45rem}
+.enc-card-loc{font-size:.78rem;color:rgba(255,255,255,.78);font-weight:300;display:flex;align-items:center;gap:.4rem}
+.enc-card-loc svg{width:13px;height:13px;flex-shrink:0;opacity:.8}
+.enc-card-body{background:var(--white);padding:1.6rem 2rem 2rem}
+.enc-cd-label{font-size:.56rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--body);margin-bottom:.6rem}
+.enc-cd{display:flex;align-items:center;gap:.5rem;margin-bottom:1.4rem}
+.enc-cd-unit{display:flex;flex-direction:column;align-items:center;background:var(--sky);border-radius:8px;padding:.5rem .75rem;min-width:52px}
+.enc-cd-n{font-family:var(--ff-d);font-size:1.9rem;font-weight:300;color:var(--ink);line-height:1}
+.enc-cd-l{font-size:.48rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--body);margin-top:.15rem}
+.enc-cd-sep{font-family:var(--ff-d);font-size:1.5rem;color:var(--body);opacity:.35;margin-bottom:.6rem}
+.enc-cd-unit.women .enc-cd-n{color:var(--gold)}
+.enc-dates{font-size:.8rem;color:var(--body);font-weight:300;line-height:1.8;margin-bottom:1.5rem;border-top:1px solid var(--rule);padding-top:1rem}
+.enc-dates strong{color:var(--ink);font-weight:500}
+.enc-reg-btns{display:flex;flex-direction:column;gap:.6rem}
+.enc-btn-part,.enc-btn-serv{font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:.85rem 1.4rem;border-radius:50px;text-decoration:none;text-align:center;transition:all .2s}
+.enc-men .enc-btn-part{background:var(--blue);color:var(--white);box-shadow:0 4px 14px rgba(42,127,193,.3)}
+.enc-men .enc-btn-part:hover{background:var(--blue2);transform:translateY(-1px)}
+.enc-men .enc-btn-serv{border:2px solid var(--blue);color:var(--blue);background:transparent}
+.enc-men .enc-btn-serv:hover{background:var(--sky)}
+.enc-women .enc-btn-part{background:var(--gold);color:var(--white);box-shadow:0 4px 14px rgba(212,137,26,.3)}
+.enc-women .enc-btn-part:hover{background:#b8730e;transform:translateY(-1px)}
+.enc-women .enc-btn-serv{border:2px solid var(--gold);color:var(--gold);background:transparent}
+.enc-women .enc-btn-serv:hover{background:var(--gold-lt)}
+.enc-skeleton{border-radius:20px;background:var(--sky);height:360px;display:grid;place-items:center;color:var(--body);opacity:.5;font-size:.85rem}
+@media(max-width:800px){.enc-pick-grid{grid-template-columns:1fr}.enc-pick-sec{padding:3rem 1.6rem}}
 
 /* REGISTRATION SECTION */
 .reg-sec{background:var(--white);padding:6rem 4rem}
@@ -121,7 +153,7 @@ footer{background:var(--ink);padding:5rem 4rem 0;border-top:4px solid var(--gold
   nav{padding:1rem 1.6rem}
   .nav-links{display:none}
   .reg-hero,.reg-sec,.dates-preview{padding:5rem 1.6rem}
-  .status-banner{padding:1.2rem 1.6rem}
+  .enc-pick-sec{padding:2.5rem 1.6rem}
   .reg-inner{grid-template-columns:1fr;gap:2.5rem}
   .footer-grid{grid-template-columns:1fr 1fr;gap:2.5rem}
   footer{padding:3.5rem 1.6rem 0}
@@ -163,13 +195,17 @@ footer{background:var(--ink);padding:5rem 4rem 0;border-top:4px solid var(--gold
   </div>
 </section>
 
-<!-- STATUS BANNER -->
-<div class="status-banner">
-  <div class="status-inner">
-    <span class="status-icon">📢</span>
-    <p class="status-text"><strong>Our current Encounter is full.</strong> We apologize for the inconvenience — please check back soon for details on the next Encounter, or view our upcoming dates below.</p>
+<!-- UPCOMING ENCOUNTER CARDS -->
+<section class="enc-pick-sec">
+  <div class="enc-pick-intro">
+    <h2>Choose Your <em>Encounter</em></h2>
+    <p>Select the Men's or Women's weekend below and register today.</p>
   </div>
-</div>
+  <div class="enc-pick-grid" id="reg-enc-cards">
+    <div class="enc-skeleton">Loading encounters…</div>
+    <div class="enc-skeleton">Loading encounters…</div>
+  </div>
+</section>
 
 <!-- MAIN CONTENT -->
 <section class="reg-sec">
@@ -267,5 +303,72 @@ footer{background:var(--ink);padding:5rem 4rem 0;border-top:4px solid var(--gold
     </div>
   </div>
 </footer>
+<script>
+(function(){
+  const REG_URL = 'https://nwflencounters.com/participants/register_intro';
+  function fmt(d){ return new Date(d).toLocaleDateString('en-US',{weekday:'short',month:'long',day:'numeric',year:'numeric'}); }
+  function cdHtml(gender){
+    const cls = gender==='W'?'women':'';
+    return `<div class="enc-cd-label">Starts in</div>
+    <div class="enc-cd" id="rcd-${gender}">
+      <div class="enc-cd-unit ${cls}"><span class="enc-cd-n" id="rcd-${gender}-d">--</span><span class="enc-cd-l">Days</span></div>
+      <span class="enc-cd-sep">:</span>
+      <div class="enc-cd-unit ${cls}"><span class="enc-cd-n" id="rcd-${gender}-h">--</span><span class="enc-cd-l">Hrs</span></div>
+      <span class="enc-cd-sep">:</span>
+      <div class="enc-cd-unit ${cls}"><span class="enc-cd-n" id="rcd-${gender}-m">--</span><span class="enc-cd-l">Min</span></div>
+      <span class="enc-cd-sep">:</span>
+      <div class="enc-cd-unit ${cls}"><span class="enc-cd-n" id="rcd-${gender}-s">--</span><span class="enc-cd-l">Sec</span></div>
+    </div>`;
+  }
+  function tickCd(gender,targetDate){
+    function upd(){
+      const diff=new Date(targetDate)-Date.now();
+      if(diff<=0){clearInterval(iv);return;}
+      const d=Math.floor(diff/864e5),h=Math.floor((diff%864e5)/36e5),m=Math.floor((diff%36e5)/6e4),s=Math.floor((diff%6e4)/1e3);
+      const el=id=>document.getElementById(id);
+      if(el(`rcd-${gender}-d`))el(`rcd-${gender}-d`).textContent=d;
+      if(el(`rcd-${gender}-h`))el(`rcd-${gender}-h`).textContent=String(h).padStart(2,'0');
+      if(el(`rcd-${gender}-m`))el(`rcd-${gender}-m`).textContent=String(m).padStart(2,'0');
+      if(el(`rcd-${gender}-s`))el(`rcd-${gender}-s`).textContent=String(s).padStart(2,'0');
+    }
+    upd();const iv=setInterval(upd,1000);
+  }
+  function buildCard(enc,gender){
+    const isMen=gender==='M';
+    const gClass=isMen?'enc-men':'enc-women';
+    const label=isMen?"Men's Encounter":"Women's Encounter";
+    const pin=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>`;
+    return `<div class="enc-card ${gClass}">
+      <div class="enc-card-hd">
+        <div class="enc-card-eyebrow">${label}</div>
+        <div class="enc-card-name">${enc.short_name||label}</div>
+        <div class="enc-card-loc">${pin} ${enc.encounter_location||''}</div>
+      </div>
+      <div class="enc-card-body">
+        ${cdHtml(gender)}
+        <div class="enc-dates"><strong>Start:</strong> ${fmt(enc.start_date)}${enc.end_date?`<br><strong>End:</strong> ${fmt(enc.end_date)}`:''}</div>
+        <div class="enc-reg-btns">
+          <a class="enc-btn-part" href="${REG_URL}" target="_blank" rel="noopener">Register as Participant</a>
+          <a class="enc-btn-serv" href="${REG_URL}" target="_blank" rel="noopener">Register as Server</a>
+        </div>
+      </div>
+    </div>`;
+  }
+  fetch('/api/encounters/upcoming').then(r=>r.json()).then(data=>{
+    const grid=document.getElementById('reg-enc-cards');
+    if(!grid)return;
+    const cards=[];
+    if(data.men)cards.push(buildCard(data.men,'M'));
+    if(data.women)cards.push(buildCard(data.women,'W'));
+    if(!cards.length){grid.innerHTML='<div class="enc-skeleton" style="grid-column:1/-1">No upcoming encounters at this time. Check back soon!</div>';return;}
+    grid.innerHTML=cards.join('');
+    if(data.men)tickCd('M',data.men.start_date);
+    if(data.women)tickCd('W',data.women.start_date);
+  }).catch(()=>{
+    const grid=document.getElementById('reg-enc-cards');
+    if(grid)grid.innerHTML='<div class="enc-skeleton" style="grid-column:1/-1">Unable to load encounters right now.</div>';
+  });
+})();
+</script>
 </body>
 </html>

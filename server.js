@@ -111,6 +111,19 @@ app.get('/api/locations', async (req, res) => {
   res.json(data || []);
 });
 
+// Public: next upcoming men's + women's encounters
+app.get('/api/encounters/upcoming', async (req, res) => {
+  const { data, error } = await supabase
+    .from('encounters')
+    .select('encounter_id,short_name,type,start_date,end_date,encounter_location,status_code')
+    .eq('status_code', 'A')
+    .eq('location_id', 1)
+    .order('start_date');
+  if (error) return res.status(500).json({ error: error.message });
+  const enc = data || [];
+  res.json({ men: enc.find(e => e.type === 'M') || null, women: enc.find(e => e.type === 'W') || null });
+});
+
 app.post('/api/admin/switch-location', requireAdmin, async (req, res) => {
   const user = req.session.adminUser;
   // Only super-admins (location_id=0) can switch

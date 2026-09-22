@@ -573,6 +573,42 @@ footer{
 @keyframes hashPulse{0%,100%{opacity:1;text-shadow:none}50%{opacity:.75;text-shadow:0 0 28px rgba(42,127,193,.35)}}
 .hero-hashtag{animation:hashPulse 4s ease-in-out infinite}
 
+/* ── UPCOMING ENCOUNTERS ── */
+.upcoming-sec{background:var(--cream);padding:5rem 4rem}
+.upcoming-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:2.5rem}
+.enc-card{border-radius:20px;overflow:hidden;box-shadow:0 8px 36px rgba(0,0,0,.1);transition:transform .3s,box-shadow .3s}
+.enc-card:hover{transform:translateY(-5px);box-shadow:0 16px 52px rgba(0,0,0,.14)}
+.enc-card-hd{padding:2rem 2rem 1.6rem}
+.enc-card.enc-men .enc-card-hd{background:linear-gradient(135deg,var(--blue) 0%,var(--blue2) 100%)}
+.enc-card.enc-women .enc-card-hd{background:linear-gradient(135deg,#C67B10 0%,var(--gold) 100%)}
+.enc-card-eyebrow{font-size:.56rem;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:rgba(255,255,255,.72);margin-bottom:.4rem}
+.enc-card-name{font-family:var(--ff-d);font-size:1.55rem;font-weight:400;color:var(--white);line-height:1.15;margin-bottom:.45rem}
+.enc-card-loc{font-size:.78rem;color:rgba(255,255,255,.78);font-weight:300;display:flex;align-items:center;gap:.4rem}
+.enc-card-loc svg{width:13px;height:13px;flex-shrink:0;opacity:.8}
+.enc-card-body{background:var(--white);padding:1.6rem 2rem 2rem}
+.enc-cd-label{font-size:.56rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--body);margin-bottom:.6rem}
+.enc-cd{display:flex;align-items:center;gap:.5rem;margin-bottom:1.4rem}
+.enc-cd-unit{display:flex;flex-direction:column;align-items:center;background:var(--sky);border-radius:8px;padding:.5rem .75rem;min-width:52px}
+.enc-cd-n{font-family:var(--ff-d);font-size:1.9rem;font-weight:300;color:var(--ink);line-height:1}
+.enc-cd-l{font-size:.48rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--body);margin-top:.15rem}
+.enc-cd-sep{font-family:var(--ff-d);font-size:1.5rem;color:var(--body);opacity:.35;margin-bottom:.6rem}
+.enc-cd-unit.women .enc-cd-n{color:var(--gold)}
+.enc-dates{font-size:.8rem;color:var(--body);font-weight:300;line-height:1.8;margin-bottom:1.5rem;border-top:1px solid var(--rule);padding-top:1rem}
+.enc-dates strong{color:var(--ink);font-weight:500}
+.enc-reg-btns{display:flex;flex-direction:column;gap:.6rem}
+.enc-btn-part{font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:.85rem 1.4rem;border-radius:50px;text-decoration:none;text-align:center;transition:all .2s}
+.enc-btn-serv{font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:.85rem 1.4rem;border-radius:50px;text-decoration:none;text-align:center;transition:all .2s}
+.enc-men .enc-btn-part{background:var(--blue);color:var(--white);box-shadow:0 4px 14px rgba(42,127,193,.3)}
+.enc-men .enc-btn-part:hover{background:var(--blue2);transform:translateY(-1px)}
+.enc-men .enc-btn-serv{border:2px solid var(--blue);color:var(--blue);background:transparent}
+.enc-men .enc-btn-serv:hover{background:var(--sky)}
+.enc-women .enc-btn-part{background:var(--gold);color:var(--white);box-shadow:0 4px 14px rgba(212,137,26,.3)}
+.enc-women .enc-btn-part:hover{background:#b8730e;transform:translateY(-1px)}
+.enc-women .enc-btn-serv{border:2px solid var(--gold);color:var(--gold);background:transparent}
+.enc-women .enc-btn-serv:hover{background:var(--gold-lt)}
+.enc-skeleton{border-radius:20px;background:var(--sky);height:360px;display:grid;place-items:center;color:var(--body);opacity:.5;font-size:.85rem}
+@media(max-width:800px){.upcoming-grid{grid-template-columns:1fr}.upcoming-sec{padding:3.5rem 1.6rem}}
+
 /* ── BUTTON SHIMMER + LIFT (ALL BUTTONS) ── */
 .btn-primary,.btn-secondary,.btn-teal,.nav-cta{position:relative;overflow:hidden}
 /* light shimmer streak */
@@ -614,7 +650,7 @@ footer{
     <li><a href="donate.html">Donate</a></li>
     <li><a href="https://nwflencountersinc.itemorder.com/shop/sale/" target="_blank">Store</a></li>
   </ul>
-  <a href="#" class="nav-cta">Register Now</a>
+  <a href="register.html" class="nav-cta">Register Now</a>
 </nav>
 
 <!-- HERO -->
@@ -632,8 +668,8 @@ footer{
       </div>
       <p class="hero-body">A safe, welcoming place where men and women are set free from the chains that bind them — through a life-changing, three-day encounter with the Living God. Across 6 states and growing.</p>
       <div class="hero-btns">
-        <a href="#" class="btn-primary">Register for an Encounter</a>
-        <a href="#" class="btn-secondary">View All Locations &amp; Dates</a>
+        <a href="register.html" class="btn-primary">Register for an Encounter</a>
+        <a href="#dates" class="btn-secondary">View All Locations &amp; Dates</a>
       </div>
     </div>
     <div class="hero-right">
@@ -659,6 +695,18 @@ footer{
     <cite>John 8:36 &nbsp;·&nbsp; The Foundation of Every Encounter</cite>
   </blockquote>
 </div>
+
+<!-- UPCOMING ENCOUNTERS -->
+<section class="upcoming-sec" id="upcoming">
+  <div class="wrap">
+    <p class="eyebrow">Don't Wait — Your Weekend Awaits</p>
+    <h2 class="section-title">Upcoming Encounters</h2>
+    <div class="upcoming-grid" id="upcoming-cards">
+      <div class="enc-skeleton">Loading encounters…</div>
+      <div class="enc-skeleton">Loading encounters…</div>
+    </div>
+  </div>
+</section>
 
 <!-- WHAT IS AN ENCOUNTER -->
 <section class="what-sec">
@@ -697,7 +745,7 @@ footer{
             <div class="tl-desc">Celebrate. Commission. Go change the world.</div>
           </div>
         </div>
-        <a href="#" class="btn-primary">I&#39;m Ready — Register Now</a>
+        <a href="register.html" class="btn-primary">I&#39;m Ready — Register Now</a>
       </div>
     </div>
   </div>
@@ -861,7 +909,7 @@ footer{
     <div class="kingdom-tag">&#10024; Join the Movement — #YESGOD</div>
     <h2 class="kingdom-h">Are You Ready<br>to <em>Say Yes to God?</em></h2>
     <p class="kingdom-p">This weekend could be the one that changes everything for you. Thousands of men and women have walked through these doors carrying heavy burdens — and walked out free. Your breakthrough could be this month.</p>
-    <a href="#" class="btn-gold-solid">Register for an Encounter</a>
+    <a href="register.html" class="btn-gold-solid">Register for an Encounter</a>
   </div>
 </section>
 
@@ -987,6 +1035,88 @@ fetch('/api/locations').then(r=>r.json()).then(locs=>{
     if (loc.status === 'coming_soon') card.style.opacity = '.75';
   });
 }).catch(()=>{});
+
+// ── Upcoming Encounters ──────────────────────────────────────────
+(function(){
+  const REG_URL = 'https://nwflencounters.com/participants/register_intro';
+
+  function fmt(d){ return new Date(d).toLocaleDateString('en-US',{weekday:'short',month:'long',day:'numeric',year:'numeric'}); }
+
+  function cdHtml(targetDate, gender){
+    const cls = gender==='W' ? 'women' : '';
+    return `<div class="enc-cd-label">Starts in</div>
+    <div class="enc-cd" id="cd-${gender}">
+      <div class="enc-cd-unit ${cls}"><span class="enc-cd-n" id="cd-${gender}-d">--</span><span class="enc-cd-l">Days</span></div>
+      <span class="enc-cd-sep">:</span>
+      <div class="enc-cd-unit ${cls}"><span class="enc-cd-n" id="cd-${gender}-h">--</span><span class="enc-cd-l">Hrs</span></div>
+      <span class="enc-cd-sep">:</span>
+      <div class="enc-cd-unit ${cls}"><span class="enc-cd-n" id="cd-${gender}-m">--</span><span class="enc-cd-l">Min</span></div>
+      <span class="enc-cd-sep">:</span>
+      <div class="enc-cd-unit ${cls}"><span class="enc-cd-n" id="cd-${gender}-s">--</span><span class="enc-cd-l">Sec</span></div>
+    </div>`;
+  }
+
+  function tickCd(gender, targetDate){
+    function update(){
+      const diff = new Date(targetDate) - Date.now();
+      if(diff <= 0){ clearInterval(iv); return; }
+      const d = Math.floor(diff/864e5);
+      const h = Math.floor((diff%864e5)/36e5);
+      const m = Math.floor((diff%36e5)/6e4);
+      const s = Math.floor((diff%6e4)/1e3);
+      const el = id => document.getElementById(id);
+      if(el(`cd-${gender}-d`)) el(`cd-${gender}-d`).textContent = d;
+      if(el(`cd-${gender}-h`)) el(`cd-${gender}-h`).textContent = String(h).padStart(2,'0');
+      if(el(`cd-${gender}-m`)) el(`cd-${gender}-m`).textContent = String(m).padStart(2,'0');
+      if(el(`cd-${gender}-s`)) el(`cd-${gender}-s`).textContent = String(s).padStart(2,'0');
+    }
+    update();
+    const iv = setInterval(update, 1000);
+  }
+
+  function buildCard(enc, gender){
+    const isMen = gender==='M';
+    const gClass = isMen ? 'enc-men' : 'enc-women';
+    const label  = isMen ? "Men's Encounter" : "Women's Encounter";
+    const locPin = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>`;
+    return `
+    <div class="enc-card ${gClass}">
+      <div class="enc-card-hd">
+        <div class="enc-card-eyebrow">${label}</div>
+        <div class="enc-card-name">${enc.short_name || label}</div>
+        <div class="enc-card-loc">${locPin} ${enc.encounter_location || ''}</div>
+      </div>
+      <div class="enc-card-body">
+        ${cdHtml(enc.start_date, gender)}
+        <div class="enc-dates">
+          <strong>Start:</strong> ${fmt(enc.start_date)}${enc.end_date ? `<br><strong>End:</strong> ${fmt(enc.end_date)}` : ''}
+        </div>
+        <div class="enc-reg-btns">
+          <a class="enc-btn-part" href="${REG_URL}" target="_blank" rel="noopener">Register as Participant</a>
+          <a class="enc-btn-serv" href="${REG_URL}" target="_blank" rel="noopener">Register as Server</a>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  fetch('/api/encounters/upcoming').then(r=>r.json()).then(data=>{
+    const grid = document.getElementById('upcoming-cards');
+    if(!grid) return;
+    const cards = [];
+    if(data.men)   { cards.push(buildCard(data.men,   'M')); }
+    if(data.women) { cards.push(buildCard(data.women, 'W')); }
+    if(!cards.length){
+      grid.innerHTML = '<div class="enc-skeleton" style="grid-column:1/-1">No upcoming encounters at this time. Check back soon!</div>';
+      return;
+    }
+    grid.innerHTML = cards.join('');
+    if(data.men)   tickCd('M', data.men.start_date);
+    if(data.women) tickCd('W', data.women.start_date);
+  }).catch(()=>{
+    const grid = document.getElementById('upcoming-cards');
+    if(grid) grid.innerHTML = '<div class="enc-skeleton" style="grid-column:1/-1">Unable to load encounters. Please try again later.</div>';
+  });
+})();
 </script>
 </body>
 </html>
