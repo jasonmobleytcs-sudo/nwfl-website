@@ -217,7 +217,7 @@ app.get('/api/admin/dashboard', requireAdmin, async (req, res) => {
 app.get('/api/admin/participants', requireAdmin, async (req, res) => {
   const { gender, search } = req.query;
   let q = supabase.from('participants')
-    .select('participant_id,first_name,last_name,city,state,postal,email,phone,status_code,gender,birth_date,date_created')
+    .select('participant_id,first_name,last_name,address1,address2,city,state,postal,email,phone,status_code,gender,birth_date,date_created')
     .order('last_name').limit(1000);
   // MySQL stored 'M'=men, 'W'=women (not 'F')
   const genderVal = gender === 'F' ? 'W' : gender;
