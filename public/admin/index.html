@@ -521,12 +521,11 @@ tfoot td.total-r{color:var(--danger)}
           <thead>
             <tr>
               <th>Encounter Name</th>
-              <th colspan="2">Participants</th>
-              <th colspan="2">Servers</th>
+              <th>P. Paid</th><th>P. Paid $</th>
+              <th>P. Unpaid</th><th>P. Unpaid $</th>
+              <th>S. Paid</th><th>S. Paid $</th>
+              <th>S. Unpaid</th><th>S. Unpaid $</th>
               <th></th>
-            </tr>
-            <tr>
-              <th></th><th>Paid</th><th>Unpaid</th><th>Paid</th><th>Unpaid</th><th></th>
             </tr>
           </thead>
           <tbody>
@@ -803,7 +802,7 @@ tfoot td.total-r{color:var(--danger)}
           <div style="display:flex;gap:.5rem;align-items:center">
             <select id="enc-status-filter" onchange="filterEncounters()" style="font-family:var(--ff-b);font-size:.7rem;padding:.35rem .7rem;border-radius:8px;border:1.5px solid var(--border);background:#fff;color:var(--ink)">
               <option value="">All Statuses</option>
-              <option value="A">Active / Upcoming</option>
+              <option value="A" selected>Active / Upcoming</option>
               <option value="C">Completed</option>
               <option value="X">Cancelled</option>
             </select>

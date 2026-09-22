@@ -198,8 +198,8 @@ app.get('/api/admin/dashboard', requireAdmin, async (req, res) => {
     }
 
     const all = Object.values(map);
-    // AC = actively running, C = completed, N = upcoming/new
-    const active    = all.filter(e => e.status_code === 'AC');
+    // A = active/upcoming, C = completed, X = cancelled
+    const active    = all.filter(e => e.status_code === 'A');
     const completed = all.filter(e => e.status_code === 'C' &&
       (e.p_unpaid_count > 0 || e.s_unpaid_count > 0));
 
