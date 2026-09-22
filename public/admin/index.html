@@ -441,6 +441,8 @@ tfoot td.total-r{color:var(--danger)}
       <span class="breadcrumb"><span id="bcLocation">NWFL Encounters</span> &rsaquo; <span id="bcTitle">Dashboard</span></span>
     </div>
     <div class="topbar-right">
+      <!-- Version badge -->
+      <span onclick="nav('changelog',document.querySelector('[onclick*=changelog]'))" style="font-size:.58rem;font-weight:700;letter-spacing:.08em;color:var(--body);opacity:.45;cursor:pointer;padding:.2rem .55rem;border:1px solid var(--border);border-radius:50px;transition:opacity .2s" onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='.45'">v2.4.0</span>
       <!-- Location switcher (visible for super-admins only) -->
       <div id="loc-switcher-wrap" style="display:none;position:relative">
         <button id="loc-switcher-btn" onclick="toggleLocMenu()" style="display:flex;align-items:center;gap:.5rem;padding:.35rem .85rem;border-radius:50px;border:1.5px solid var(--border);background:#fff;font-family:var(--ff-b);font-size:.65rem;font-weight:600;color:var(--ink);cursor:pointer;transition:border-color .2s">

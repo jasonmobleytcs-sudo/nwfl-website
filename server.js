@@ -231,9 +231,11 @@ app.get('/api/admin/participants', requireAdmin, async (req, res) => {
   // Fetch ALL PE and encounters then join in Node (avoids .in() URL length limits)
   const [{ data: peData }, { data: encounters }] = await Promise.all([
     supabase.from('participants_encounters')
-      .select('participants_encounter_id,participant_id,encounter_id,type,attended,status_code'),
+      .select('participants_encounter_id,participant_id,encounter_id,type,attended,status_code')
+      .limit(20000),
     supabase.from('encounters')
       .select('encounter_id,short_name,start_date,type')
+      .limit(2000),
   ]);
   // Build participant ID set for fast lookup
   const partSet = new Set(participants.map(p => p.participant_id));
