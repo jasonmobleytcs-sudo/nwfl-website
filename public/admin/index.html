@@ -442,7 +442,7 @@ tfoot td.total-r{color:var(--danger)}
     </div>
     <div class="topbar-right">
       <!-- Version badge -->
-      <span onclick="nav('changelog',document.querySelector('[onclick*=changelog]'))" style="font-size:.58rem;font-weight:700;letter-spacing:.08em;color:var(--body);opacity:.45;cursor:pointer;padding:.2rem .55rem;border:1px solid var(--border);border-radius:50px;transition:opacity .2s" onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='.45'">v2.4.0</span>
+      <span onclick="nav('changelog',document.querySelector('[onclick*=changelog]'))" style="font-size:.58rem;font-weight:700;letter-spacing:.08em;color:var(--body);opacity:.45;cursor:pointer;padding:.2rem .55rem;border:1px solid var(--border);border-radius:50px;transition:opacity .2s" onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='.45'">v2.5.0</span>
       <!-- Location switcher (visible for super-admins only) -->
       <div id="loc-switcher-wrap" style="display:none;position:relative">
         <button id="loc-switcher-btn" onclick="toggleLocMenu()" style="display:flex;align-items:center;gap:.5rem;padding:.35rem .85rem;border-radius:50px;border:1.5px solid var(--border);background:#fff;font-family:var(--ff-b);font-size:.65rem;font-weight:600;color:var(--ink);cursor:pointer;transition:border-color .2s">
@@ -1418,6 +1418,7 @@ async function loadAuditLog() {
 
 // ── Version Changelog ─────────────────────────────────────────
 const CHANGELOG = [
+  { v:'2.5.0', date:'2026-09-22', items:['Encounters attended now shows in participant list — bypassed PostgREST 1000-row cap with paginated filtered queries','Dashboard Active Encounters now populates — server filter used AC but migrated data uses A','Encounter list defaults to Active / Upcoming filter','Dashboard table header columns fixed to match 10-column data layout'] },
   { v:'2.4.0', date:'2026-09-22', items:['Version History — dedicated page in System nav with full release notes','Encounter status codes fixed to match migrated data (A=Active, C=Completed, X=Cancelled)','Participant list now shows full street address (address1 was missing from API)','Encounter list error handling — no longer shows "undefined encounters" on API failure'] },
   { v:'2.3.0', date:'2026-09-22', items:['FL database re-migration from 9/19/2026 backup (14,818 rows)','Fixed participants_encounters: strip shirt_size column not in Supabase schema','Fixed participants: expanded shirt_size to varchar(10) to match MySQL source','Added --skip-users flag to migration script — prevents admin password reset on re-migrations'] },
   { v:'2.2.0', date:'2026-09-21', items:['SFTP Backups file browser in admin portal — timestamps, file sizes, single download, multi-file zip','SFTP service HTTP API secured with SFTP_API_KEY bearer token','Fixed Dockerfile: http-server.js was missing from COPY commands','Fixed SFTP proxy: switched from http to https module for public Railway domain','Fixed SFTP connection: generated public HTTP domain on backup-sftp service'] },

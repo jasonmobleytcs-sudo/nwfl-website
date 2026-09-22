@@ -228,17 +228,29 @@ app.get('/api/admin/participants', requireAdmin, async (req, res) => {
 
   if (!participants?.length) return res.json([]);
 
-  // Fetch ALL PE and encounters then join in Node (avoids .in() URL length limits)
-  const [{ data: peData }, { data: encounters }] = await Promise.all([
-    supabase.from('participants_encounters')
+  const partIds = participants.map(p => p.participant_id);
+
+  // Paginate PE rows filtered by participant IDs to bypass PostgREST max-rows cap
+  let peData = [];
+  const PE_PAGE = 900;
+  for (let from = 0; ; from += PE_PAGE) {
+    const { data } = await supabase
+      .from('participants_encounters')
       .select('participants_encounter_id,participant_id,encounter_id,type,attended,status_code')
-      .limit(20000),
-    supabase.from('encounters')
-      .select('encounter_id,short_name,start_date,type')
-      .limit(2000),
-  ]);
+      .in('participant_id', partIds)
+      .range(from, from + PE_PAGE - 1);
+    if (!data?.length) break;
+    peData = peData.concat(data);
+    if (data.length < PE_PAGE) break;
+  }
+
+  const { data: encounters } = await supabase
+    .from('encounters')
+    .select('encounter_id,short_name,start_date,type')
+    .limit(2000);
+
   // Build participant ID set for fast lookup
-  const partSet = new Set(participants.map(p => p.participant_id));
+  const partSet = new Set(partIds);
 
   const encMap = {};
   for (const e of (encounters || [])) encMap[e.encounter_id] = e;
