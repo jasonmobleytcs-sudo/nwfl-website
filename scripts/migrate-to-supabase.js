@@ -94,6 +94,11 @@ const OFFSET_SCHEMA = {
   users:                   { pk: 'user_id',                   fks: [] },
 };
 
+// Columns present in MySQL backups but not in the Supabase schema — strip before upsert
+const STRIP_COLUMNS = {
+  participants_encounters: ['shirt_size'],
+};
+
 // MySQL column name → PostgreSQL column name overrides
 const COLUMN_OVERRIDES = {
   events: { where: '"where"', when: '"when"' }
@@ -237,7 +242,7 @@ async function migrate() {
     const overrides = COLUMN_OVERRIDES[table] || {};
     const FALLBACK_TS = '1970-01-01T00:00:00Z';
     const offsetSchema = OFFSET_SCHEMA[table];
-    const objects = rows.map(values => {
+    let objects = rows.map(values => {
       const obj = {};
       columns.forEach((col, i) => {
         const pgCol = overrides[col] ? overrides[col].replace(/"/g,'') : col;
@@ -259,6 +264,16 @@ async function migrate() {
       if (LOCATION_SCOPED_TABLES.has(table)) obj.location_id = LOCATION_ID;
       return obj;
     });
+
+    // Strip columns not present in Supabase schema
+    const stripCols = STRIP_COLUMNS[table] || [];
+    if (stripCols.length) {
+      objects = objects.map(obj => {
+        const o = { ...obj };
+        for (const col of stripCols) delete o[col];
+        return o;
+      });
+    }
 
     // Insert in batches of 500
     const BATCH = 500;
