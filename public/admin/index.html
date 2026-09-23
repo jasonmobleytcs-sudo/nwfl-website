@@ -442,7 +442,7 @@ tfoot td.total-r{color:var(--danger)}
     </div>
     <div class="topbar-right">
       <!-- Version badge -->
-      <span onclick="nav('changelog',document.querySelector('[onclick*=changelog]'))" style="font-size:.58rem;font-weight:700;letter-spacing:.08em;color:var(--body);opacity:.45;cursor:pointer;padding:.2rem .55rem;border:1px solid var(--border);border-radius:50px;transition:opacity .2s" onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='.45'">v2.5.0</span>
+      <span onclick="nav('changelog',document.querySelector('[onclick*=changelog]'))" style="font-size:.58rem;font-weight:700;letter-spacing:.08em;color:var(--body);opacity:.45;cursor:pointer;padding:.2rem .55rem;border:1px solid var(--border);border-radius:50px;transition:opacity .2s" onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='.45'">v2.6.0</span>
       <!-- Location switcher (visible for super-admins only) -->
       <div id="loc-switcher-wrap" style="display:none;position:relative">
         <button id="loc-switcher-btn" onclick="toggleLocMenu()" style="display:flex;align-items:center;gap:.5rem;padding:.35rem .85rem;border-radius:50px;border:1.5px solid var(--border);background:#fff;font-family:var(--ff-b);font-size:.65rem;font-weight:600;color:var(--ink);cursor:pointer;transition:border-color .2s">
@@ -1018,7 +1018,7 @@ async function loadParticipants(gender){
   if(!r.ok){tbody.innerHTML='<tr><td colspan="5" style="color:var(--danger);padding:2rem;text-align:center">Error loading</td></tr>';return;}
   const data=await r.json();
   pCache[gender]=data;
-  renderParticipants(gender,data);
+  filterParticipants(gender);
   countEl.textContent=data.length+' participants';
 }
 
@@ -1033,8 +1033,7 @@ function renderParticipants(gender,data){
     const encHtml=(p.encounters||[]).length?p.encounters.map(e=>{
       const n=e.encounter?.short_name||'Unknown Encounter';
       const t=e.type==='PART'?'Participant':'Server';
-      const a=e.attended?'Attended':'Did Not Attend';
-      return '<div class="p-enc-item'+(e.attended?'':' did-not')+'">'+n+' as '+t+' &#8212; '+a+'</div>';
+      return '<div class="p-enc-item">'+n+' as '+t+'</div>';
     }).join(''):'<span style="opacity:.35;font-size:.72rem">No encounters on record</span>';
     return '<tr>'
       +'<td><div class="p-name">'+p.last_name+', '+p.first_name+'</div><div style="font-size:.72rem;color:var(--body);margin-top:.15rem">'+( p.email||'')+'</div></td>'
@@ -1053,7 +1052,7 @@ function filterParticipants(gender){
   const search=document.getElementById(gender==='M'?'men-search':'women-search').value.toLowerCase().trim();
   const data=pCache[gender]||[];
   if(!search){renderParticipants(gender,data);document.getElementById(gender==='M'?'men-count':'women-count').textContent=data.length+' participants';return;}
-  const f=data.filter(p=>(p.first_name+' '+p.last_name+' '+(p.email||'')+' '+(p.city||'')).toLowerCase().includes(search));
+  const f=data.filter(p=>(p.first_name+' '+p.last_name+' '+p.last_name+', '+p.first_name+' '+(p.email||'')+' '+(p.city||'')+' '+(p.address1||'')).toLowerCase().includes(search));
   renderParticipants(gender,f);
   document.getElementById(gender==='M'?'men-count':'women-count').textContent=f.length+' of '+data.length;
 }
@@ -1165,7 +1164,7 @@ async function loadInvoices() {
   document.getElementById('inv-tbody').innerHTML = '<tr><td colspan="12" style="padding:2rem;text-align:center;opacity:.4">Loading…</td></tr>';
   const r = await fetch('/api/admin/invoices/unpaid');
   allInvoices = await r.json();
-  renderInvoices(allInvoices);
+  filterInvoices();
 }
 function renderInvoices(data) {
   const total = data.reduce((s,i) => s + (i.balance||0), 0);
@@ -1195,7 +1194,7 @@ function filterInvoices() {
   const q = document.getElementById('inv-search').value.toLowerCase();
   if (!q) { renderInvoices(allInvoices); return; }
   const f = allInvoices.filter(i =>
-    ((i.billing_first_name||'')+(i.billing_last_name||'')).toLowerCase().includes(q) ||
+    ((i.billing_first_name||'')+' '+(i.billing_last_name||'')).toLowerCase().includes(q) ||
     (i.encounter?.short_name||'').toLowerCase().includes(q) ||
     (i.billing_address1||'').toLowerCase().includes(q) ||
     (i.billing_city||'').toLowerCase().includes(q)
@@ -1221,7 +1220,7 @@ async function loadDonations() {
   document.getElementById('don-type-tabs').innerHTML = types.map(t =>
     `<button class="edit-tab" onclick="filterDonations('${t.code}',this)">${t.label} <span style="opacity:.5;font-size:.55rem">(${t.count})</span></button>`
   ).join('');
-  renderDonations(allDonations);
+  filterDonations(currentDonType, null, true);
 }
 function filterDonations(typeCode, btn, searchOnly) {
   if (!searchOnly) {
@@ -1418,6 +1417,7 @@ async function loadAuditLog() {
 
 // ── Version Changelog ─────────────────────────────────────────
 const CHANGELOG = [
+  { v:'2.6.0', date:'2026-09-23', items:['Removed Did Not Attend label and strikethrough from participant encounters — attended flag in migrated data is unreliable','Fixed participant search — now re-applies any typed search after data loads, no more full-list overwrite','Fixed participant search to match Last, First display format and include address','Fixed invoice search — first+last name were concatenated without space','Fixed donations search to re-apply after data loads'] },
   { v:'2.5.0', date:'2026-09-22', items:['Encounters attended now shows in participant list — bypassed PostgREST 1000-row cap with paginated filtered queries','Dashboard Active Encounters now populates — server filter used AC but migrated data uses A','Encounter list defaults to Active / Upcoming filter','Dashboard table header columns fixed to match 10-column data layout'] },
   { v:'2.4.0', date:'2026-09-22', items:['Version History — dedicated page in System nav with full release notes','Encounter status codes fixed to match migrated data (A=Active, C=Completed, X=Cancelled)','Participant list now shows full street address (address1 was missing from API)','Encounter list error handling — no longer shows "undefined encounters" on API failure'] },
   { v:'2.3.0', date:'2026-09-22', items:['FL database re-migration from 9/19/2026 backup (14,818 rows)','Fixed participants_encounters: strip shirt_size column not in Supabase schema','Fixed participants: expanded shirt_size to varchar(10) to match MySQL source','Added --skip-users flag to migration script — prevents admin password reset on re-migrations'] },
